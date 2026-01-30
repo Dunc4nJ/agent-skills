@@ -1,0 +1,10 @@
+# OS/editor
+.DS_Store
+.vscode/
+
+# Logs/cache
+*.log
+.cache/
+
+# If any tooling creates deps here
+node_modules/
