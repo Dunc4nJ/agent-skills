@@ -3,22 +3,30 @@ name: create-global-skill
 description: Create and publish a "global" skill that is available to all local agents (Codex/Claude-style agents reading ~/.agent/skills) and to Clawdbot (via ~/.clawdbot/skills symlink). Use when asked to add a new skill for all agents, set up the folder structure for SKILL.md + resources, symlink into Clawdbot, and run OpenSkills sync commands (e.g. npx openskills sync) to refresh AGENTS.md skill tables.
 ---
 
-# Create Global Skill (repo → ~/.agent/skills → Clawdbot)
+# Create Global Skill
 
-## Goal
-Create a skill once under `~/.agent/skills/<skill-name>/` and make it available everywhere:
-- **Codex/Claude-style agents** that read skills from `~/.agent/skills`
-- **Clawdbot agents** by symlinking into `~/.clawdbot/skills`
-- **OpenSkills-indexed agents** by running the OpenSkills sync command to refresh the skills table in the canonical `AGENTS.md`
+## Architecture
 
-This skill defines the standard workflow.
+```
+~/.agent/                     ← git repo (origin: GitHub)
+  AGENTS.md                   ← agent instructions + skill table (synced by openskills)
+  skills/                     ← all skill folders live here
 
----
+~/.claude/skills              ← symlink → ~/.agent/skills (OpenSkills Claude Code path)
+~/.claude/CLAUDE.md           ← "@~/.agent/AGENTS.md" (Claude Code @import)
+~/.codex/AGENTS.md            ← symlink → ~/.agent/AGENTS.md (Codex reads directly)
+~/.clawdbot/skills/*          ← per-skill symlinks → ~/.agent/skills/*
+```
 
-## Workflow (create-global-skill)
+- **One source of truth**: `~/.agent/` is the git repo containing skills and AGENTS.md
+- **Claude Code** discovers skills natively via `~/.claude/skills` symlink AND via the AGENTS.md skill table (@import)
+- **Codex** reads `~/.agent/AGENTS.md` directly via symlink (Codex does NOT support `@` imports)
+- **Clawdbot** reads per-skill symlinks under `~/.clawdbot/skills/`
+
+## Workflow
 
 ### 0) Preconditions
-- `~/.agent` is a git repo (commit after each change).
+- `~/.agent` is a git repo with remote `origin` (commit and push after each change).
 - Skills are stored as folders under `~/.agent/skills/`.
 
 ### 1) Choose a skill name
@@ -26,7 +34,7 @@ Rules:
 - lowercase letters, digits, hyphens
 - keep it short and action-oriented
 
-Example: `obsidian-vault-keeper`.
+Example: `zombie-killer`.
 
 ### 2) Create the skill folder
 Create:
@@ -51,10 +59,6 @@ Guidance:
 ### 4) Expose the skill to Clawdbot (symlink)
 Create/update symlink:
 
-- Target folder: `~/.clawdbot/skills/<skill-name>`
-- Symlink source: `~/.agent/skills/<skill-name>`
-
-Commands:
 ```bash
 mkdir -p ~/.clawdbot/skills
 ln -sfn ~/.agent/skills/<skill-name> ~/.clawdbot/skills/<skill-name>
@@ -65,10 +69,8 @@ Verification:
 ls -la ~/.clawdbot/skills/<skill-name>
 ```
 
-### 5) Run OpenSkills sync (to refresh AGENTS.md)
-OpenSkills (per its README) uses `sync` to write/update the `<available_skills>` table.
-
-Run (pick the canonical AGENTS.md you use):
+### 5) Run OpenSkills sync (to refresh AGENTS.md skill table)
+This updates the `<available_skills>` XML block in AGENTS.md with metadata (name + description) for all discovered skills.
 
 ```bash
 # IMPORTANT: Always pass -y to skip the interactive selector
@@ -78,20 +80,15 @@ npx openskills sync -y -o ~/.agent/AGENTS.md
 Notes:
 - **Always use `-y`** — without it, `sync` opens an interactive multi-select prompt that blocks non-interactive agents.
 - `-y` syncs all discovered skills automatically.
-- OpenSkills default install locations are `.claude/skills` or `.agent/skills` depending on mode.
-- This step is about keeping the skills *listing* in AGENTS.md current for ecosystems that rely on it.
+- OpenSkills discovers skills from both `~/.agent/skills/` (universal path) and `~/.claude/skills/` (Claude Code path, which symlinks to the same directory).
+- The sync writes metadata only (name + description) to the skill table. Full SKILL.md content loads on-demand via `npx openskills read <skill-name>`.
 
-### 6) Commit the change (rollback safety)
-Commit after each skill add/update:
+### 6) Commit and push
 ```bash
 cd ~/.agent
 git add -A
 git commit -m "Add skill <skill-name>"
-```
-
-If vendor skills update creates noise, commit that separately:
-```bash
-git commit -m "Update vendor skills"
+git push
 ```
 
 ---
@@ -100,5 +97,5 @@ git commit -m "Update vendor skills"
 - [ ] Skill folder exists under `~/.agent/skills/<skill-name>`
 - [ ] `SKILL.md` has correct frontmatter and lean body
 - [ ] Symlink exists at `~/.clawdbot/skills/<skill-name>`
-- [ ] OpenSkills `sync` run for the canonical `AGENTS.md`
-- [ ] Changes committed in `~/.agent` repo
+- [ ] OpenSkills `sync -y` run for `~/.agent/AGENTS.md`
+- [ ] Changes committed and pushed in `~/.agent` repo
