@@ -1,8 +1,8 @@
 ---
 name: obsidian
-description: Search and manage Obsidian vault notes using qmd (Markdown search engine). Use when user asks about notes, Obsidian, searching knowledge base, or finding information in their vault.
-user_invocable: true
-tools:
+description: Search and manage Obsidian vault notes using qmd (Markdown search engine). Use when the user asks about "notes", "Obsidian", "search my vault", "find in knowledge base", "what do I know about", or needs to create, read, or update vault content. Provides search commands, vault navigation, and note-writing conventions.
+user-invocable: true
+allowed-tools:
   - Bash
   - Read
   - Write
@@ -14,15 +14,86 @@ tools:
 **Collection name**: `obsidian`
 **Sync**: Git-based (Obsidian Git plugin)
 
+## Vault Philosophy
+
+This vault is external knowledge infrastructure for AI agents. Agents do not run inside it — access it via this skill to read or write knowledge.
+
+For deep understanding of vault conventions and architecture, read:
+`Knowledge/Agentic Memory/Obsidian as Agentic Memory.md`
+
 ## Structure
 
 ```
 obsidian-vault/
-├── Daily Notes/    # Daily journal entries
-├── Projects/       # Project-specific notes
-├── Archive/        # Old/completed stuff
-└── Templates/      # Note templates
+├── moc - Vault.md              # Root MOC — read this first
+├── Projects/                    # Per-project knowledge (nestable)
+│   └── [Project]/
+│       ├── moc - [Project].md  # Project MOC: status, decisions, nav, questions
+│       └── learning - *.md     # Project-specific learnings
+├── Knowledge/                   # Cross-cutting knowledge
+│   └── Agentic Memory/         # Vault philosophy + agent integration patterns
+├── Daily Notes/                 # Daily journal
+├── Templates/                   # Note templates
+└── Archive/                     # Inactive content
 ```
+
+## Navigation Protocol
+
+When you need vault context:
+1. Read `moc - Vault.md` (root MOC) for vault-wide orientation
+2. Identify which project is relevant based on your current task
+3. Read that project's MOC (`moc - [Project].md`) for status, decisions, and links
+4. Follow wiki links from the MOC to specific notes
+5. Use qmd search (below) for targeted lookups
+
+## Writing Notes
+
+### Titles
+Write titles as claims (readable prose), not keywords:
+- GOOD: `quality is the hard part.md`
+- BAD: `quality-notes.md`
+
+### Structure
+Every note must stand alone. A reader arriving via any wiki link should understand the note without reading 3 others first.
+
+### Wiki Links
+Weave `[[links]]` inline into sentences:
+- GOOD: `because [[quality is the hard part]] we need to focus on curation`
+- BAD: `Related: [[quality-note]]` (at the bottom)
+
+### YAML Frontmatter
+Every note needs:
+```yaml
+---
+created: YYYY-MM-DD
+description: One sentence describing the note (enables progressive disclosure)
+---
+```
+
+Optional fields: `type` (e.g., decision, question, framework), `source` (where it came from)
+
+### Prefixes
+Only 3 prefixes are used:
+- `meta - ` — system/workflow files
+- `moc - ` — maps of content (navigation hubs)
+- `learning - ` — extracted insights from agent work
+
+All other notes use clean claim-based titles with `type` in YAML frontmatter.
+
+### Learnings
+When you discover something significant, create a learning note:
+- Filename: `learning - [claim as readable prose].md`
+- Place in relevant project folder if project-specific, `Knowledge/` if cross-cutting
+- Densely linked: wiki links to source material and related vault notes woven inline
+- Update the relevant MOC's Navigation section with a link to the new learning
+
+## Meta Feedback Loop
+
+When your behavior misses expectations while working with the vault:
+1. Identify what rule is missing or unclear
+2. Check if the rule exists in vault convention notes
+3. Add or update the rule immediately
+4. This compounds — every correction improves the system for all future sessions
 
 ## Searching Notes (use qmd, not grep!)
 
@@ -66,14 +137,23 @@ qmd update
 
 ## Creating/Editing Notes
 
-```bash
-# Create note (direct file write)
-cat > /data/projects/obsidian-vault/Folder/note.md << 'EOF'
-# Title
-Content here
-EOF
+Use the Write tool to create notes directly. Always include YAML frontmatter:
 
-# Or use Write tool to create/edit directly
+```bash
+# Create a learning note in a project
+Write to: /data/projects/obsidian-vault/Projects/[Project]/learning - [claim].md
+
+# Create a knowledge note
+Write to: /data/projects/obsidian-vault/Knowledge/[Domain]/[claim title].md
+```
+
+After creating or editing notes:
+```bash
+# Sync changes
+cd /data/projects/obsidian-vault && git add -A && git commit -m "vault: description" && git push
+
+# Re-index for search
+qmd update
 ```
 
 ## Syncing Changes

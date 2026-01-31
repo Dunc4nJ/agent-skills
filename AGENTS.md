@@ -262,7 +262,7 @@ Usage notes:
 
 <skill>
 <name>obsidian</name>
-<description>Search and manage Obsidian vault notes using qmd (Markdown search engine). Use when user asks about notes, Obsidian, searching knowledge base, or finding information in their vault.</description>
+<description>Search and manage Obsidian vault notes using qmd (Markdown search engine). Use when the user asks about "notes", "Obsidian", "search my vault", "find in knowledge base", "what do I know about", or needs to create, read, or update vault content. Provides search commands, vault navigation, and note-writing conventions.</description>
 <location>global</location>
 </skill>
 
@@ -321,6 +321,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>obsidian-reflect</name>
+<description>Extract key learnings from recent work and persist them to the Obsidian vault as linked learning notes. Use when the user says "reflect on", "capture learnings", "what did we learn", "extract insights", "end of session", or when wrapping up a task with significant non-obvious discoveries worth preserving.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>web-design-guidelines</name>
 <description>Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices".</description>
 <location>global</location>
@@ -330,6 +336,12 @@ Usage notes:
 <name>create-plan</name>
 <description>Iterative planning skill that explores codebases, researches best practices via Perplexity/NIA, and creates comprehensive self-contained plans through multiple clarification rounds. Use when asked to create, design, or plan any feature, refactor, or implementation.</description>
 <location>global</location>
+</skill>
+
+<skill>
+<name>bird</name>
+<description>X/Twitter CLI for reading, searching, posting, and engagement. Use when user asks about Twitter, tweets, timelines, posting to X, or social media engagement.</description>
+<location>project</location>
 </skill>
 
 </available_skills>
