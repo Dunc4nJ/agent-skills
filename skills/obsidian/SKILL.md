@@ -40,11 +40,24 @@ obsidian-vault/
 ## Navigation Protocol
 
 When you need vault context:
-1. Read `moc - Vault.md` (root MOC) for vault-wide orientation
-2. Identify which project is relevant based on your current task
-3. Read that project's MOC (`moc - [Project].md`) for status, decisions, and links
-4. Follow wiki links from the MOC to specific notes
-5. Use qmd search (below) for targeted lookups
+1. **(Optional) Inject vault context** for the map before exploring:
+   ```bash
+   bash ~/.agent/skills/obsidian/scripts/inject-context.sh [path]
+   ```
+   Outputs vault tree + YAML descriptions. Pass a path to scope to a specific project (e.g., `Projects/App Creation`) or omit for the full vault. Use descriptions to decide which notes to open — most decisions can be made at the description level without reading full files.
+2. Read `moc - Vault.md` (root MOC) for vault-wide orientation
+3. Identify which project is relevant based on your current task
+4. Read that project's MOC (`moc - [Project].md`) for status, decisions, and links
+5. **Follow wiki links** using qmd to resolve them:
+   ```bash
+   qmd search "note title from wiki link" -c obsidian
+   ```
+6. **Use qmd for targeted lookups** when descriptions or MOCs point to something relevant:
+   ```bash
+   qmd search "exact term" -c obsidian        # keyword match
+   qmd vsearch "concept description" -c obsidian  # semantic match
+   qmd query "broad topic" -c obsidian         # hybrid + rerank
+   ```
 
 ## Writing Notes
 

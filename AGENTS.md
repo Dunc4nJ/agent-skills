@@ -243,6 +243,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>obsidian-edit</name>
+<description>Process inline {edit annotations} in Obsidian vault notes. Use when the user says "edit my notes", "process annotations", "run edit", "fix my annotations", or has left {curly brace instructions} in markdown files for batch processing.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>ntm-prompt-palette-adder</name>
 <description>Add a new prompt to the ntm command palette with deep thinking best practices</description>
 <location>global</location>
