@@ -261,6 +261,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>obsidian</name>
+<description>Search and manage Obsidian vault notes using qmd (Markdown search engine). Use when user asks about notes, Obsidian, searching knowledge base, or finding information in their vault.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>vercel-react-best-practices</name>
 <description>React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.</description>
 <location>global</location>
@@ -324,18 +330,6 @@ Usage notes:
 <name>create-plan</name>
 <description>Iterative planning skill that explores codebases, researches best practices via Perplexity/NIA, and creates comprehensive self-contained plans through multiple clarification rounds. Use when asked to create, design, or plan any feature, refactor, or implementation.</description>
 <location>global</location>
-</skill>
-
-<skill>
-<name>obsidian</name>
-<description>Search and manage Obsidian vault notes using qmd (Markdown search engine). Use when user asks about notes, Obsidian, searching knowledge base, or finding information in their vault.</description>
-<location>project</location>
-</skill>
-
-<skill>
-<name>bird</name>
-<description>X/Twitter CLI for reading, searching, posting, and engagement. Use when user asks about Twitter, tweets, timelines, posting to X, or social media engagement.</description>
-<location>project</location>
 </skill>
 
 </available_skills>
