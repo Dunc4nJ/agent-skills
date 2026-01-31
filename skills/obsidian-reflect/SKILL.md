@@ -13,7 +13,7 @@ allowed-tools:
 
 Extract key learnings from work and persist them to the vault as standalone, densely linked notes.
 
-**Vault location**: `/data/projects/obsidian-vault`
+**Vault location**: `/data/projects/obsidian-vault` (symlinked at `~/obsidian-vault`)
 
 ## Workflow
 

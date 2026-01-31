@@ -10,7 +10,7 @@ allowed-tools:
 
 # Obsidian Vault (qmd-indexed)
 
-**Vault location**: `/data/projects/obsidian-vault`
+**Vault location**: `/data/projects/obsidian-vault` (symlinked at `~/obsidian-vault`)
 **Collection name**: `obsidian`
 **Sync**: Git-based (Obsidian Git plugin)
 

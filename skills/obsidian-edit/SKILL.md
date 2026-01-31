@@ -13,7 +13,7 @@ allowed-tools:
 
 Process `{inline annotations}` in Obsidian vault notes. Leave edit instructions where they belong; resolve them in place.
 
-**Vault location**: `/data/projects/obsidian-vault`
+**Vault location**: `/data/projects/obsidian-vault` (symlinked at `~/obsidian-vault`)
 
 ## Concept
 
