@@ -285,6 +285,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>url-to-obsidian</name>
+<description>Capture knowledge from any URL into the Obsidian vault as a linked note. Use when the user says "save this URL", "capture this to vault", "add to obsidian", "save this tweet", "capture this article", or provides a URL and asks to save, store, or capture it. Routes tweets (x.com, twitter.com) via bird CLI and any other web page via playbooks.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>nia-docs</name>
 <description>Search library documentation and code examples via Nia (package semantic search, regex grep, and universal search). Use when you need API docs/code examples across npm, PyPI, crates, or Go modules. Requires NIA_API_KEY.</description>
 <location>global</location>
