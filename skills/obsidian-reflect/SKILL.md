@@ -13,7 +13,7 @@ allowed-tools:
 
 Extract key learnings from work and persist them to the vault as standalone, densely linked notes.
 
-**Vault location**: `/data/projects/obsidian-vault` (symlinked at `~/obsidian-vault`)
+**Vault location**: `~/obsidian-vault`
 
 ## Workflow
 
@@ -57,8 +57,8 @@ The claim should be a complete, assertive statement:
 - BAD: `learning - caching-notes.md`
 
 **Location**:
-- Project-specific: `/data/projects/obsidian-vault/Projects/[Project]/learning - claim.md`
-- Cross-cutting: `/data/projects/obsidian-vault/Knowledge/[Domain]/learning - claim.md`
+- Project-specific: `~/obsidian-vault/Projects/[Project]/learning - claim.md`
+- Cross-cutting: `~/obsidian-vault/Knowledge/[Domain]/learning - claim.md`
 
 **Template**:
 ```yaml
@@ -84,7 +84,7 @@ After creating learning notes, update the relevant MOC:
 ### 6. Sync
 
 ```bash
-cd /data/projects/obsidian-vault && git add -A && git commit -m "vault: extract learnings from [topic]" && git push
+cd ~/obsidian-vault && git add -A && git commit -m "vault: extract learnings from [topic]" && git push
 qmd update
 ```
 

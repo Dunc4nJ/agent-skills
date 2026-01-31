@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VAULT="/data/projects/obsidian-vault"
+VAULT="$HOME/obsidian-vault"
 
 rg '\{[^}]+\}' --type md -l "$VAULT" \
   -g '!.obsidian/*' \

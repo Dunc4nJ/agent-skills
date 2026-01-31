@@ -10,7 +10,7 @@ allowed-tools:
 
 # Obsidian Vault (qmd-indexed)
 
-**Vault location**: `/data/projects/obsidian-vault` (symlinked at `~/obsidian-vault`)
+**Vault location**: `~/obsidian-vault`
 **Collection name**: `obsidian`
 **Sync**: Git-based (Obsidian Git plugin)
 
@@ -154,16 +154,16 @@ Use the Write tool to create notes directly. Always include YAML frontmatter:
 
 ```bash
 # Create a learning note in a project
-Write to: /data/projects/obsidian-vault/Projects/[Project]/learning - [claim].md
+Write to: ~/obsidian-vault/Projects/[Project]/learning - [claim].md
 
 # Create a knowledge note
-Write to: /data/projects/obsidian-vault/Knowledge/[Domain]/[claim title].md
+Write to: ~/obsidian-vault/Knowledge/[Domain]/[claim title].md
 ```
 
 After creating or editing notes:
 ```bash
 # Sync changes
-cd /data/projects/obsidian-vault && git add -A && git commit -m "vault: description" && git push
+cd ~/obsidian-vault && git add -A && git commit -m "vault: description" && git push
 
 # Re-index for search
 qmd update
@@ -172,7 +172,7 @@ qmd update
 ## Syncing Changes
 
 ```bash
-cd /data/projects/obsidian-vault && git add -A && git commit -m "msg" && git push
+cd ~/obsidian-vault && git add -A && git commit -m "msg" && git push
 ```
 
 ## When to Use What

@@ -13,7 +13,7 @@ allowed-tools:
 
 Process `{inline annotations}` in Obsidian vault notes. Leave edit instructions where they belong; resolve them in place.
 
-**Vault location**: `/data/projects/obsidian-vault` (symlinked at `~/obsidian-vault`)
+**Vault location**: `~/obsidian-vault`
 
 ## Concept
 
@@ -57,7 +57,7 @@ For each target file:
 After all files processed:
 
 ```bash
-cd /data/projects/obsidian-vault && git add -A && git commit -m "vault: process spatial edits" && git push
+cd ~/obsidian-vault && git add -A && git commit -m "vault: process spatial edits" && git push
 qmd update
 ```
 
