@@ -268,7 +268,7 @@ Usage notes:
 
 <skill>
 <name>create-global-skill</name>
-<description>Create and publish a “global” skill that is available to all local agents (Codex/Claude-style agents reading ~/.agents/skills) and to Clawdbot (via ~/.clawdbot/skills symlink). Use when asked to add a new skill for all agents, set up the folder structure for SKILL.md + resources, symlink into Clawdbot, and run OpenSkills sync commands (e.g. npx openskills sync) to refresh AGENTS.md skill tables.</description>
+<description>Create and publish global skills available to all local agents. Use when asked to "create a skill", "add a new skill", "write a skill", "make a global skill", or when setting up skill folder structure, writing SKILL.md, creating symlinks, or running OpenSkills sync. Covers both skill authoring best practices and deployment to ~/.agent/skills/.</description>
 <location>global</location>
 </skill>
 
@@ -321,15 +321,21 @@ Usage notes:
 </skill>
 
 <skill>
-<name>skill-creator</name>
-<description>Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.</description>
+<name>create-plan</name>
+<description>Iterative planning skill that explores codebases, researches best practices via Perplexity/NIA, and creates comprehensive self-contained plans through multiple clarification rounds. Use when asked to create, design, or plan any feature, refactor, or implementation.</description>
 <location>global</location>
 </skill>
 
 <skill>
-<name>create-plan</name>
-<description>Iterative planning skill that explores codebases, researches best practices via Perplexity/NIA, and creates comprehensive self-contained plans through multiple clarification rounds. Use when asked to create, design, or plan any feature, refactor, or implementation.</description>
-<location>global</location>
+<name>obsidian</name>
+<description>Search and manage Obsidian vault notes using qmd (Markdown search engine). Use when user asks about notes, Obsidian, searching knowledge base, or finding information in their vault.</description>
+<location>project</location>
+</skill>
+
+<skill>
+<name>bird</name>
+<description>X/Twitter CLI for reading, searching, posting, and engagement. Use when user asks about Twitter, tweets, timelines, posting to X, or social media engagement.</description>
+<location>project</location>
 </skill>
 
 </available_skills>
