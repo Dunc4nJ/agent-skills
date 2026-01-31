@@ -1,5 +1,207 @@
 # AGENTS
 
+# Global Agent Instructions
+
+## REQUIRED: Session Initialization
+
+At the START of every coding session (not if asked for planning, this is when any coding is about to begin), BEFORE any other work, call:
+
+```
+macro_start_session(
+  human_key="<absolute path to current project>",
+  program="<include claude or codex>",
+  model="<include model name>,
+  task_description="<brief description of your task>"
+)
+```
+
+This registers your identity, checks for conflicts, and fetches your inbox.
+
+**IMPORTANT:** The response contains `agent.name` (e.g., "GreenCastle"). Use this name for all subsequent Agent Mail calls (`sender_name`, `agent_name` parameters).
+
+## Workflow
+
+1. **Start session**: `macro_start_session(...)` — ALWAYS DO THIS FIRST
+2. **Get rules**: `cm context "task" --json`
+3. **Get skills**: `ms suggest`
+4. **Past solutions**: `cass search "topic"` (if needed)
+
+## Agent Mail
+
+**Reserve files** before editing:
+```
+file_reservation_paths(project_key, agent_name, ["src/**/*.ts"], ttl_seconds=3600, exclusive=true, reason="task-id")
+```
+
+**Send messages** to coordinate:
+```
+send_message(project_key, sender_name, to=["AgentName"], subject="...", body_md="...", thread_id="task-id")
+```
+
+**Check inbox** when you see "INBOX REMINDER":
+```
+fetch_inbox(project_key, agent_name, include_bodies=true)
+```
+
+**Release** when done:
+```
+release_file_reservations(project_key, agent_name)
+```
+
+### Git commit/push guard (optional)
+
+If the Agent Mail git guard is installed in a repo, it only enforces when gated.
+
+Use the `agent.name` you got from `macro_start_session(...)` as `AGENT_NAME`:
+```
+AGENT_NAME="BlueLake" WORKTREES_ENABLED=1 GIT_IDENTITY_ENABLED=1 git commit -m "..."
+AGENT_NAME="BlueLake" WORKTREES_ENABLED=1 GIT_IDENTITY_ENABLED=1 git push
+```
+
+Notes:
+- `AGENT_NAME` must match your Agent Mail identity (adjective+noun).
+- Set `AGENT_MAIL_GUARD_MODE=warn` for advisory (non-blocking) checks.
+- Emergency bypass: `AGENT_MAIL_BYPASS=1` or Git `--no-verify`.
+
+**Common errors:**
+- "from_agent not registered" → call `macro_start_session` first
+- "FILE_RESERVATION_CONFLICT" → coordinate with holder or wait
+
+## Beads Integration
+
+Use Beads task ID everywhere:
+- `thread_id` = `br-###`
+- Subject = `[br-###] ...`
+- Reservation `reason` = `br-###`
+
+Typical flow (agents)
+1) **Pick ready work** (Beads)
+   - `br ready --json` → choose one item (highest priority, no blockers)
+2) **Reserve edit surface** (Mail)
+   - `file_reservation_paths(project_key, agent_name, ["src/**"], ttl_seconds=3600, exclusive=true, reason="br-123")`
+3) **Announce start** (Mail)
+   - `send_message(..., thread_id="br-123", subject="[br-123] Start: <short title>", ack_required=true)`
+4) **Work and update**
+   - Reply in-thread with progress and attach artifacts/images; keep the discussion in one thread per issue id
+5) **Complete and release**
+   - `br close br-123 --reason "Completed"` (Beads is status authority)
+   - `release_file_reservations(project_key, agent_name, paths=["src/**"])`
+   - Final Mail reply: `[br-123] Completed` with summary and links
+
+Mapping cheat-sheet
+- **Mail `thread_id`** ↔ `br-###`
+- **Mail subject**: `[br-###] …`
+- **File reservation `reason`**: `br-###`
+- **Commit messages (optional)**: include `br-###` for traceability
+
+Event mirroring (optional automation)
+- On `br update --status blocked`, send a high-importance Mail message in thread `br-###` describing the blocker.
+- On Mail "ACK overdue" for a critical decision, add a Beads label (e.g., `needs-ack`) or bump priority to surface it in `br ready`.
+
+Pitfalls to avoid
+- Don't create or manage tasks in Mail; treat Beads as the single task queue.
+- Always include `br-###` in message `thread_id` to avoid ID drift across tools.
+
+**Task intelligence** (`bv` robot commands):
+- `bv --robot-priority` — ranked tasks with impact scores and confidence
+- `bv --robot-plan` — parallel tracks showing what can run concurrently
+- `bv --robot-insights` — PageRank, critical path, cycle detection
+- `bv --robot-diff --diff-since "1 hour ago"` — what changed recently
+
+**Rule**: Use `br` for task CRUD, use `bv` for task intelligence.
+
+### Coordinated Workflow (Agent Mail + Beads)
+
+1. Run `bv --robot-priority` → identify highest-impact task (e.g., `br-42`)
+2. Reserve files: `file_reservation_paths(..., reason="br-42")`
+3. Announce: `send_message(..., thread_id="br-42", subject="[br-42] Starting...")`
+4. Other agents see reservation + message, pick different tasks
+5. Complete, run `bv --robot-diff` to report downstream unblocks
+
+## Frontend Validation (Beads)
+
+For beads with frontend/UI acceptance criteria, validate changes visually before closing.
+
+### Pre-validation: Confirm Vercel Deploy
+
+Vercel deployment is triggered automatically when you push changes. Before validating, confirm the deployment completed:
+```bash
+# Check Vercel deployment status (wait for "Ready" state)
+vercel list --limit 1
+# Or check the Vercel dashboard URL in the deploy output
+```
+
+**Note:** After `git push`, wait for Vercel to finish building and deploying before proceeding with validation.
+
+### Validation Workflow
+
+1. **Open deployed URL**:
+   ```bash
+   agent-browser open <vercel-preview-url>
+   ```
+
+2. **Validate acceptance criteria**:
+   ```bash
+   agent-browser snapshot -i  # Get interactive elements
+   # Interact as needed to verify functionality
+   ```
+
+3. **On success, capture screenshot**:
+   ```bash
+   # Create screenshots folder if needed
+   mkdir -p screenshots
+
+   # Take screenshot with bead ID in filename
+   agent-browser screenshot screenshots/br-###-description.png
+   ```
+
+4. **Close browser**:
+   ```bash
+   agent-browser close
+   ```
+
+### Example
+
+```bash
+# Verify deploy is ready
+vercel list --limit 1
+
+# Validate br-42 (new login button)
+agent-browser open https://my-app-abc123.vercel.app
+agent-browser snapshot -i
+agent-browser click @e5  # Click login button
+agent-browser wait --text "Welcome"
+agent-browser screenshot screenshots/br-42-login-button-works.png
+agent-browser close
+
+# Now safe to close the bead
+br close br-42 --reason "Validated: login button functional"
+```
+
+### Rules
+
+- **MUST** confirm Vercel deploy completed before validation
+- **MUST** take screenshot if acceptance criteria pass
+- Screenshots saved to `screenshots/` at project root
+- Screenshot filename format: `br-<id>-<short-description>.png`
+- If validation fails, do NOT close the bead — report the issue instead
+
+## CLI Tools
+
+| Tool | Purpose | Command |
+|------|---------|---------|
+| cass | Search sessions | `cass search "query"` |
+| cm | Get rules | `cm context "task" --json` |
+| ms | Skills | `ms search "topic"` |
+
+## Automated (no action needed)
+- **UBS** — Bug scanner on file saves
+- **DCG** — Destructive command guard
+- **Inbox reminder** — Shows after Bash if you have mail
+
+## Concurrent file changes (normal)
+You will most likely notice modifications to files that you did not make. This is completely normal as other developers are concurrently working on the same project as you. Do not stop and ask how to continue, just continue and add/commit files relevant to your current bead. If it happens to be a file that was modified by another that is fine, continue working on your current bead and do NOT STOP and ask for instructions.
+
 <skills_system priority="1">
 
 ## Available Skills
