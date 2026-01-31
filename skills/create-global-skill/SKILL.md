@@ -71,14 +71,13 @@ OpenSkills (per its README) uses `sync` to write/update the `<available_skills>`
 Run (pick the canonical AGENTS.md you use):
 
 ```bash
-# If you use ~/.agent/AGENTS.md as the canonical skills table
-npx openskills sync -o ~/.agent/AGENTS.md
-
-# Or if you sync in a specific project folder
-# cd /path/to/project && npx openskills sync
+# IMPORTANT: Always pass -y to skip the interactive selector
+npx openskills sync -y -o ~/.agent/AGENTS.md
 ```
 
 Notes:
+- **Always use `-y`** — without it, `sync` opens an interactive multi-select prompt that blocks non-interactive agents.
+- `-y` syncs all discovered skills automatically.
 - OpenSkills default install locations are `.claude/skills` or `.agent/skills` depending on mode.
 - This step is about keeping the skills *listing* in AGENTS.md current for ecosystems that rely on it.
 
