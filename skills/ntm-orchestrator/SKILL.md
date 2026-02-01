@@ -7,6 +7,15 @@ description: Use when the user asks you to "send a message to an agent in anothe
 
 Operate Claude Code + Codex agents inside NTM/tmux sessions where **session name == project name** and repo path is **/data/projects/<session>**.
 
+## Quick recipes (copy/paste)
+
+- Send a *new* task to all Claude panes (reset context first):
+  - `python3 scripts/ntm_send.py --session <project> --new-task --to cc_all --message "..." `
+- Send a follow-up to a specific pane (preserve context):
+  - `python3 scripts/ntm_send.py --session <project> --to cc_1 --message "..." `
+- Watch until an agent asks a question (JSONL stream; exits 2 on question):
+  - `python3 scripts/ntm_watch.py --session <project> --interval 120 --lines 120`
+
 ## Non-negotiables
 
 - Prefer **pane-targeted sends** for follow-ups.
@@ -15,6 +24,9 @@ Operate Claude Code + Codex agents inside NTM/tmux sessions where **session name
 - Use `ntm --robot-status` + `ntm --robot-tail` as the source of truth.
 - **Never send resets to the user/zsh pane**. Avoid `--all` for resets (it includes the user pane).
 - For a **new task** (fresh work distribution), run the **reset workflow** below before sending instructions.
+
+Definition: “new task” = the instruction is unrelated to the agent’s current thread; we prefer a clean context window.
+Definition: “follow-up” = continuing the same thread; do NOT reset or you’ll lose useful context.
 
 ## Canonical workflow
 
@@ -45,6 +57,8 @@ When starting a **new task** (unrelated to the agent’s prior conversation), re
 - `python3 scripts/ntm_send.py --session <project> --new-task --to cod_all --message "..."`
 - `python3 scripts/ntm_send.py --session <project> --new-task --to agents_all --message "..."`
 
+If you are answering a question from the agent or continuing a long-running thread, omit `--new-task`.
+
 Purpose: reset the agent’s context window so it can focus on the new task without being biased/distracted by prior chat.
 
 Broadcast targets:
@@ -72,6 +86,16 @@ This script:
 - performs `ntm send <session> --pane=<idx> ...`
 - prints a single JSON object with what was sent and where
 
+#### `ntm_send.py` flags (reference)
+
+- `--session <name>`: NTM/tmux session name (project name)
+- `--to <target>`:
+  - Single target: `cc_1`, `cod_1`, `pane:<idx>`
+  - Broadcast: `cc_all`, `cod_all`, `agents_all`
+- `--message "<text>"`: the message to send
+- `--new-task`: interrupt agents and reset context (Claude: `/clear`, Codex: `/new`) before sending message
+- `--cc <n>` / `--cod <n>`: only used if the session must be auto-spawned (default 2/1)
+
 ### 5) Watch progress every 2 minutes
 
 Run the watcher script:
@@ -88,6 +112,14 @@ Watcher behavior:
   - `WAITING_USER_INSTRUCTION`
   - `ERROR`
   - `UNKNOWN`
+
+#### `ntm_watch.py` flags (reference)
+
+- `--session <name>`: NTM/tmux session name (project name)
+- `--interval <sec>`: polling interval (default 120)
+- `--lines <n>`: tail lines captured per pane (default 120)
+- `--max-ticks <n>`: stop after N ticks (0 = forever)
+- `--stop-on-question` / `--stop-on-error`: stop early when detected (note: script currently defaults these to True)
 
 ### 6) Auto-respond to questions (policy)
 
@@ -113,6 +145,10 @@ When watcher output indicates `WAITING_QUESTION`:
 
 - `scripts/ntm_send.py` — ensure session + resolve target + send (JSON)
 - `scripts/ntm_watch.py` — poll tails + classify + JSONL ticks
+
+## How the scripts tie together
+
+Dispatch with `ntm_send.py` → observe/triage via `ntm_watch.py` → respond with `ntm_send.py` (follow-up, usually without `--new-task`).
 
 ## Reference
 
