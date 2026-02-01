@@ -20,8 +20,10 @@ Use `--force` flag with `aprx run` to enable concurrent sessions without Oracle 
 ### Authentication Failures
 
 If a round fails due to authentication:
-1. The skill will detect auth errors in Oracle output
-2. Prompt user to re-authenticate via VNC with `--headed` flag
+1. Detect auth errors in pool job stderr/output.
+2. Prompt user to refresh cookies via the pool:
+   - `oracle-pool refresh-auth`
+3. Re-run the failed round.
 
 ## Critical Constraint: File Scope
 
@@ -44,9 +46,11 @@ This constraint applies to ALL phases: integration, commits, and any other file 
 
 ## Prerequisites
 
-- APRX must be configured (`aprx setup` already run)
-- `.apr/` directory exists with valid workflow
-- Oracle installed with ChatGPT session active
+- `aprx` installed and on PATH
+- `oracle-pool` daemon running and responsive (`oracle-pool status` succeeds)
+- `oracle` installed and ChatGPT session active in the base profile used by oracle-pool
+
+**No interactive setup required:** if `.apr/` or workflows are missing, auto-create them (see Workflow step 1).
 
 ## Autonomous Execution
 
@@ -61,20 +65,51 @@ This is a fully autonomous workflow. Only stop and notify the user if:
 
 ## Workflow
 
-### 1. Validate Setup
+### 0. Ensure oracle-pool daemon is running
+
+```bash
+oracle-pool status
+```
+
+If it fails:
+- If `/etc/systemd/system/oracle-pool.service` exists: `sudo systemctl start oracle-pool`
+- Else: `nohup oracle-pool start --foreground > ~/.oracle-pool/daemon.out 2>&1 &`
+
+Re-check `oracle-pool status`. Stop if still failing.
+
+### 1. Validate Setup (and auto-configure if needed)
 
 ```bash
 aprx robot status
 ```
 
 Parse JSON response and check:
-- `data.configured == true` - APRX is configured
-- `data.oracle_available == true` - Oracle is available
-- `data.default_workflow` - Extract workflow name for later use
+- `data.oracle_available == true`
+- If `data.configured == false` OR no workflows exist → auto-configure.
 
-If not configured, exit with: "APRX not configured. Run `aprx setup` first."
+#### Auto-configure workflow (no interactive setup)
 
-### 2. Get Document Paths
+1) Initialize `.apr/`:
+```bash
+aprx robot init
+```
+
+2) Create `.apr/config.yaml` if missing:
+```yaml
+default_workflow: default
+```
+
+3) Create `.apr/workflows/default.yaml` if missing with defaults:
+- `documents.readme`: `README.md`
+- `documents.spec`: `SPEC_UPDATED.md` if it exists else `SPEC.md`
+- `oracle.model`: `gpt-5.2-pro`
+- `oracle.thinking_time`: `extended`
+- `rounds.output_dir`: `.apr/rounds/default`
+- `rounds.impl_every_n`: `0`
+
+Re-run `aprx robot status`. If still not configured, stop and report the missing files/paths.
+
+### 2. Get Document Paths + enforce model/thinking defaults
 
 Read workflow YAML to get document paths:
 
@@ -83,9 +118,13 @@ cat .apr/workflows/<workflow>.yaml
 ```
 
 Parse YAML to extract:
-- `documents.readme` - Path to README file
-- `documents.spec` - Path to specification file
-- `documents.implementation` - Path to implementation doc (optional)
+- `documents.readme`
+- `documents.spec`
+- `documents.implementation` (optional)
+
+Enforce defaults unless user explicitly requested otherwise:
+- `oracle.model: gpt-5.2-pro`
+- `oracle.thinking_time: extended`
 
 ### 3. Detect Next Round
 

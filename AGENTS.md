@@ -297,6 +297,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>oracle-job-runner</name>
+<description>Use when the user asks to "run this through Oracle", "ask GPT 5.2 Pro", "submit a job", "bundle files for ChatGPT", "use oracle-pool", "queue oracle runs", or needs a reliable pattern to send a plan/spec/docs/question to Oracle and retrieve the result (oracle CLI, oracle-pool, aprx via pool). Covers prompts, file bundling, slugs, waiting/reattaching, and where outputs live.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>perplexity-search</name>
 <description>AI-powered web search and research via Perplexity (Sonar models), including ranked search results and AI-synthesized answers with citations. Use for up-to-date facts, source gathering, deep research, and reasoning. Requires PERPLEXITY_API_KEY.</description>
 <location>global</location>

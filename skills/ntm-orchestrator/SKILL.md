@@ -13,6 +13,8 @@ Operate Claude Code + Codex agents inside NTM/tmux sessions where **session name
 - Use **JSON outputs only** (no human-formatted summaries).
 - Do **not** rely on `ntm activity` for state; it may return `UNKNOWN`.
 - Use `ntm --robot-status` + `ntm --robot-tail` as the source of truth.
+- **Never send resets to the user/zsh pane**. Avoid `--all` for resets (it includes the user pane).
+- For a **new task** (fresh work distribution), run the **reset workflow** below before sending instructions.
 
 ## Canonical workflow
 
@@ -31,7 +33,33 @@ Alias mapping (recomputed on demand):
 - `cc_1..cc_N` are Claude panes in ascending `pane_idx`
 - `cod_1..cod_N` are Codex panes in ascending `pane_idx`
 
-### 3) Send tasks
+### 3) Reset panes (for new tasks)
+
+When starting a **new task** (unrelated to the agent’s prior conversation), reset agent panes first so they don’t carry over stale context.
+
+**Preferred**: use the bundled sender with `--new-task`:
+
+- `python3 scripts/ntm_send.py --session <project> --new-task --to cod_1 --message "..."`
+- `python3 scripts/ntm_send.py --session <project> --new-task --to cc_2 --message "..."`
+- `python3 scripts/ntm_send.py --session <project> --new-task --to cc_all --message "..."`
+- `python3 scripts/ntm_send.py --session <project> --new-task --to cod_all --message "..."`
+- `python3 scripts/ntm_send.py --session <project> --new-task --to agents_all --message "..."`
+
+Purpose: reset the agent’s context window so it can focus on the new task without being biased/distracted by prior chat.
+
+Broadcast targets:
+- `cc_all` = all Claude panes in the session
+- `cod_all` = all Codex panes in the session
+- `agents_all` = all agent panes (Claude + Codex). Never includes the user shell pane.
+
+Under the hood, `--new-task` does:
+1) `ntm interrupt <session>` (agents only)
+2) Claude panes: `/clear`
+3) Codex panes: `/new`
+
+**Important:** do not use `--all` for resets; it includes the user shell pane.
+
+### 4) Send tasks
 
 Use bundled script (recommended):
 
@@ -44,7 +72,7 @@ This script:
 - performs `ntm send <session> --pane=<idx> ...`
 - prints a single JSON object with what was sent and where
 
-### 4) Watch progress every 2 minutes
+### 5) Watch progress every 2 minutes
 
 Run the watcher script:
 
@@ -61,7 +89,7 @@ Watcher behavior:
   - `ERROR`
   - `UNKNOWN`
 
-### 5) Auto-respond to questions (policy)
+### 6) Auto-respond to questions (policy)
 
 When watcher output indicates `WAITING_QUESTION`:
 
