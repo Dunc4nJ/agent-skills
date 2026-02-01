@@ -37,6 +37,10 @@ If a session does not exist, spawn it automatically:
 - Default spawn: `--cc=2 --cod=1`
 - Session name equals project name (e.g. `polytrader`)
 
+To add agents to an *existing* session (instead of spawning a new one):
+- Add one Codex pane: `ntm add <session> --cod=1`
+- Add one Claude pane: `ntm add <session> --cc=1`
+
 ### 2) Resolve agent targets
 
 Use aliases for reasoning; send by pane.
