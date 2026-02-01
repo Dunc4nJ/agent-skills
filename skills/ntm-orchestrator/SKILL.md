@@ -61,13 +61,13 @@ Watcher behavior:
   - `ERROR`
   - `UNKNOWN`
 
-### 5) Auto-respond to questions
+### 5) Auto-respond to questions (policy)
 
 When watcher output indicates `WAITING_QUESTION`:
 
 - Read the `question_excerpt` + `context_excerpt`
-- If confident, respond via `ntm send ... --pane=<idx>`
-- If unsure, ask the human (Droid Overlord) with:
+- If you can answer with **confidence >= 0.8**, respond immediately via `ntm send ... --pane=<idx>`
+- If confidence < 0.8, ask the human (Droid Overlord) with:
   - session + alias/pane
   - question excerpt + minimal context
   - your recommended reply + what you need clarified
