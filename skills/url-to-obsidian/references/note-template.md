@@ -64,6 +64,22 @@ Use a collapsible Obsidian callout:
 > [Original page](https://url)
 ```
 
+## Format: PDFs (local or remote)
+
+Use the same collapsible callout as web pages:
+
+```markdown
+> [!quote]- Source Material
+> Full extracted text from the PDF.
+> pdftotext preserves reading order but not rich formatting.
+>
+> [Source: filename.pdf](/path/to/filename.pdf)
+```
+
+Notes:
+- `source` frontmatter field: use the PDF filename, not the full path
+- Text extraction quality varies — tables and multi-column layouts may need manual cleanup
+
 ## Rules
 
 - Title is a claim, not a topic: "onboarding drives 70% of retention" not "onboarding-notes"

@@ -1,6 +1,6 @@
 ---
 name: url-to-obsidian
-description: Capture knowledge from any URL into the Obsidian vault as a linked note. Use when the user says "save this URL", "capture this to vault", "add to obsidian", "save this tweet", "capture this article", or provides a URL and asks to save, store, or capture it. Routes tweets (x.com, twitter.com) via bird CLI and any other web page via playbooks.
+description: Capture knowledge from any URL or PDF into the Obsidian vault as a linked note. Use when the user says "save this URL", "capture this to vault", "add to obsidian", "save this tweet", "capture this article", "capture this PDF", or provides a URL/file path and asks to save, store, or capture it. Routes tweets (x.com, twitter.com) via bird CLI, PDFs via pdftotext, and any other web page via playbooks.
 user-invocable: true
 allowed-tools:
   - Bash
@@ -20,11 +20,20 @@ Capture knowledge from a URL and create a linked vault note.
 
 ### 1. Classify and fetch content
 
-Classify the URL type:
+Classify the input:
 ```bash
-bash ~/.agent/skills/url-to-obsidian/scripts/detect-url-type.sh "<url>"
-# Outputs: "twitter" or "web"
+bash ~/.agent/skills/url-to-obsidian/scripts/detect-url-type.sh "<url-or-path>"
+# Outputs: "pdf", "twitter", or "web"
 ```
+
+**If pdf** (local file path or URL ending in `.pdf`):
+```bash
+bash ~/.agent/skills/url-to-obsidian/scripts/fetch-pdf.sh "<path-or-url>" /tmp/content.md
+# File output: collapsible callout with full extracted text
+# Stdout: JSON metadata { title, filename, description, url }
+```
+Prerequisite: `poppler-utils` (`sudo apt install poppler-utils`).
+For `source` frontmatter: use the PDF filename (e.g., `Framework.pdf`), not the full path.
 
 **If twitter**:
 ```bash
