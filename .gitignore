@@ -9,3 +9,10 @@
 # If any tooling creates deps here
 node_modules/
 skills.bak.*
+
+# NTM local state
+skills/ntm-orchestrator/.ntm/
+
+# Local-only skills that shouldn't be committed by accident
+skills/agent-conference/
+skills/telegram-send-as-self/
