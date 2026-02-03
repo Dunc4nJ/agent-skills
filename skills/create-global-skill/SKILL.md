@@ -174,7 +174,13 @@ This checks: SKILL.md exists, valid YAML frontmatter, required fields (name, des
 
 ### Step 6: Deploy
 
-**Expose to Clawdbot** (symlink):
+**Expose to OpenClaw** (symlink):
+```bash
+mkdir -p ~/.openclaw/skills
+ln -sfn ~/.agent/skills/<skill-name> ~/.openclaw/skills/<skill-name>
+```
+
+**Legacy compatibility (optional)** — keep old Clawdbot path working:
 ```bash
 mkdir -p ~/.clawdbot/skills
 ln -sfn ~/.agent/skills/<skill-name> ~/.clawdbot/skills/<skill-name>
@@ -214,13 +220,15 @@ cd ~/.agent && git add -A && git commit -m "Add skill <skill-name>" && git push
 ~/.claude/CLAUDE.md           <- "@~/.agent/AGENTS.md" (Claude Code @import)
 ~/.codex/AGENTS.md            <- symlink -> ~/.agent/AGENTS.md (Codex reads directly)
 ~/.codex/skills               <- symlink -> ~/.agent/skills (Codex skill discovery)
-~/.clawdbot/skills/*          <- per-skill symlinks -> ~/.agent/skills/*
+~/.openclaw/skills/*          <- per-skill symlinks -> ~/.agent/skills/*
+~/.clawdbot/skills/*          <- (legacy) per-skill symlinks -> ~/.agent/skills/*
 ```
 
 - **One source of truth**: `~/.agent/` is the git repo
 - **Claude Code** discovers via `~/.claude/skills` symlink and AGENTS.md skill table
 - **Codex** reads `~/.agent/AGENTS.md` directly via symlink
-- **Clawdbot** reads per-skill symlinks under `~/.clawdbot/skills/`
+- **OpenClaw** reads per-skill symlinks under `~/.openclaw/skills/`
+- **Legacy Clawdbot** (optional) can still read per-skill symlinks under `~/.clawdbot/skills/`
 
 ## Common Mistakes
 
@@ -275,7 +283,8 @@ skill-name/
 - [ ] All referenced files exist
 - [ ] Scripts are tested and executable
 - [ ] No auxiliary files (README, CHANGELOG, etc.)
-- [ ] Symlink exists at `~/.clawdbot/skills/<skill-name>`
+- [ ] Symlink exists at `~/.openclaw/skills/<skill-name>`
+- [ ] (Optional) Legacy symlink exists at `~/.clawdbot/skills/<skill-name>`
 - [ ] OpenSkills `sync -y` run for `~/.agent/AGENTS.md`
 - [ ] Changes committed and pushed in `~/.agent` repo
 
