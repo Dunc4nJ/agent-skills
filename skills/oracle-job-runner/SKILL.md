@@ -91,7 +91,7 @@ If it still fails, inspect:
 
 ## Run via oracle-pool (preferred)
 
-**Notify flag note:** In this environment, the OpenClaw notification integration is exposed via the legacy token `--notify clawdbot` (keep using that exact string).
+**Notify flag note:** In this environment, the OpenClaw notification integration is exposed via the legacy token `--notify clawdbot` (keep using that exact string). `--notify openclaw` is **not** supported by oracle-pool yet.
 
 Submit (non-blocking):
 
