@@ -1,5 +1,5 @@
 ---
-name: dair-image-generator
+name: image-generator
 description: Use this skill when the user asks to "generate an image", "create a logo", "make a mockup", "edit a photo", "remove a background", "iterate on an image", or otherwise wants image generation/editing via Gemini image models. Provides a safe, file-based curl workflow that avoids command-line length limits and requires GEMINI_API_KEY.
 ---
 

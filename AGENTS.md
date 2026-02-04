@@ -231,12 +231,6 @@ Usage notes:
 </skill>
 
 <skill>
-<name>agent-conference</name>
-<description>"Start a multi-agent discussion visible in a Telegram group. Orchestrator (main) facilitates rounds of conversation between agents, each posting as their own bot identity. Use when user says 'discuss with', 'conference', 'talk to agents', 'agent meeting', or wants agents to collaborate visibly."</description>
-<location>global</location>
-</skill>
-
-<skill>
 <name>aprx-iterate</name>
 <description>Runs iterative APRX specification refinement until convergence. Executes APRX rounds, integrates GPT Pro suggestions into spec and README, commits changes, and tracks convergence. Use when user wants to refine a specification through multiple GPT Pro review cycles.</description>
 <location>global</location>
@@ -261,14 +255,14 @@ Usage notes:
 </skill>
 
 <skill>
-<name>dair-image-generator</name>
-<description>Use this skill when the user asks to "generate an image", "create a logo", "make a mockup", "edit a photo", "remove a background", "iterate on an image", or otherwise wants image generation/editing via Gemini image models. Provides a safe, file-based curl workflow that avoids command-line length limits and requires GEMINI_API_KEY.</description>
+<name>frontend-design</name>
+<description>Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.</description>
 <location>global</location>
 </skill>
 
 <skill>
-<name>frontend-design</name>
-<description>Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.</description>
+<name>image-generator</name>
+<description>Use this skill when the user asks to "generate an image", "create a logo", "make a mockup", "edit a photo", "remove a background", "iterate on an image", or otherwise wants image generation/editing via Gemini image models. Provides a safe, file-based curl workflow that avoids command-line length limits and requires GEMINI_API_KEY.</description>
 <location>global</location>
 </skill>
 
@@ -323,12 +317,6 @@ Usage notes:
 <skill>
 <name>stripe-best-practices</name>
 <description>Best practices for building a Stripe integrations</description>
-<location>global</location>
-</skill>
-
-<skill>
-<name>telegram-send-as-self</name>
-<description>Use when the user wants strict per-agent Telegram identity, or asks to "send a Telegram message as this agent", "enforce accountId", "multi-account Telegram", or fix "Telegram bot token missing" errors. Ensures every Telegram send includes the agent's own accountId.</description>
 <location>global</location>
 </skill>
 
