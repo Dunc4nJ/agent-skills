@@ -77,13 +77,15 @@ Use Beads task ID everywhere:
 Typical flow (agents)
 1) **Pick ready work** (Beads)
    - `br ready --json` → choose one item (highest priority, no blockers)
-2) **Reserve edit surface** (Mail)
+2) **Claim atomically in Beads**
+   - `br update br-123 --claim --actor <agent-id> --json` (sets `status=in_progress` and assignee)
+3) **Reserve edit surface** (Mail)
    - `file_reservation_paths(project_key, agent_name, ["src/**"], ttl_seconds=3600, exclusive=true, reason="br-123")`
-3) **Announce start** (Mail)
+4) **Announce start** (Mail)
    - `send_message(..., thread_id="br-123", subject="[br-123] Start: <short title>", ack_required=true)`
-4) **Work and update**
+5) **Work and update**
    - Reply in-thread with progress and attach artifacts/images; keep the discussion in one thread per issue id
-5) **Complete and release**
+6) **Complete and release**
    - `br close br-123 --reason "Completed"` (Beads is status authority)
    - `release_file_reservations(project_key, agent_name, paths=["src/**"])`
    - Final Mail reply: `[br-123] Completed` with summary and links
@@ -113,10 +115,11 @@ Pitfalls to avoid
 ### Coordinated Workflow (Agent Mail + Beads)
 
 1. Run `bv --robot-priority` → identify highest-impact task (e.g., `br-42`)
-2. Reserve files: `file_reservation_paths(..., reason="br-42")`
-3. Announce: `send_message(..., thread_id="br-42", subject="[br-42] Starting...")`
-4. Other agents see reservation + message, pick different tasks
-5. Complete, run `bv --robot-diff` to report downstream unblocks
+2. Claim task in Beads: `br update br-42 --claim --actor <agent-id> --json`
+3. Reserve files: `file_reservation_paths(..., reason="br-42")`
+4. Announce: `send_message(..., thread_id="br-42", subject="[br-42] Starting...")`
+5. Other agents see reservation + message, pick different tasks
+6. Complete, run `bv --robot-diff` to report downstream unblocks
 
 ## Frontend Validation (Beads)
 
@@ -243,6 +246,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>caam-expert</name>
+<description>>-</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>create-global-skill</name>
 <description>Create and publish global skills available to all local agents. Use when asked to "create a skill", "add a new skill", "write a skill", "make a global skill", or when setting up skill folder structure, writing SKILL.md, creating symlinks, or running OpenSkills sync. Covers both skill authoring best practices and deployment to ~/.agent/skills/.</description>
 <location>global</location>
@@ -251,6 +260,12 @@ Usage notes:
 <skill>
 <name>create-plan</name>
 <description>Iterative planning skill that explores codebases, researches best practices via Perplexity/NIA, and creates comprehensive self-contained plans through multiple clarification rounds. Use when asked to create, design, or plan any feature, refactor, or implementation.</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>decompose-plan</name>
+<description>Decompose a written plan/spec into Beads (br issues) with correct granularity, self-contained descriptions, and a dependency graph (including epics). Use when the user says “decompose this plan”, “turn this into beads”, or “create a bead graph from this plan”.</description>
 <location>global</location>
 </skill>
 
@@ -280,7 +295,7 @@ Usage notes:
 
 <skill>
 <name>ntm-prompt-palette-adder</name>
-<description>Add a new prompt to the ntm command palette with deep thinking best practices</description>
+<description>Add a new prompt to the NTM command palette in ~/.config/ntm/config.toml (generates a [[palette]] TOML entry). Use when the user asks to “add a prompt to ntm palette”, “add to NTM command palette”, or “create a palette prompt”.</description>
 <location>global</location>
 </skill>
 
@@ -339,6 +354,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>validate-beads</name>
+<description>Decompose and validate an existing set of Beads against a plan or spec, including self-containment, coverage, and dependency correctness. Use after decompose-plan and before implementation.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>vercel-composition-patterns</name>
 <description>React composition patterns that scale. Use when refactoring components with</description>
 <location>global</location>
@@ -359,6 +380,18 @@ Usage notes:
 <skill>
 <name>web-design-guidelines</name>
 <description>Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices".</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>x-research</name>
+<description>></description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>x-to-task-inbox</name>
+<description>Capture an X (Twitter) post/thread into the Tooling task inbox (not Obsidian) and draft a first-iteration implementation plan. Use when the user says “capture this tweet”, “save this X post”, “add this to the task inbox”, or provides an x.com/twitter.com link for later implementation.</description>
 <location>global</location>
 </skill>
 

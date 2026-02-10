@@ -9,6 +9,14 @@ Operate Claude Code + Codex agents inside NTM/tmux sessions where **session name
 
 ## Quick recipes (copy/paste)
 
+- Dispatch a tooling slug (spawn session `tooling-<slug>` and broadcast the `bead_worker` palette prompt to all spawned agents):
+  - `python3 scripts/dispatch_beads.py --slug <slug> --cc 2 --cod 1`
+
+Notes:
+- NTM uses `projects_base=/data/projects`. This script creates a symlink:
+  - `/data/projects/tooling-<slug> -> /data/projects/tooling/<slug>`
+  so agents start in the correct working directory.
+
 - Send a *new* task to all Claude panes (reset context first):
   - `python3 scripts/ntm_send.py --session <project> --new-task --to cc_all --message "..." `
 - Send a follow-up to a specific pane (preserve context):

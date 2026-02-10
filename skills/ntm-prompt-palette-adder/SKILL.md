@@ -1,6 +1,6 @@
 ---
-description: Add a new prompt to the ntm command palette with deep thinking best practices
-user-invocable: true
+name: ntm-prompt-palette-adder
+description: Add a new prompt to the NTM command palette in ~/.config/ntm/config.toml (generates a [[palette]] TOML entry). Use when the user asks to “add a prompt to ntm palette”, “add to NTM command palette”, or “create a palette prompt”.
 ---
 
 # Add NTM Palette Prompt
