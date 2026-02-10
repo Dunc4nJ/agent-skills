@@ -13,9 +13,31 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
+try:
+    import tomllib  # py>=3.11
+except ModuleNotFoundError:  # pragma: no cover
+    import tomli as tomllib  # type: ignore
 
 from ntm_lib import ensure_session, now_iso, resolve_target, robot_status
+
+
+def load_palette_prompt(key: str, *, config_path: Optional[str] = None) -> str:
+    """Load a prompt from NTM's [[palette]] entries in config.toml by palette key."""
+    cfg = Path(config_path or Path.home() / ".config" / "ntm" / "config.toml")
+    data = tomllib.loads(cfg.read_text(encoding="utf-8"))
+    palette = data.get("palette", [])
+    if not isinstance(palette, list):
+        raise RuntimeError("config.toml palette is not a list")
+    for entry in palette:
+        if isinstance(entry, dict) and entry.get("key") == key:
+            prompt = entry.get("prompt")
+            if isinstance(prompt, str) and prompt.strip():
+                return prompt.strip()
+            raise RuntimeError(f"palette entry '{key}' has no prompt")
+    raise RuntimeError(f"palette key not found: {key}")
 
 
 def main() -> int:
@@ -26,7 +48,11 @@ def main() -> int:
         required=True,
         help="cc_1|cc_2|cod_1|... | cc_all|cod_all|agents_all or pane:<idx>",
     )
-    ap.add_argument("--message", required=True)
+    ap.add_argument("--message", help="message text to send (ignored if --palette is set)")
+    ap.add_argument(
+        "--palette",
+        help="If set, load the message body from NTM config.toml [[palette]] by key (e.g. bead_worker)",
+    )
     ap.add_argument(
         "--new-task",
         action="store_true",
@@ -36,12 +62,20 @@ def main() -> int:
     ap.add_argument("--cod", type=int, default=1, help="auto-spawn codex count if session missing")
     args = ap.parse_args()
 
+    if args.palette:
+        message = load_palette_prompt(args.palette)
+    elif args.message:
+        message = args.message
+    else:
+        ap.error("must provide --message or --palette")
+
     out: Dict[str, Any] = {
         "ok": False,
         "timestamp": now_iso(),
         "session": args.session,
         "to": args.to,
-        "message": args.message,
+        "message": message,
+        "palette": args.palette,
         "new_task": bool(args.new_task),
     }
 
@@ -59,14 +93,6 @@ def main() -> int:
         claude_panes = sorted({int(a.get("pane_idx")) for a in agents if a.get("type") == "claude" and a.get("pane_idx") is not None})
         codex_panes = sorted({int(a.get("pane_idx")) for a in agents if a.get("type") == "codex" and a.get("pane_idx") is not None})
 
-        # If this is a fresh/new task, reset agent panes first to avoid stale context carryover.
-        reset_info: Dict[str, Any] = {
-            "ran": False,
-            "interrupt": None,
-            "claude": {"panes": claude_panes, "msg": "/clear", "sent": False},
-            "codex": {"panes": codex_panes, "msg": "/new", "sent": False},
-        }
-
         def panes_for_target(to: str) -> List[int]:
             # Broadcasters
             if to == "cc_all":
@@ -77,23 +103,67 @@ def main() -> int:
                 return sorted(set(claude_panes) | set(codex_panes))
             return []
 
+        def reset_scope_for_target(to: str) -> tuple[List[int], List[int]]:
+            """Return (claude_panes_to_reset, codex_panes_to_reset) for --new-task.
+
+            Important: reset only the targeted agent scope by default.
+            This avoids clearing unrelated panes in mixed sessions.
+            """
+            if to == "cc_all":
+                return (claude_panes, [])
+            if to == "cod_all":
+                return ([], codex_panes)
+            if to == "agents_all":
+                return (claude_panes, codex_panes)
+
+            # Single-target aliases (cc_1/cod_1) and pane:<idx>
+            try:
+                tgt = resolve_target(st, args.session, to)
+                if tgt.agent_type == "claude":
+                    return ([tgt.pane_idx], [])
+                if tgt.agent_type == "codex":
+                    return ([], [tgt.pane_idx])
+            except Exception:
+                pass
+
+            # Safe fallback: do not reset unrelated panes.
+            return ([], [])
+
+        reset_claude_panes, reset_codex_panes = reset_scope_for_target(args.to)
+
+        # If this is a fresh/new task, reset *targeted* agent panes first to avoid stale context carryover.
+        reset_info: Dict[str, Any] = {
+            "ran": False,
+            "interrupt": None,
+            "scope": "targeted",
+            "claude": {"panes": reset_claude_panes, "msg": "/clear", "sent": False},
+            "codex": {"panes": reset_codex_panes, "msg": "/new", "sent": False},
+        }
+
         import subprocess
 
         if args.new_task:
             reset_info["ran"] = True
 
-            # 1) Interrupt agents (NTM defaults to agent panes only).
-            subprocess.run(
-                ["ntm", "interrupt", args.session],
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            reset_info["interrupt"] = "ok"
+            # 1) Interrupt agents only for full-session resets.
+            # For targeted resets (e.g. --to cod_all), avoid disturbing unrelated panes.
+            # NOTE: In practice, sending /new to Codex panes can land in the underlying shell
+            # if Codex crashed/exited or isn't ready yet. To make "new task" reliable,
+            # we respawn Codex panes instead of sending /new.
+            if args.to == "agents_all":
+                subprocess.run(
+                    ["ntm", "interrupt", args.session],
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                reset_info["interrupt"] = "ok"
+            else:
+                reset_info["interrupt"] = "skipped_targeted_scope"
 
-            # 2) Reset per agent type. Use robot-send with explicit pane list.
-            if claude_panes:
-                panes_arg = ",".join(str(p) for p in claude_panes)
+            # 2) Reset Claude panes via /clear (targeted scope only)
+            if reset_claude_panes:
+                panes_arg = ",".join(str(p) for p in reset_claude_panes)
                 subprocess.run(
                     ["ntm", f"--robot-send={args.session}", "--msg", reset_info["claude"]["msg"], "--panes", panes_arg],
                     check=True,
@@ -102,10 +172,12 @@ def main() -> int:
                 )
                 reset_info["claude"]["sent"] = True
 
-            if codex_panes:
-                panes_arg = ",".join(str(p) for p in codex_panes)
+            # 3) Respawn targeted Codex panes (fresh process) instead of sending /new
+            if reset_codex_panes:
+                # ntm respawn currently works by type (all codex panes in session), so only
+                # use it when codex is the intended reset scope.
                 subprocess.run(
-                    ["ntm", f"--robot-send={args.session}", "--msg", reset_info["codex"]["msg"], "--panes", panes_arg],
+                    ["ntm", "respawn", args.session, "--type=codex", "--force"],
                     check=True,
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,
@@ -117,13 +189,16 @@ def main() -> int:
         broadcast_panes = panes_for_target(args.to)
 
         if broadcast_panes:
-            panes_arg = ",".join(str(p) for p in broadcast_panes)
-            subprocess.run(
-                ["ntm", f"--robot-send={args.session}", "--msg", args.message, "--panes", panes_arg],
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
+            # Use per-pane `ntm send` instead of `--robot-send`.
+            # Empirically, `--robot-send` can paste multiline text without reliably submitting it
+            # inside some TUIs (notably Codex). Per-pane send is more consistent.
+            for pidx in broadcast_panes:
+                subprocess.run(
+                    ["ntm", "send", args.session, f"--pane={pidx}", message],
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
 
             out.update(
                 {
@@ -140,7 +215,7 @@ def main() -> int:
         else:
             tgt = resolve_target(st, args.session, args.to)
             subprocess.run(
-                ["ntm", "send", args.session, f"--pane={tgt.pane_idx}", args.message],
+                ["ntm", "send", args.session, f"--pane={tgt.pane_idx}", message],
                 check=True,
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
