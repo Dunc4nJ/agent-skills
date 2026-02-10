@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -77,10 +78,21 @@ def main() -> int:
         "message": message,
         "palette": args.palette,
         "new_task": bool(args.new_task),
+        "delays": {
+            "post_spawn_seconds": 30,
+            "post_send_seconds": 30,
+            "post_spawn_applied": False,
+            "post_send_applied": False,
+        },
     }
 
     try:
         spawned, st = ensure_session(args.session, cc=args.cc, cod=args.cod)
+
+        # Give freshly spawned panes time to initialize their TUIs before any reset/send.
+        if spawned:
+            time.sleep(30)
+            out["delays"]["post_spawn_applied"] = True
 
         # Compute agent pane indices from robot status so we never touch the user shell pane.
         sess = None
@@ -200,6 +212,10 @@ def main() -> int:
                     stderr=subprocess.DEVNULL,
                 )
 
+            # Post-send settle delay (all paths)
+            time.sleep(30)
+            out["delays"]["post_send_applied"] = True
+
             out.update(
                 {
                     "ok": True,
@@ -220,6 +236,10 @@ def main() -> int:
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
             )
+
+            # Post-send settle delay (all paths)
+            time.sleep(30)
+            out["delays"]["post_send_applied"] = True
 
             out.update(
                 {
