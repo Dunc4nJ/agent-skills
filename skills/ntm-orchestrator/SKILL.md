@@ -1,167 +1,281 @@
 ---
 name: ntm-orchestrator
-description: Use when the user asks you to "send a message to an agent in another project", "spawn agents in a project", "check on agents", "watch progress", "see if any agent has questions", or mentions NTM/tmux agent orchestration across /data/projects/PROJECT. Provides a deterministic JSON-only workflow using NTM robot APIs plus bundled scripts.
+description: Use when the user asks you to "send a message to an agent in another project", "spawn agents in a project", "check on agents", "watch progress", "see if any agent has questions", "reset agents", "send bead worker", "enter bead mode", "start bead supervisor", or mentions NTM/tmux agent orchestration across /data/projects/PROJECT.
 ---
 
-# NTM Orchestrator (JSON-first)
+# NTM Orchestrator v2
 
 Operate Claude Code + Codex agents inside NTM/tmux sessions where **session name == project name** and repo path is **/data/projects/<session>**.
 
-## Quick recipes (copy/paste)
+## Core Primitives (tested, reliable)
 
-- Dispatch a tooling slug (spawn session `tooling-<slug>` and broadcast the `bead_worker` palette prompt to all spawned agents):
-  - `python3 scripts/dispatch_beads.py --slug <slug> --cc 2 --cod 1`
+### Session Management
 
-Notes:
-- NTM uses `projects_base=/data/projects`. This script creates a symlink:
-  - `/data/projects/tooling-<slug> -> /data/projects/tooling/<slug>`
-  so agents start in the correct working directory.
+```bash
+# Spawn a new session (2 Claude + 1 Codex default)
+ntm spawn <session> --cc=2 --cod=1
 
-- Send a *new* task to all Claude panes (reset context first):
-  - `python3 scripts/ntm_send.py --session <project> --new-task --to cc_all --message "..." `
-- Send a follow-up to a specific pane (preserve context):
-  - `python3 scripts/ntm_send.py --session <project> --to cc_1 --message "..." `
-- Watch until an agent asks a question (JSONL stream; exits 2 on question):
-  - `python3 scripts/ntm_watch.py --session <project> --interval 120 --lines 120`
+# Kill entire session
+ntm kill <session> --force
 
-## Non-negotiables
+# Full reset (kill + respawn)
+ntm kill <session> --force && ntm spawn <session> --cc=2 --cod=1
+```
 
-- Prefer **pane-targeted sends** for follow-ups.
-- Use **JSON outputs only** (no human-formatted summaries).
-- Do **not** rely on `ntm activity` for state; it may return `UNKNOWN`.
-- Use `ntm --robot-status` + `ntm --robot-tail` as the source of truth.
-- **Never send resets to the user/zsh pane**. Avoid `--all` for resets (it includes the user pane).
-- For a **new task** (fresh work distribution), run the **reset workflow** below before sending instructions.
+### Check Session State
 
-Definition: “new task” = the instruction is unrelated to the agent’s current thread; we prefer a clean context window.
-Definition: “follow-up” = continuing the same thread; do NOT reset or you’ll lose useful context.
+```bash
+# JSON status of all sessions
+ntm --robot-status
 
-## Canonical workflow
+# Get pane output (last N lines)
+ntm --robot-tail=<session> --lines=N --panes=2,3,4
+```
 
-### 1) Ensure session exists (auto-spawn)
+### Send Prompts
 
-If a session does not exist, spawn it automatically:
+```bash
+# Short prompt to specific pane
+ntm send <session> --pane=N "message text"
 
-- Default spawn: `--cc=2 --cod=1`
-- Session name equals project name (e.g. `polytrader`)
+# Long/multiline prompt from file
+ntm send <session> --pane=N --file=/path/to/prompt.txt
 
-To add agents to an *existing* session (instead of spawning a new one):
-- Add one Codex pane: `ntm add <session> --cod=1`
-- Add one Claude pane: `ntm add <session> --cc=1`
+# Broadcast to all Claude panes
+ntm send <session> --cc --file=/path/to/prompt.txt
 
-### 2) Resolve agent targets
+# Broadcast to all Codex panes
+ntm send <session> --cod --file=/path/to/prompt.txt
+```
 
-Use aliases for reasoning; send by pane.
+### Reset Agent Context (without killing)
 
-Alias mapping (recomputed on demand):
-- `cc_1..cc_N` are Claude panes in ascending `pane_idx`
-- `cod_1..cod_N` are Codex panes in ascending `pane_idx`
+```bash
+# Clear all Claude panes (resets context window)
+ntm send <session> --cc --no-cass-check "/clear"
 
-### 3) Reset panes (for new tasks)
+# New session all Codex panes (resets context window)
+ntm send <session> --cod --no-cass-check "/new"
 
-When starting a **new task** (unrelated to the agent’s prior conversation), reset agent panes first so they don’t carry over stale context.
+# Wait for reset to take effect
+sleep 5
+```
 
-**Preferred**: use the bundled sender with `--new-task`:
+**`--no-cass-check` is REQUIRED** for `/clear` and `/new` — otherwise CASS duplicate detection intercepts with an interactive prompt that blocks.
 
-- `python3 scripts/ntm_send.py --session <project> --new-task --to cod_1 --message "..."`
-- `python3 scripts/ntm_send.py --session <project> --new-task --to cc_2 --message "..."`
-- `python3 scripts/ntm_send.py --session <project> --new-task --to cc_all --message "..."`
-- `python3 scripts/ntm_send.py --session <project> --new-task --to cod_all --message "..."`
-- `python3 scripts/ntm_send.py --session <project> --new-task --to agents_all --message "..."`
+### Send Palette Prompts (e.g. bead_worker)
 
-If you are answering a question from the agent or continuing a long-running thread, omit `--new-task`.
+Palette prompts are stored in `~/.config/ntm/config.toml` under `[[palette]]` entries.
 
-Purpose: reset the agent’s context window so it can focus on the new task without being biased/distracted by prior chat.
+```bash
+# Extract a palette prompt
+ntm --robot-palette | jq -r '.commands[] | select(.key=="bead_worker") | .prompt' > /tmp/prompt.txt
 
-Broadcast targets:
-- `cc_all` = all Claude panes in the session
-- `cod_all` = all Codex panes in the session
-- `agents_all` = all agent panes (Claude + Codex). Never includes the user shell pane.
+# Send to all agents
+ntm send <session> --cc --file=/tmp/prompt.txt
+ntm send <session> --cod --file=/tmp/prompt.txt
+```
 
-Under the hood, `--new-task` does:
-1) `ntm interrupt <session>` (agents only)
-2) Claude panes: `/clear`
-3) Codex panes: `/new`
+Available palette keys: `bead_worker`, `tableclay_bead_worker`, `fresh_review`, `fix_bug`, `git_commit`, `run_tests`, etc.
 
-**Important:** do not use `--all` for resets; it includes the user shell pane.
+### Targeted Agent Type Reset (e.g. Codex in cooldown)
 
-### 4) Send tasks
+When one agent type needs to be replaced (auth issues, rate limits, cooldowns):
 
-Use bundled script (recommended):
+```bash
+# 1. Find pane indices for the type
+ntm --robot-status  # check which panes are codex/claude
 
-- `python3 scripts/ntm_send.py --session <project> --to cod_1 --message "..."`
-- `python3 scripts/ntm_send.py --session <project> --to cc_2 --message "..."`
+# 2. Kill specific panes
+tmux kill-pane -t <session>:.N   # for each affected pane
 
-This script:
-- ensures the session exists (auto-spawn if missing)
-- resolves `cc_*/cod_*` aliases to a tmux pane index
-- performs `ntm send <session> --pane=<idx> ...`
-- prints a single JSON object with what was sent and where
+# 3. (Optional) Rotate account if auth/cooldown issue
+caam activate codex --auto    # or: caam activate claude --auto
 
-#### `ntm_send.py` flags (reference)
+# 4. Add fresh agent panes
+ntm add <session> --cod=1     # or --cc=1 for Claude
+```
 
-- `--session <name>`: NTM/tmux session name (project name)
-- `--to <target>`:
-  - Single target: `cc_1`, `cod_1`, `pane:<idx>`
-  - Broadcast: `cc_all`, `cod_all`, `agents_all`
-- `--message "<text>"`: the message to send
-- `--new-task`: interrupt agents and reset context (Claude: `/clear`, Codex: `/new`) before sending message
-- `--cc <n>` / `--cod <n>`: only used if the session must be auto-spawned (default 2/1)
+### Add More Agents to Existing Session
 
-### 5) Watch progress every 2 minutes
+```bash
+ntm add <session> --cc=1      # add 1 Claude pane
+ntm add <session> --cod=2     # add 2 Codex panes
+```
 
-Run the watcher script:
+## Workflows
 
-- `python3 scripts/ntm_watch.py --session <project> --interval 120 --lines 120`
+### New Task (fresh context + prompt)
 
-Watcher behavior:
-- emits **JSONL** (one JSON object per tick)
-- captures per-pane tails and computes `changed` by hashing tail text
-- classifies each pane into:
-  - `RUNNING`
-  - `IDLE`
-  - `WAITING_QUESTION`
-  - `WAITING_USER_INSTRUCTION`
-  - `ERROR`
-  - `UNKNOWN`
+When starting unrelated work — reset context first, then send the new task:
 
-#### `ntm_watch.py` flags (reference)
+```bash
+# 1. Reset all agent contexts
+ntm send <session> --cc --no-cass-check "/clear"
+ntm send <session> --cod --no-cass-check "/new"
+sleep 5
 
-- `--session <name>`: NTM/tmux session name (project name)
-- `--interval <sec>`: polling interval (default 120)
-- `--lines <n>`: tail lines captured per pane (default 120)
-- `--max-ticks <n>`: stop after N ticks (0 = forever)
-- `--stop-on-question` / `--stop-on-error`: stop early when detected (note: script currently defaults these to True)
+# 2. Send new task
+ntm send <session> --cc "Your task description here"
+ntm send <session> --cod "Your task description here"
+```
 
-### 6) Auto-respond to questions (policy)
+### Bead Worker Dispatch
 
-When watcher output indicates `WAITING_QUESTION`:
+Reset context and send the bead worker prompt to all agents:
 
-- Read the `question_excerpt` + `context_excerpt`
-- If you can answer with **confidence >= 0.8**, respond immediately via `ntm send ... --pane=<idx>`
-- If confidence < 0.8, ask the human (Droid Overlord) with:
-  - session + alias/pane
-  - question excerpt + minimal context
-  - your recommended reply + what you need clarified
+```bash
+ntm send <session> --cc --no-cass-check "/clear"
+ntm send <session> --cod --no-cass-check "/new"
+sleep 5
+ntm --robot-palette | jq -r '.commands[] | select(.key=="bead_worker") | .prompt' > /tmp/bw.txt
+ntm send <session> --cc --file=/tmp/bw.txt
+ntm send <session> --cod --file=/tmp/bw.txt
+```
 
-## Robot primitives (direct)
+### Follow-up (preserve context)
 
-- `ntm --robot-status`
-- `ntm --robot-tail=<session> --lines=<N> --panes=<comma list of pane_idx>`
-- `ntm send <session> --pane=<pane_idx> "message"`
-- `ntm spawn <session> --cc=2 --cod=1`
-- `ntm add <session> --cc=N` / `--cod=N`
-- `ntm interrupt <session>`
+When continuing the same thread — do NOT reset:
 
-## Bundled scripts
+```bash
+ntm send <session> --pane=N "Your follow-up message"
+```
 
-- `scripts/ntm_send.py` — ensure session + resolve target + send (JSON)
-- `scripts/ntm_watch.py` — poll tails + classify + JSONL ticks
+### Monitor Progress
 
-## How the scripts tie together
+```bash
+# Quick check — tail all agent panes
+ntm --robot-tail=<session> --lines=20 --panes=2,3,4
 
-Dispatch with `ntm_send.py` → observe/triage via `ntm_watch.py` → respond with `ntm_send.py` (follow-up, usually without `--new-task`).
+# Check specific pane
+ntm --robot-tail=<session> --lines=50 --panes=N
+```
 
-## Reference
+#### Structured State Detection (ft-style patterns)
 
-- `references/json-schema.md` — JSON shapes emitted by scripts and expected fields
+Use `scripts/pane-detect.py` for reliable, structured state classification:
+
+```bash
+# Auto-fetch tail and classify all panes
+python3 ~/.openclaw/skills/ntm-orchestrator/scripts/pane-detect.py <session> --panes=2,3,4
+
+# Or pipe from stdin
+ntm --robot-tail=<session> --lines=30 --panes=2,3,4 2>&1 | python3 ~/.openclaw/skills/ntm-orchestrator/scripts/pane-detect.py
+```
+
+**Output:** JSON array with per-pane state:
+```json
+[
+  {"pane": "2", "agent_type": "claude", "state": "idle", "detections": ["idle"], "last_line": "❯"},
+  {"pane": "3", "agent_type": "claude", "state": "working", "detections": ["working"], "last_line": "◐ Running bash..."},
+  {"pane": "4", "agent_type": "codex", "state": "rate_limited", "detections": ["rate_limited"], "last_line": "Rate limit exceeded"}
+]
+```
+
+**Detected states:** `idle`, `working`, `question`, `error`, `rate_limited`, `context_full`, `unknown`
+
+**Patterns detected per agent type:**
+
+| State | Claude signals | Codex signals |
+|-------|---------------|---------------|
+| idle | `❯` prompt | `›` prompt, `context left` |
+| working | `◐`, `Running`, tool calls | `◦`, `Ran`, `Executed` |
+| question | `?` at end, `Do you want to`, `(y/n)` | same |
+| error | `Error:`, `permission_error`, `not logged in` | same |
+| rate_limited | `rate limit`, `cooldown`, `429`, `overloaded` | same |
+| context_full | `context window`, `token limit` | `context left: 0` |
+
+### Handle Cooldown / Auth Errors
+
+When you see auth errors or rate limits in the tail:
+
+```bash
+# 1. Kill affected panes
+tmux kill-pane -t <session>:.N
+
+# 2. Rotate account
+caam activate claude --auto   # or codex
+caam status                   # verify
+
+# 3. Add fresh panes
+ntm add <session> --cc=1      # or --cod=1
+
+# 4. Re-send task
+ntm send <session> --pane=<new_pane_idx> --file=/tmp/prompt.txt
+```
+
+### Full Session Reset (nuclear option)
+
+When everything is broken — kill and start over:
+
+```bash
+caam activate claude --auto
+caam activate codex --auto
+ntm kill <session> --force
+ntm spawn <session> --cc=2 --cod=1
+sleep 15  # wait for agents to boot
+ntm --robot-palette | jq -r '.commands[] | select(.key=="bead_worker") | .prompt' > /tmp/bw.txt
+ntm send <session> --cc --file=/tmp/bw.txt
+ntm send <session> --cod --file=/tmp/bw.txt
+```
+
+## Important Notes
+
+### What DOESN'T work reliably
+- `ntm respawn` — kills agent process but drops to bare shell, does NOT relaunch the agent
+- `ntm --robot-send --msg-file` — pastes multiline text but does NOT press Enter (prompt never submitted)
+- `ntm --robot-is-working` — unreliable state detection (returns UNKNOWN for idle Claude, RATE_LIMITED for idle Codex when they're fine)
+- `ntm wait --until=idle` — times out even when agents are clearly idle and ready
+
+### Agent startup time
+After `ntm spawn` or `ntm add`, agents take **10-20 seconds** to fully initialize. Preferred: poll the tail for the prompt character. Fallback: `sleep 15`.
+
+**Readiness polling (preferred over hardcoded sleep):**
+```bash
+# Poll until Claude prompt appears (max 30s)
+for i in $(seq 1 15); do
+  ntm --robot-tail=<session> --lines=5 --panes=N 2>&1 | grep -q '❯' && break
+  sleep 2
+done
+
+# Poll until Codex prompt appears (max 30s)
+for i in $(seq 1 15); do
+  ntm --robot-tail=<session> --lines=5 --panes=N 2>&1 | grep -q '›' && break
+  sleep 2
+done
+```
+
+**⚠️ MCP server startup delay:** The prompt (`❯`/`›`) appears BEFORE MCP servers finish loading. If the project uses MCP tools (agent-mail, etc.), wait for them to initialize before sending work:
+- **Claude:** Poll tail for `N MCPs` in status bar (e.g. `1 MCPs`)
+- **Codex:** Poll tail for `Use /skills to list available skills`
+- **Fallback:** `sleep 30` after prompt appears
+
+### Pane layout
+- **Pane 1:** Always the user shell (type: `unknown`) — never send resets to this
+- **Panes 2+:** Agent panes (Claude and Codex)
+- Use `ntm --robot-status` to confirm pane indices and types
+
+## Bead Mode (Heartbeat-Driven Supervisor)
+
+**Any agent** can enter bead mode. It's a heartbeat-driven pattern — you temporarily increase your heartbeat to 10m, add a supervisor checklist to HEARTBEAT.md, and each heartbeat runs one check cycle.
+
+**Full playbook:** See `bead-mode.md` in this skill directory for the complete step-by-step instructions (enter, check cycle, exit, best practices).
+
+**Detection script:** See `scripts/pane-detect.py` for structured pane state classification.
+
+**Supervisor logic:** See `bead-supervisor.md` for the detailed check cycle procedure.
+
+### Quick Reference
+
+```
+Enter:  caam status → ntm spawn → send bead_worker → create state file → patch heartbeat to 10m → write HEARTBEAT.md
+Check:  read state → br list → pane-detect.py → act on states → update state → report if needed
+Exit:   update state → revert heartbeat to 1h → clear HEARTBEAT.md → report summary
+```
+
+### Key Rules
+- One project per agent at a time
+- Use `--no-cass-check` for `/clear`, `/new`, and short utility commands
+- Answer agent questions yourself before escalating
+- Don't reset context unless actually needed (context_full or confused)
+- Auto-stops on: all beads closed, 60min stall, all accounts exhausted

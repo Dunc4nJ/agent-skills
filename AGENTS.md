@@ -202,6 +202,10 @@ br close br-42 --reason "Validated: login button functional"
 - **DCG** — Destructive command guard
 - **Inbox reminder** — Shows after Bash if you have mail
 
+## Context7
+
+ALWAYS proactively use Context7 MCP when you need library/API documentation, code generation, setup or configuration steps — without the user having to explicitly ask. External libraries, docs, and frameworks should be guided by Context7 and always used when creating an in-depth plan.
+
 ## Concurrent file changes (normal)
 You will most likely notice modifications to files that you did not make. This is completely normal as other developers are concurrently working on the same project as you. Do not stop and ask how to continue, just continue and add/commit files relevant to your current bead. If it happens to be a file that was modified by another that is fine, continue working on your current bead and do NOT STOP and ask for instructions.
 
@@ -282,6 +286,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>markdown-url</name>
+<description>Route website visits through markdown.new for clean Markdown extraction. Use when reading docs, blog posts, changelogs, GitHub issues, or any web content where you need extractable text. Prefixes URLs with https://markdown.new/ automatically.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>nia-docs</name>
 <description>Search library documentation and code examples via Nia (package semantic search, regex grep, and universal search). Use when you need API docs/code examples across npm, PyPI, crates, or Go modules. Requires NIA_API_KEY.</description>
 <location>global</location>
@@ -289,7 +299,7 @@ Usage notes:
 
 <skill>
 <name>ntm-orchestrator</name>
-<description>Use when the user asks you to "send a message to an agent in another project", "spawn agents in a project", "check on agents", "watch progress", "see if any agent has questions", or mentions NTM/tmux agent orchestration across /data/projects/PROJECT. Provides a deterministic JSON-only workflow using NTM robot APIs plus bundled scripts.</description>
+<description>Use when the user asks you to "send a message to an agent in another project", "spawn agents in a project", "check on agents", "watch progress", "see if any agent has questions", "reset agents", "send bead worker", "enter bead mode", "start bead supervisor", or mentions NTM/tmux agent orchestration across /data/projects/PROJECT.</description>
 <location>global</location>
 </skill>
 

@@ -5,7 +5,8 @@ description: >-
   caam-switch OpenClaw sync, and the automated timer. Use when the user asks
   "how does caam work", "switch accounts", "rotate tokens", "caam-switch",
   "check caam status", "add a new account to caam", or mentions account
-  limits, token rotation, or OpenClaw auth sync.
+  limits, token rotation, OpenClaw auth sync, or Codex cooldown/rate-limit
+  launch errors in NTM.
 ---
 
 ## What is caam
@@ -97,3 +98,8 @@ systemctl --user restart caam-switch.service   # Force immediate run
 - **Gateway restart interrupts agents**: Expected; agents recover on next spawn
 - **Profile shows "no matching profile"**: Current auth wasn't backed up — run `caam backup <tool> <email>`
 - **Token mismatch in verification**: Check if another process overwrote credentials between steps
+- **NTM shows Codex cooldown/rate-limit launch message** (for example: `Codex cooldown active; waiting ...m before launching`): treat as account-rotation trigger.
+  1. Run `caam activate codex --auto`
+  2. Run `caam-switch` to sync OpenClaw agent auth + restart gateway
+  3. Re-spawn/retry Codex panes
+  4. If the owner says they already swapped accounts, skip step 1 and continue with re-spawn/retry
