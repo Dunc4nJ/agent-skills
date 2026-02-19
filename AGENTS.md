@@ -234,181 +234,187 @@ Usage notes:
 <skill>
 <name>agent-browser</name>
 <description>Automates browser interactions for web testing, form filling, screenshots, and data extraction. Use when the user needs to navigate websites, interact with web pages, fill forms, take screenshots, test web applications, or extract information from web pages.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>aprx-iterate</name>
 <description>Runs iterative APRX specification refinement until convergence. Executes APRX rounds, integrates GPT Pro suggestions into spec and README, commits changes, and tracks convergence. Use when user wants to refine a specification through multiple GPT Pro review cycles.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>bd-to-br-migration</name>
 <description>>-</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>caam-expert</name>
 <description>>-</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>create-global-skill</name>
 <description>Create and publish global skills available to all local agents. Use when asked to "create a skill", "add a new skill", "write a skill", "make a global skill", or when setting up skill folder structure, writing SKILL.md, creating symlinks, or running OpenSkills sync. Covers both skill authoring best practices and deployment to ~/.agent/skills/.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>create-plan</name>
 <description>Iterative planning skill that explores codebases, researches best practices via Perplexity/NIA, and creates comprehensive self-contained plans through multiple clarification rounds. Use when asked to create, design, or plan any feature, refactor, or implementation.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>decompose-plan</name>
 <description>Decompose a written plan/spec into Beads (br issues) with correct granularity, self-contained descriptions, and a dependency graph (including epics). Use when the user says “decompose this plan”, “turn this into beads”, or “create a bead graph from this plan”.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>frontend-design</name>
 <description>Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>image-generator</name>
 <description>Use this skill when the user asks to "generate an image", "create a logo", "make a mockup", "edit a photo", "remove a background", "iterate on an image", or otherwise wants image generation/editing via Gemini image models. Provides a safe, file-based curl workflow that avoids command-line length limits and requires GEMINI_API_KEY.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>markdown-url</name>
 <description>Route website visits through markdown.new for clean Markdown extraction. Use when reading docs, blog posts, changelogs, GitHub issues, or any web content where you need extractable text. Prefixes URLs with https://markdown.new/ automatically.</description>
-<location>global</location>
+<location>project</location>
+</skill>
+
+<skill>
+<name>markitdown</name>
+<description>Convert office documents and rich files to Markdown using markitdown. Use when reading, processing, or extracting text from .pptx, .docx, .xlsx, .xls, .pdf, .html, .csv, .json, .xml, .epub, .zip, images (EXIF/OCR), or audio files (transcription). Triggers on "read this PowerPoint", "extract text from Word doc", "convert spreadsheet", "parse this PDF", "read this presentation", or any task involving these file types where the Read tool cannot handle the format directly.</description>
+<location>project</location>
 </skill>
 
 <skill>
 <name>nia-docs</name>
 <description>Search library documentation and code examples via Nia (package semantic search, regex grep, and universal search). Use when you need API docs/code examples across npm, PyPI, crates, or Go modules. Requires NIA_API_KEY.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>ntm-orchestrator</name>
 <description>Use when the user asks you to "send a message to an agent in another project", "spawn agents in a project", "check on agents", "watch progress", "see if any agent has questions", "reset agents", "send bead worker", "enter bead mode", "start bead supervisor", or mentions NTM/tmux agent orchestration across /data/projects/PROJECT.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>ntm-prompt-palette-adder</name>
 <description>Add a new prompt to the NTM command palette in ~/.config/ntm/config.toml (generates a [[palette]] TOML entry). Use when the user asks to “add a prompt to ntm palette”, “add to NTM command palette”, or “create a palette prompt”.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>obsidian</name>
 <description>Search and manage Obsidian vault notes using qmd (Markdown search engine). Use when the user asks about "notes", "Obsidian", "search my vault", "find in knowledge base", "what do I know about", or needs to create, read, or update vault content. Provides search commands, vault navigation, and note-writing conventions.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>obsidian-edit</name>
 <description>Process inline {edit annotations} in Obsidian vault notes. Use when the user says "edit my notes", "process annotations", "run edit", "fix my annotations", or has left {curly brace instructions} in markdown files for batch processing.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>obsidian-reflect</name>
 <description>Extract key learnings from recent work and persist them to the Obsidian vault as linked learning notes. Use when the user says "reflect on", "capture learnings", "what did we learn", "extract insights", "end of session", or when wrapping up a task with significant non-obvious discoveries worth preserving.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>oracle-job-runner</name>
 <description>Use when the user asks to "run this through Oracle", "ask GPT 5.2 Pro", "submit a job", "bundle files for ChatGPT", "use oracle-pool", "queue oracle runs", or needs a reliable pattern to send a plan/spec/docs/question to Oracle and retrieve the result (oracle CLI, oracle-pool, aprx via pool). Covers prompts, file bundling, slugs, waiting/reattaching, and where outputs live.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>perplexity-search</name>
 <description>AI-powered web search and research via Perplexity (Sonar models), including ranked search results and AI-synthesized answers with citations. Use for up-to-date facts, source gathering, deep research, and reasoning. Requires PERPLEXITY_API_KEY.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>stripe-best-practices</name>
 <description>Best practices for building a Stripe integrations</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>twitter-bird-workflows</name>
 <description>Read/search X (Twitter) and draft posts/replies using the bird CLI with safety guardrails. Use when you need to check timelines, read threads, search X, summarize findings, or prepare a tweet/reply draft. NEVER post without explicit user approval.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>upgrade-stripe</name>
 <description>Guide for upgrading Stripe API versions and SDKs</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>url-to-obsidian</name>
 <description>Capture knowledge from any URL or PDF into the Obsidian vault as a linked note. Use when the user says "save this URL", "capture this to vault", "add to obsidian", "save this tweet", "capture this article", "capture this PDF", or provides a URL/file path and asks to save, store, or capture it. Routes tweets (x.com, twitter.com) via bird CLI, PDFs via pdftotext, and any other web page via playbooks.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>validate-beads</name>
 <description>Decompose and validate an existing set of Beads against a plan or spec, including self-containment, coverage, and dependency correctness. Use after decompose-plan and before implementation.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>vercel-composition-patterns</name>
 <description>React composition patterns that scale. Use when refactoring components with</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>vercel-react-best-practices</name>
 <description>React and Next.js performance optimization guidelines from Vercel Engineering. This skill should be used when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>vercel-react-native-skills</name>
 <description>React Native and Expo best practices for building performant mobile apps. Use</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>web-design-guidelines</name>
 <description>Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices".</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>x-research</name>
 <description>></description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>x-to-task-inbox</name>
 <description>Capture an X (Twitter) post/thread into the Tooling task inbox (not Obsidian) and draft a first-iteration implementation plan. Use when the user says “capture this tweet”, “save this X post”, “add this to the task inbox”, or provides an x.com/twitter.com link for later implementation.</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 <skill>
 <name>zombie-killer</name>
 <description>Detect and kill zombie processes on the VPS. Use when the user mentions zombies, defunct processes, slow VPS, high load average, stale agent sessions, or process cleanup. Triggers on "check zombies", "kill zombies", "why is my server slow", "clean up processes", "defunct processes".</description>
-<location>global</location>
+<location>project</location>
 </skill>
 
 </available_skills>
