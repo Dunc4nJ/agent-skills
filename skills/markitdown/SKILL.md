@@ -5,7 +5,16 @@ description: Convert office documents and rich files to Markdown using markitdow
 
 # Markitdown
 
-Convert documents to Markdown via `uvx markitdown` — no installation required.
+Convert documents to Markdown via `markitdown` CLI.
+
+## Prerequisites
+
+Install once with all format support:
+```bash
+uv tool install "markitdown[all]"
+```
+
+The base `uvx markitdown` lacks docx/pptx/xlsx dependencies. Always use the installed `markitdown` command after setup.
 
 ## When This Triggers
 
@@ -18,13 +27,13 @@ Use markitdown whenever encountering a file the Read tool cannot natively parse:
 
 ```bash
 # Convert to stdout (pipe into context)
-uvx markitdown input.pptx
+markitdown input.pptx
 
 # Save to file then read
-uvx markitdown input.docx -o /tmp/output.md
+markitdown input.docx -o /tmp/output.md
 
 # From stdin with extension hint
-cat document | uvx markitdown -x .pdf
+cat document | markitdown -x .pdf
 ```
 
 ## Key Flags
@@ -39,7 +48,7 @@ cat document | uvx markitdown -x .pdf
 ## Workflow Pattern
 
 1. Detect unsupported file format (office doc, PDF, presentation, etc.)
-2. Run `uvx markitdown <file>` to convert to Markdown
+2. Run `markitdown <file>` to convert to Markdown
 3. Read the Markdown output or use it directly
 4. First run caches dependencies; subsequent runs are faster
 
