@@ -346,6 +346,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>shaping</name>
+<description>Shape Up methodology for product and feature development. Use when collaboratively shaping a solution — iterating on problem definition (requirements) and solution options (shapes), breadboarding systems into affordances and wiring, and slicing into vertical implementation increments. Triggers include "shape this feature", "breadboard the system", "let's shape", "slice this into increments", "fit check", "define requirements", or any product/feature scoping discussion using Shape Up methodology.</description>
+<location>project</location>
+</skill>
+
+<skill>
 <name>stripe-best-practices</name>
 <description>Best practices for building a Stripe integrations</description>
 <location>project</location>
