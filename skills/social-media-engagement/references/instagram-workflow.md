@@ -50,17 +50,25 @@ Engage with posts that feel like they belong in the brand's world. For Table Cla
 
 ---
 
-## Engagement Flow (Per Account)
+## Engagement Actions
 
-This is the exact sequence for each account. Everything happens inside the same post modal — no profile visits needed.
+Everything happens inside the post modal — no profile visits needed.
 
 1. **Click a relevant post** from the Explore grid to open the modal
 2. **Check the handle** against your in-memory list of previously engaged accounts. If already engaged, close and move on.
-3. **Follow** — use `find` to locate the Follow button and click it
-4. **Like** — use `find` to locate the heart/Like button and click it
-5. **Comment** (only if this is a designated comment account) — click the comment input, type the comment, click Post
-6. **Close the modal** — press `Escape` (twice if needed) to return to the Explore grid
-7. **Scroll** to find the next relevant post and repeat
+3. **Engage** using whichever combination fits (see Engagement Pattern Variation below)
+4. **Close the modal** — press `Escape` (twice if needed) to return to the Explore grid
+5. **Scroll** to find the next relevant post and repeat
+
+### Action Types
+
+**Like** — use `find` to locate the heart/Like button and click it. This is the baseline action for most posts.
+
+**Follow** — use `find` to locate the Follow button and click it. Follow is the primary growth action — do this on most posts you engage with. Skip follows occasionally (maybe 1-2 per session) to keep the pattern organic, but follows are the main goal.
+
+**Comment** — click the comment input, type the comment, click Post. See `references/comment-guide.md` for writing guidelines. About 5 comments per session, spread naturally across the session (don't bunch them at the start or end).
+
+**Save** — if something is genuinely exceptional (a technique you'd want to reference, a stunning piece, a tutorial worth revisiting), save it. This is rare — maybe 1-2 per session at most, and only if it actually stands out. Don't force it. Use `find` to locate the save/bookmark icon on the post modal.
 
 ### What NOT to do during this flow
 
@@ -75,21 +83,38 @@ Re-run `find` after closing a modal and opening the next post. The previous post
 
 ---
 
-## Session Limits
+## Engagement Pattern Variation
 
-Non-negotiable. Never exceed these in a single session.
+Not every post gets the same treatment. Vary your pattern to look natural:
+
+- **Follow most posts you engage with** — follows are the primary growth action. Skip a follow on maybe 1-2 posts per session for organic variation, but the default is to follow.
+- **Like most posts** — likes support the follow and signal genuine interest
+- **Comment on about 5 posts per session** — spread naturally, not bunched at the start or end
+- **Save 0-2 posts per session** — only when something genuinely stands out
+
+Mix it up:
+
+- Most posts: like + follow (the standard combo)
+- Sometimes like, follow, and comment all three
+- Sometimes like + follow + save (rare, for exceptional content)
+- Occasionally like only, skip the follow (1-2 times per session max)
+- Occasionally like, comment, but skip the follow
+- Occasionally skip a niche-fit post entirely — this makes your engagement pattern more organic
+
+The point is that no two consecutive engagements should look identical. A human scrolling through Explore doesn't mechanically do the exact same thing on every post.
+
+---
+
+## Session Limits
 
 | Action | Per Session | Daily Max (2 sessions) |
 |--------|-------------|----------------------|
-| Follows | 15 | 30 |
-| Likes | 15 | 30 |
+| Follows | 10-12 | 20-24 |
+| Likes | 10 | 20 |
 | Comments | 5 | 10 |
+| Saves | 0-2 | 0-4 |
 
 **Max 2 sessions per day** (morning + evening).
-
-### Comment Distribution
-
-Pre-decide which accounts get comments before starting. Spread them evenly across the session. For 5 comments across 15 accounts, aim to comment on roughly every 3rd account (e.g., accounts #3, #6, #9, #12, #15). Don't bunch comments at the start or end.
 
 ---
 
@@ -100,14 +125,6 @@ The natural time spent scrolling, finding posts, reading content, and executing 
 - **Between accounts:** No explicit wait needed. The time to close a modal, scroll, assess the next post, and click it (typically 5-10 seconds) is natural pacing.
 - **After posting a comment:** Wait **15-30 seconds** before moving to the next account. Comments are the highest-signal action and benefit from a brief pause.
 - **If anything feels "off"** (slow loading, repeated errors, unusual prompts), stop and tell the user.
-
-### Pattern Variation
-
-Keep it simple:
-
-- Follow + like is the baseline for every account
-- Comments are spread evenly per the distribution above
-- Vary comment types (compliments, questions, relatable, encouraging) per `references/comment-guide.md`
 
 ---
 
@@ -147,4 +164,4 @@ If you encounter ANY of these, **stop immediately** and inform the user:
 
 ## Session Target
 
-A full session (15 accounts) should take **8-12 minutes**. Most time is spent scrolling and identifying relevant content — the engagement actions themselves are fast.
+A full session should take **8-12 minutes**. Most time is spent scrolling and identifying relevant content — the engagement actions themselves are fast.

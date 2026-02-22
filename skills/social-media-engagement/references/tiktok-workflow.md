@@ -86,13 +86,40 @@ Don't waste time checking follower counts. But if it's obviously a massive creat
 
 Engage **directly from the video in the FYP** -- no need to visit the creator's profile to evaluate them first. If the content vibes, engage.
 
-1. **Follow the creator** -- click Follow right from the video
-2. **Like (heart) the video** -- tap the heart
-3. **For 4 of the creators:** Leave a genuine comment (see `references/comment-guide.md`)
+### Action Types
 
-Follow + like is the baseline. Comments are reserved for videos where you have something genuinely specific to say about what you saw or heard. Don't force comments.
+**Follow** -- click Follow right from the video. This is the primary growth action -- follow on most videos you engage with.
 
-No saves/bookmarks, no shares, no duets or stitches -- those are content creation, not engagement.
+**Like (heart)** -- tap the heart. Likes support the follow and signal genuine interest.
+
+**Comment** -- leave a genuine comment referencing what you saw or heard in the video (see `references/comment-guide.md`). About 5 comments per session, spread naturally. Don't bunch them.
+
+**Save/Bookmark** -- if a video is genuinely exceptional (a technique tutorial, a stunning piece, a process you'd want to revisit), bookmark it. Rare -- 0-2 per session at most, and only if it actually stands out. Don't force it.
+
+No shares, duets, or stitches -- those are content creation, not engagement.
+
+---
+
+## Engagement Pattern Variation
+
+Not every video gets the same treatment. Vary your pattern to look natural:
+
+- **Follow most videos you engage with** -- follows are the primary growth action. Skip a follow on maybe 1-2 videos per session for organic variation, but the default is to follow.
+- **Like most videos** -- likes support the follow and signal genuine interest
+- **Comment on about 5 videos per session** -- spread naturally, not bunched
+- **Save 0-2 videos per session** -- only when something genuinely stands out
+
+Mix it up:
+
+- Most videos: follow + like (the standard combo)
+- Sometimes follow, like, and comment all three
+- Sometimes follow + like + save (rare, for exceptional content)
+- Occasionally like only, skip the follow (1-2 times per session max)
+- Occasionally follow only, no like
+- Occasionally just watch and scroll past -- not every relevant video needs an action
+- Sometimes like 2-3 of a creator's videos instead of just 1
+
+The point is that no two consecutive engagements should look identical. A human scrolling through TikTok doesn't mechanically do the exact same thing on every video.
 
 ---
 
@@ -102,22 +129,18 @@ Conservative limits. TikTok is aggressive about bot detection.
 
 | Action | Per Session | Daily Max (2 sessions) |
 |--------|-------------|------------------------|
-| Follows | 10 | 20 |
-| Likes | 12 | 24 |
-| Comments | 4 | 8 |
+| Follows | 10-12 | 20-24 |
+| Likes | 10 | 20 |
+| Comments | 5 | 10 |
+| Saves | 0-2 | 0-4 |
 
 **Max 2 sessions per day** (morning + evening).
 
-For accounts running TikTok engagement for 2+ weeks without flags, the user could consider gradually increasing to 12 follows per session. But this should be a manual user decision, not automatic.
+For accounts running TikTok engagement for 2+ weeks without flags, the user could consider gradually increasing limits. But this should be a manual user decision, not automatic.
 
 ---
 
 ## Pacing
-
-- **45-90 seconds** between follows
-- **20-40 seconds** between likes
-- **2-3 minutes** between comments
-- When doing multiple actions on a single video (follow + like + comment), space by **15-30 seconds**
 
 ### Watch Before Engaging
 
@@ -125,15 +148,12 @@ For accounts running TikTok engagement for 2+ weeks without flags, the user coul
 
 Let the video play, then engage. This adds natural time and makes behavior organic.
 
-### Pattern Variation
+### Between Actions
 
-Mix it up:
-
-- Sometimes like first, then follow
-- Sometimes follow only (no like)
-- Vary which creators get comments
-- Occasionally like 2-3 of a creator's videos instead of just 1
-- Sometimes just watch and scroll past -- not every relevant video needs an action
+- **No explicit wait between follow and like on the same video** -- the time to locate and click both buttons is natural pacing
+- **After posting a comment:** Wait **15-30 seconds** before moving to the next video. Comments are the highest-signal action and benefit from a brief pause.
+- **Between videos:** The natural time spent watching (10-15 seconds minimum), assessing relevance, and scrolling provides sufficient spacing. Don't add unnecessary artificial waits beyond the watch time.
+- **If anything feels "off"** (slow loading, repeated errors, unusual prompts), stop and tell the user.
 
 ---
 
