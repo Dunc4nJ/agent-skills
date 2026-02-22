@@ -14,6 +14,7 @@ allowed-tools:
 Capture knowledge from a URL and create a linked vault note.
 
 **Vault location**: `~/obsidian-vault`
+**Media folder**: `~/obsidian-vault/_media/` (all captured images go here)
 **Collection**: `obsidian`
 
 ## Workflow
@@ -50,6 +51,46 @@ npx playbooks get "<url>"
 ```
 
 See `references/playbooks-usage.md` for detailed options and JSON output mode.
+
+### 1b. Extract images (twitter and web)
+
+For **twitter** URLs, extract all content images from the post:
+```bash
+bash ~/.agent/skills/url-to-obsidian/scripts/extract-tweet-images.sh "<url>" "<slug>" ~/obsidian-vault/_media/
+```
+
+**Slug convention**: `{author_handle}-{last_6_digits_of_tweet_id}`
+- Example: URL `https://x.com/nicbstme/status/2021656728094617652` → slug `nicbstme-617652`
+
+The script:
+1. Opens the tweet in agent-browser
+2. Scrolls to load all lazy images
+3. Extracts `pbs.twimg.com/media/` URLs (filters out profile pics, emoji, icons)
+4. Downloads at full resolution (`name=large`)
+5. Returns a JSON array of filenames: `["slug-001.png", "slug-002.jpg", ...]`
+
+Images are numbered in visual order (001 = first image in the article/thread).
+
+For **web** URLs with important images, use agent-browser manually:
+```bash
+agent-browser open "<url>"
+agent-browser eval '<JS to extract content image URLs>'
+# Download with curl, save to ~/obsidian-vault/_media/ with same slug convention
+agent-browser close
+```
+
+For **PDFs**, skip image extraction (text-only capture via pdftotext).
+
+**Image embedding convention** (used in step 6):
+- All images live in `_media/` at the vault root
+- Embed with Obsidian wiki syntax: `![[slug-001.png]]`
+- Add a brief italic caption above each embed:
+  ```markdown
+  *Pricing comparison: cached vs uncached tokens*
+  ![[nicbstme-617652-001.png]]
+  ```
+- Place embeds in the **Original Content** section near the text they illustrate
+- Also reference key images in **Key Takeaways** if they contain data absent from the text
 
 ### 2. Analyze content
 
@@ -162,4 +203,5 @@ Before finishing, verify:
 - [ ] Original content preserved (blockquote or collapsible callout)
 - [ ] Link to original URL included
 - [ ] Nearest MOC updated
+- [ ] **Images captured** (if source had images): downloaded to `_media/`, embedded with `![[filename]]` and captions
 - [ ] Changes committed, pushed, and qmd re-indexed

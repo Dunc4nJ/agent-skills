@@ -1,0 +1,34 @@
+# Profile Manifest — Social Media Engagement
+# Maps brand names to OpenClaw browser profile names.
+# Each profile is a separate Chrome user data directory with persistent sessions.
+#
+# To add a new business:
+# 1. Add an entry here
+# 2. Run: openclaw browser create-profile --name <profile_name> --color "<hex>"
+# 3. Start the browser: DISPLAY=:1 openclaw browser --browser-profile <profile_name> start
+# 4. VNC in, log into IG + FB + TK, close the browser
+# 5. Create vault brand context: Projects/Ecommerce/Business/{Brand}/Brand/
+#
+# Usage: "run IG engagement for tableclay" → resolves to browser profile "tableclay"
+
+brands:
+  tableclay:
+    profile: tableclay
+    display_name: Table Clay
+    platforms: [instagram, facebook, tiktok]
+    instagram_handle: _TBD_
+    facebook_page: _TBD_
+    tiktok_handle: _TBD_
+    vault_path: Projects/Ecommerce/Business/TableClay/Brand
+    brand_reference: references/brand-tableclay.md
+
+# Template for adding new businesses:
+# brandname:
+#   profile: brandname           # OpenClaw browser profile name
+#   display_name: Brand Name
+#   platforms: [instagram, facebook, tiktok]
+#   instagram_handle: "@handle"
+#   facebook_page: "PageName"
+#   tiktok_handle: "@handle"
+#   vault_path: Projects/Ecommerce/Business/BrandName/Brand
+#   brand_reference: references/brand-brandname.md

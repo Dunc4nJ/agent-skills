@@ -80,6 +80,31 @@ Notes:
 - `source` frontmatter field: use the PDF filename, not the full path
 - Text extraction quality varies — tables and multi-column layouts may need manual cleanup
 
+## Images
+
+When the source contains images (diagrams, tables, screenshots, charts):
+
+1. Images are saved to the vault's `_media/` folder at the root
+2. Naming convention: `{author}-{last6digits_of_id}-{NNN}.{ext}`
+   - Example: `nicbstme-617652-001.png`
+3. Embed in the note using Obsidian wiki syntax: `![[nicbstme-617652-001.png]]`
+4. Place image embeds in the **Original Content** section near the text they accompany
+5. Add a brief caption line above or below each image embed:
+   ```markdown
+   *Pricing comparison: cached vs uncached inputs*
+   ![[nicbstme-617652-001.png]]
+   ```
+6. Also reference key images in **Key Takeaways** when they contain data not in the text
+   (e.g., a pricing table whose numbers are missing from the article text)
+
+Images are extracted using:
+```bash
+bash scripts/extract-tweet-images.sh "<tweet_url>" "<slug>" /path/to/vault/_media/
+```
+
+The script returns a JSON array of filenames. Map them to the article by visual order
+(image 001 = first image in the article, 002 = second, etc.).
+
 ## Rules
 
 - Title is a claim, not a topic: "onboarding drives 70% of retention" not "onboarding-notes"
@@ -88,3 +113,4 @@ Notes:
 - The note must stand alone — a reader arriving from any wiki link understands it
 - No emoji in headings or body
 - Always include link to original URL in the Original Content section
+- When source has images, always run the image extraction script and embed them

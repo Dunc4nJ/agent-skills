@@ -41,16 +41,44 @@ Extract from brand context:
 - **Products** — what NOT to mention in comments (instant spam signal)
 - **Competitors** — awareness only (don't engage with direct competitors)
 
-## Step 3: Open the Platform
+## Step 3: Launch Browser Profile and Open Platform
 
-**Instagram:** `https://www.instagram.com/`
-**Facebook:** `https://www.facebook.com/`
-**TikTok:** `https://www.tiktok.com/`
+### Multi-Business Profile System
 
-Rules:
-1. Whatever account is signed into the browser is correct. Do NOT verify or ask confirmation. The browser is the source of truth.
-2. If not logged in, ask the user to log in. Never enter credentials.
-3. If CAPTCHA/verification appears, pause and ask the user.
+Each business has its own Chrome browser profile with persistent sessions. Read `references/profile-manifest.yaml` for the brand→profile mapping.
+
+**To start a session:**
+```bash
+# Start the browser profile (requires DISPLAY=:1 for VNC-capable launch)
+DISPLAY=:1 openclaw browser --browser-profile <profile_name> start
+
+# Open the platform
+openclaw browser --browser-profile <profile_name> open <platform_url>
+```
+
+**Platform URLs:**
+- **Instagram:** `https://www.instagram.com/`
+- **Facebook:** `https://www.facebook.com/`
+- **TikTok:** `https://www.tiktok.com/`
+
+**After the session:**
+```bash
+openclaw browser --browser-profile <profile_name> stop
+```
+
+### Adding a New Business
+
+1. Create the profile: `openclaw browser create-profile --name <name> --color "<hex>" --driver openclaw`
+2. Start it: `DISPLAY=:1 openclaw browser --browser-profile <name> start`
+3. User logs into all 3 platforms via VNC (one-time setup)
+4. Stop the browser: `openclaw browser --browser-profile <name> stop`
+5. Add entry to `references/profile-manifest.yaml`
+6. Create vault brand context at `Projects/Ecommerce/Business/{Brand}/Brand/`
+
+### Rules
+1. Whatever account is signed into the profile is correct. Do NOT verify or ask confirmation.
+2. If not logged in, ask the user to log in via VNC. Never enter credentials.
+3. If CAPTCHA/verification appears, pause and ask the user to handle via VNC.
 4. If any rate-limiting or suspicious activity warning appears, **STOP immediately**.
 
 ## Step 4: Discover and Engage
