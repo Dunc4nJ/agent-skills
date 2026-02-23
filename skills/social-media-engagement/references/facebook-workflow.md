@@ -218,16 +218,20 @@ The natural time spent scrolling, finding Reels, and assessing content provides 
 
 After each session, append to `engagement-log.csv` following these rules:
 
-1. **One row per account per session.** Consolidate all actions on one account into a single row using the `action_taken` field (e.g., "follow+react(love)+comment"). Do NOT log each action as separate rows for the same account.
+1. **One row per action.** Each follow, react, and comment is a separate row. If you follow + react + comment on one account, that's 3 rows.
 2. **Always include time (HH:MM).** Every row must have a timestamp. Never leave blank.
 3. **Platform name:** always lowercase `facebook`
 4. **Account type:** always lowercase `page`
-5. **Action format:** `follow+react(like)+comment` — use `react(like)`, `react(love)`, or `react(care)` for reaction type. Order: follow → react → comment.
-6. **Follower count:** use `unknown` if not visible, never leave blank.
+5. **Action values:** `follow`, `react(like)`, `react(love)`, `react(care)`, `comment`
+6. **`comment_text`** only populated on `comment` rows.
+7. **`notes`** on first action row for an account, empty on subsequent rows for same account.
+8. **Follower count:** use `unknown` if not visible, never leave blank.
 
-**Example row:**
+**Example (3 rows for one account):**
 ```
-2026-03-01,14:30,facebook,themagnoliamercantile,The Magnolia Mercantile,unknown,page,Reel,follow+react(love)+comment,"The mug is gorgeous and the ribbon takes it to another level.",https://www.facebook.com/reel/1268827865155437,spring gift in a mug
+2026-03-01,14:30,facebook,themagnoliamercantile,The Magnolia Mercantile,unknown,page,Reel,react(love),,https://www.facebook.com/reel/1268827865155437,spring gift in a mug
+2026-03-01,14:30,facebook,themagnoliamercantile,The Magnolia Mercantile,unknown,page,Reel,follow,,https://www.facebook.com/reel/1268827865155437,
+2026-03-01,14:30,facebook,themagnoliamercantile,The Magnolia Mercantile,unknown,page,Reel,comment,"The mug is gorgeous and the ribbon takes it to another level.",https://www.facebook.com/reel/1268827865155437,
 ```
 
 ---
