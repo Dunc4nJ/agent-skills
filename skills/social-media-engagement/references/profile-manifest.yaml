@@ -1,34 +1,46 @@
-# Profile Manifest — Social Media Engagement
-# Maps brand names to OpenClaw browser profile names.
-# Each profile is a separate Chrome user data directory with persistent sessions.
-#
-# To add a new business:
-# 1. Add an entry here
-# 2. Run: openclaw browser create-profile --name <profile_name> --color "<hex>"
-# 3. Start the browser: DISPLAY=:1 openclaw browser --browser-profile <profile_name> start
-# 4. VNC in, log into IG + FB + TK, close the browser
-# 5. Create vault brand context: Projects/Ecommerce/Business/{Brand}/Brand/
-#
-# Usage: "run IG engagement for tableclay" → resolves to browser profile "tableclay"
+# Profile Manifest — Brand → Chrome Instance Mapping
+# Each brand has its own Chrome instance with persistent login sessions.
+# Connect via: agent-browser connect <cdp_port>
+
+version: 1
 
 brands:
   tableclay:
-    profile: tableclay
-    display_name: Table Clay
-    platforms: [instagram, facebook, tiktok]
-    instagram_handle: _TBD_
-    facebook_page: _TBD_
-    tiktok_handle: _TBD_
-    vault_path: Projects/Ecommerce/Business/TableClay/Brand
-    brand_reference: references/brand-tableclay.md
+    display_name: "TableClay"
+    cdp_port: 9222
+    systemd_service: chrome-tableclay
+    data_dir: /data/chrome-profiles/tableclay
+    platforms:
+      instagram:
+        handle: "Table.clay"
+        url: "https://www.instagram.com/"
+        auth_status: active
+      facebook:
+        handle: "tableclay"
+        url: "https://www.facebook.com/"
+        auth_status: active
+      tiktok:
+        handle: "Table.clay"
+        url: "https://www.tiktok.com/"
+        auth_status: rate_limited
+    vault_brand_context: "Projects/Ecommerce/Business/TableClay/Brand/"
 
-# Template for adding new businesses:
-# brandname:
-#   profile: brandname           # OpenClaw browser profile name
-#   display_name: Brand Name
-#   platforms: [instagram, facebook, tiktok]
-#   instagram_handle: "@handle"
-#   facebook_page: "PageName"
-#   tiktok_handle: "@handle"
-#   vault_path: Projects/Ecommerce/Business/BrandName/Brand
-#   brand_reference: references/brand-brandname.md
+  preppack:
+    display_name: "PrepPack"
+    cdp_port: 9223
+    systemd_service: chrome-preppack
+    data_dir: /data/chrome-profiles/preppack
+    platforms:
+      instagram:
+        handle: "Thepreppack"
+        url: "https://www.instagram.com/"
+        auth_status: pending
+      facebook:
+        handle: "PrepPack"
+        url: "https://www.facebook.com/"
+        auth_status: pending
+      tiktok:
+        handle: "prep_pack"
+        url: "https://www.tiktok.com/"
+        auth_status: pending
+    vault_brand_context: "Projects/Ecommerce/Business/PrepPack/Brand/"

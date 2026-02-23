@@ -43,35 +43,36 @@ Extract from brand context:
 
 ## Step 3: Launch Browser Profile and Open Platform
 
-### Multi-Business Profile System
+### Multi-Business Chrome Infrastructure
 
-Each business has its own Chrome browser profile with persistent sessions. Read `references/profile-manifest.yaml` for the brand→profile mapping.
+Each business has its own **dedicated Chrome instance** running as a systemd service on the VPS with persistent login sessions. Read `references/profile-manifest.yaml` for the brand→Chrome mapping.
 
 **To start a session:**
 ```bash
-# Start the browser profile (requires DISPLAY=:1 for VNC-capable launch)
-DISPLAY=:1 openclaw browser --browser-profile <profile_name> start
+# Connect agent-browser to the brand's Chrome instance
+agent-browser connect <cdp_port>
 
 # Open the platform
-openclaw browser --browser-profile <profile_name> open <platform_url>
+agent-browser open <platform_url>
 ```
+
+**Brand → CDP Port:**
+- **TableClay:** `agent-browser connect 9222`
+- **PrepPack:** `agent-browser connect 9223`
 
 **Platform URLs:**
 - **Instagram:** `https://www.instagram.com/`
 - **Facebook:** `https://www.facebook.com/`
 - **TikTok:** `https://www.tiktok.com/`
 
-**After the session:**
-```bash
-openclaw browser --browser-profile <profile_name> stop
-```
+**After the session:** No cleanup needed — Chrome keeps running as a systemd service.
 
 ### Adding a New Business
 
-1. Create the profile: `openclaw browser create-profile --name <name> --color "<hex>" --driver openclaw`
-2. Start it: `DISPLAY=:1 openclaw browser --browser-profile <name> start`
-3. User logs into all 3 platforms via VNC (one-time setup)
-4. Stop the browser: `openclaw browser --browser-profile <name> stop`
+1. Create Chrome data dir: `mkdir -p /data/chrome-profiles/{brand}`
+2. Add systemd service (copy template from existing brand, change port + data dir)
+3. Add credentials to `/data/chrome-profiles/.credentials/{brand}.env`
+4. User logs into all platforms via noVNC (one-time manual setup)
 5. Add entry to `references/profile-manifest.yaml`
 6. Create vault brand context at `Projects/Ecommerce/Business/{Brand}/Brand/`
 
