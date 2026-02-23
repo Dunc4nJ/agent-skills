@@ -14,7 +14,7 @@ allowed-tools:
 Capture knowledge from a URL and create a linked vault note.
 
 **Vault location**: `~/obsidian-vault`
-**Media folder**: `~/obsidian-vault/_media/` (all captured images go here)
+**Media folders**: `~/obsidian-vault/Knowledge/_media/` (public) and `~/obsidian-vault/Projects/_media/` (private)
 **Collection**: `obsidian`
 
 ## Workflow
@@ -56,7 +56,12 @@ See `references/playbooks-usage.md` for detailed options and JSON output mode.
 
 For **twitter** URLs, extract all content images from the post:
 ```bash
-bash ~/.agent/skills/url-to-obsidian/scripts/extract-tweet-images.sh "<url>" "<slug>" ~/obsidian-vault/_media/
+# Route to the correct _media/ based on where the note will live (step 5)
+# Public notes (Knowledge/):
+bash ~/.agent/skills/url-to-obsidian/scripts/extract-tweet-images.sh "<url>" "<slug>" ~/obsidian-vault/Knowledge/_media/
+
+# Private notes (Projects/):
+bash ~/.agent/skills/url-to-obsidian/scripts/extract-tweet-images.sh "<url>" "<slug>" ~/obsidian-vault/Projects/_media/
 ```
 
 **Slug convention**: `{author_handle}-{last_6_digits_of_tweet_id}`
@@ -71,19 +76,30 @@ The script:
 
 Images are numbered in visual order (001 = first image in the article/thread).
 
-For **web** URLs with important images, use agent-browser manually:
+For **web** URLs, the agent examines the page directly using agent-browser:
 ```bash
 agent-browser open "<url>"
-agent-browser eval '<JS to extract content image URLs>'
-# Download with curl, save to ~/obsidian-vault/_media/ with same slug convention
+# Inspect the page — identify content images (diagrams, charts, tables, screenshots)
+# Skip decoration (logos, icons, nav images, tracking pixels)
+agent-browser eval 'JSON.stringify(Array.from(document.querySelectorAll("article img, main img, [role=main] img, .post img, .content img")).map(i=>({src:i.src,alt:i.alt,w:i.naturalWidth,h:i.naturalHeight})))'
+# Use judgment: download images that carry information not in the text
+# curl -sL -o ~/obsidian-vault/Knowledge/_media/slug-001.png "<image_url>"
 agent-browser close
 ```
+No generic script needed — the agent sees the page and decides which images matter.
+Use the same slug convention: `{domain_or_author}-{short_id}-{NNN}.{ext}`
 
 For **PDFs**, skip image extraction (text-only capture via pdftotext).
 
+**Image storage convention**:
+- Each top-level vault folder has its own `_media/` subfolder:
+  - `Knowledge/_media/` — images for public Knowledge notes (ships with public repo)
+  - `Projects/_media/` — images for private Projects notes
+- This ensures images travel with their notes when folders are published separately
+
 **Image embedding convention** (used in step 6):
-- All images live in `_media/` at the vault root
 - Embed with Obsidian wiki syntax: `![[slug-001.png]]`
+- Obsidian resolves filenames globally, so embeds work regardless of `_media/` location
 - Add a brief italic caption above each embed:
   ```markdown
   *Pricing comparison: cached vs uncached tokens*
@@ -91,6 +107,8 @@ For **PDFs**, skip image extraction (text-only capture via pdftotext).
   ```
 - Place embeds in the **Original Content** section near the text they illustrate
 - Also reference key images in **Key Takeaways** if they contain data absent from the text
+
+**Important**: Run image extraction AFTER determining folder placement (step 5) so you know which `_media/` folder to target. If folder placement is uncertain, default to `Knowledge/_media/` and move later if needed.
 
 ### 2. Analyze content
 

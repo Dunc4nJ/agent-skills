@@ -171,9 +171,14 @@ date,time,platform,account_id,display_name,follower_count,account_type,content_t
 ```
 
 Rules:
-1. **One row per account per session.** Consolidate: `follow+like+comment`, not separate rows.
+1. **One row per account per session.** Consolidate all actions into one row: `follow+like+comment` (IG/TK) or `follow+react(love)+comment` (FB). Do NOT log each action as separate rows.
 2. **Always include time (HH:MM).** Never leave blank.
-3. **Consistent format** across all platforms.
+3. **Consistent format across all platforms:**
+   - Platform names: always lowercase (`instagram`, `facebook`, `tiktok`)
+   - Account type: lowercase (`profile` for IG, `page` for FB, `creator` for TK)
+   - Follower count: use `unknown` if not visible, never leave blank
+   - Facebook reactions: use `react(like)`, `react(love)`, or `react(care)` — not "Like", "Love", etc.
+   - Action order: follow → like/react → comment → save
 
 ### C. Learning Loop (Vault Integration)
 After each session, if notable patterns emerged, append to the brand's vault `learnings-log.md` per [[PROTOCOL]]:

@@ -24,14 +24,7 @@ Before engaging with any Reels:
 
 ### What to Engage With
 
-Engage with Reels that feel like they belong in the brand's world. For Table Clay, that means content like:
-
-- Pottery, ceramics, clay work (throwing, glazing, kiln reveals, handbuilding)
-- Coffee culture (pour-overs, latte art, morning routines, cafe visits)
-- Cute home finds, aesthetic kitchen/table setups
-- DIY and artsy projects (painting, crafting, woodworking, candle making)
-- Handmade goods and small business showcases
-- Cozy lifestyle and mindful living content
+Engage with Reels that feel like they belong in the brand's world. Load the brand's audience file (`Projects/Ecommerce/Business/{Brand}/Brand/audience.md`) to understand what content themes and communities are relevant.
 
 **The bar is vibes, not metrics.** If the content feels like something the brand's audience would enjoy, engage with it.
 
@@ -225,9 +218,17 @@ The natural time spent scrolling, finding Reels, and assessing content provides 
 
 After each session, append to `engagement-log.csv` following these rules:
 
-1. **One row per account per session.** Consolidate all actions on one account into a single row using the `action_taken` field (e.g., "page_follow+react", "page_follow+react+comment"). Do NOT log each action as separate rows for the same account.
-2. **Always include time (HH:MM).** Every row must have a timestamp.
-3. **Keep format consistent** across all platforms.
+1. **One row per account per session.** Consolidate all actions on one account into a single row using the `action_taken` field (e.g., "follow+react(love)+comment"). Do NOT log each action as separate rows for the same account.
+2. **Always include time (HH:MM).** Every row must have a timestamp. Never leave blank.
+3. **Platform name:** always lowercase `facebook`
+4. **Account type:** always lowercase `page`
+5. **Action format:** `follow+react(like)+comment` — use `react(like)`, `react(love)`, or `react(care)` for reaction type. Order: follow → react → comment.
+6. **Follower count:** use `unknown` if not visible, never leave blank.
+
+**Example row:**
+```
+2026-03-01,14:30,facebook,themagnoliamercantile,The Magnolia Mercantile,unknown,page,Reel,follow+react(love)+comment,"The mug is gorgeous and the ribbon takes it to another level.",https://www.facebook.com/reel/1268827865155437,spring gift in a mug
+```
 
 ---
 

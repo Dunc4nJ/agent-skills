@@ -4,30 +4,18 @@ date,time,platform,account_id,display_name,follower_count,account_type,content_t
 2026-02-09,21:34,instagram,@izzy_home_designs,Izzy Designer & Artist,762,profile,home design/handmade,follow+like,,https://www.instagram.com/p/DRB9tdmEibX/,sydney based textile designer and UGC creator. adjacent lifestyle audience
 2026-02-09,21:36,instagram,@livingkiln,livingkiln,unknown,profile,pottery/ceramics,follow+like,,https://www.instagram.com/p/DSSst45ARg5/,verified. whimsical functional ceramics (berry strainers). small biz. very genuine caption style
 2026-02-09,21:38,instagram,@lucky_rabbit_co,lucky_rabbit_co,unknown,profile,pottery/ceramics,follow+like+comment,"that progress in under a year is wild, the vessel at the end is so clean",https://www.instagram.com/p/DS5r_V1EbpZ/,pottery progress post. very genuine and personal. good community engagement
-2026-02-11,,Facebook,emilywelchstyle,Emily Welch Style,,Page,Reel,Love,,https://www.facebook.com/reel/,Galentines charm party - DIY crafting tablescape
-2026-02-11,,Facebook,emilywelchstyle,Emily Welch Style,,Page,Reel,Follow,,https://www.facebook.com/reel/,
-2026-02-11,,Facebook,jessicasotelo,Jessica Sotelo,,Page,Reel,Like,,https://www.facebook.com/reel/2083465019108799,Heart boxes with berries - Valentine gift prep
-2026-02-11,,Facebook,jessysdreamhouse,Jessys Dream House,,Page,Reel,Love,,https://www.facebook.com/reel/2143856076419150,Pink aesthetic kitchen tour
-2026-02-11,,Facebook,jessysdreamhouse,Jessys Dream House,,Page,Reel,Follow,,https://www.facebook.com/reel/2143856076419150,
-2026-02-11,,Facebook,jessysdreamhouse,Jessys Dream House,,Page,Reel,Comment,"The way everything coordinates down to the mugs and the dish rack is so satisfying. This kitchen feels like a whole mood.",https://www.facebook.com/reel/2143856076419150,
-2026-02-11,,Facebook,themagnoliamercantile,The Magnolia Mercantile,,Page,Reel,Love,,https://www.facebook.com/reel/1268827865155437,Spring gift in a mug - blue floral ceramic mugs
-2026-02-11,,Facebook,themagnoliamercantile,The Magnolia Mercantile,,Page,Reel,Follow,,https://www.facebook.com/reel/1268827865155437,
-2026-02-11,,Facebook,themagnoliamercantile,The Magnolia Mercantile,,Page,Reel,Comment,"The mug itself is gorgeous, and wrapping it all together with the gingham ribbon takes it to a whole other level. What a thoughtful gift idea.",https://www.facebook.com/reel/1268827865155437,
-2026-02-11,,Facebook,thevettelfarm,The Vettel Farm,,Page,Reel,Like,,https://www.facebook.com/reel/1735837761135982,DIY vintage hankie garland on mantel
-2026-02-11,,Facebook,thevettelfarm,The Vettel Farm,,Page,Reel,Follow,,https://www.facebook.com/reel/1735837761135982,
-2026-02-11,,Facebook,maddie.east,Maddie.east,,Page,Reel,Like,,https://www.facebook.com/reel/25764868213174773,HomeGoods spring bunny towels and home finds
-2026-02-11,,Facebook,maddie.east,Maddie.east,,Page,Reel,Follow,,https://www.facebook.com/reel/25764868213174773,
-2026-02-11,,Facebook,thechicishchick,The Chicish Chick,,Page,Reel,Love,,https://www.facebook.com/reel/1432800281858053,Valentine treat cones and Bloody Marys in mason jars
-2026-02-11,,Facebook,thechicishchick,The Chicish Chick,,Page,Reel,Follow,,https://www.facebook.com/reel/1432800281858053,
-2026-02-11,,Facebook,styleitwithashley,Styleitwithashley,,Page,Reel,Love,,https://www.facebook.com/reel/1576645480330684,Hobby Lobby spring collection - bow ceramic mugs and plates
-2026-02-11,,Facebook,styleitwithashley,Styleitwithashley,,Page,Reel,Comment,"Obsessed with those bow mugs on the top shelf. Hobby Lobby is dangerous for people who love ceramics.",https://www.facebook.com/reel/1576645480330684,Already following
-2026-02-11,,Facebook,samc,Sam C,,Page,Reel,Like,,https://www.facebook.com/reel/778239488631036,DIY Valentine crafts - pressed flower frames and garlands
-2026-02-11,,Facebook,samc,Sam C,,Page,Reel,Follow,,https://www.facebook.com/reel/778239488631036,
-2026-02-11,,Facebook,samc,Sam C,,Page,Reel,Comment,"Adding the pressed flowers to the footprints is such a clever touch. How long did you press them before using?",https://www.facebook.com/reel/778239488631036,
-2026-02-11,,Facebook,thefighome,The Fighome,,Page,Reel,Like,,https://www.facebook.com/reel/2159843704841788,Seasonal home decorating - cozy lifestyle
-2026-02-11,,Facebook,thefighome,The Fighome,,Page,Reel,Follow,,https://www.facebook.com/reel/2159843704841788,
-2026-02-11,,Facebook,magdiel,Magdiel,,Page,Reel,Like,,https://www.facebook.com/reel/1487217782969394,Cherry-themed tablescape with elegant plates
-2026-02-11,,Facebook,sandralee,Sandra Lee,,Page,Reel,Love,,https://www.facebook.com/reel/871200352301102,Valentine living room and tablescape decor
+2026-02-11,00:00,facebook,emilywelchstyle,Emily Welch Style,unknown,page,Reel,follow+react(love),,https://www.facebook.com/reel/,Galentines charm party - DIY crafting tablescape
+2026-02-11,00:00,facebook,jessicasotelo,Jessica Sotelo,unknown,page,Reel,react(like),,https://www.facebook.com/reel/2083465019108799,Heart boxes with berries - Valentine gift prep
+2026-02-11,00:00,facebook,jessysdreamhouse,Jessys Dream House,unknown,page,Reel,follow+react(love)+comment,The way everything coordinates down to the mugs and the dish rack is so satisfying. This kitchen feels like a whole mood.,https://www.facebook.com/reel/2143856076419150,Pink aesthetic kitchen tour
+2026-02-11,00:00,facebook,themagnoliamercantile,The Magnolia Mercantile,unknown,page,Reel,follow+react(love)+comment,"The mug itself is gorgeous, and wrapping it all together with the gingham ribbon takes it to a whole other level. What a thoughtful gift idea.",https://www.facebook.com/reel/1268827865155437,Spring gift in a mug - blue floral ceramic mugs
+2026-02-11,00:00,facebook,thevettelfarm,The Vettel Farm,unknown,page,Reel,follow+react(like),,https://www.facebook.com/reel/1735837761135982,DIY vintage hankie garland on mantel
+2026-02-11,00:00,facebook,maddie.east,Maddie.east,unknown,page,Reel,follow+react(like),,https://www.facebook.com/reel/25764868213174773,HomeGoods spring bunny towels and home finds
+2026-02-11,00:00,facebook,thechicishchick,The Chicish Chick,unknown,page,Reel,follow+react(love),,https://www.facebook.com/reel/1432800281858053,Valentine treat cones and Bloody Marys in mason jars
+2026-02-11,00:00,facebook,styleitwithashley,Styleitwithashley,unknown,page,Reel,react(love)+comment,Obsessed with those bow mugs on the top shelf. Hobby Lobby is dangerous for people who love ceramics.,https://www.facebook.com/reel/1576645480330684,Hobby Lobby spring collection - bow ceramic mugs and plates. Already following
+2026-02-11,00:00,facebook,samc,Sam C,unknown,page,Reel,follow+react(like)+comment,Adding the pressed flowers to the footprints is such a clever touch. How long did you press them before using?,https://www.facebook.com/reel/778239488631036,DIY Valentine crafts - pressed flower frames and garlands
+2026-02-11,00:00,facebook,thefighome,The Fighome,unknown,page,Reel,follow+react(like),,https://www.facebook.com/reel/2159843704841788,Seasonal home decorating - cozy lifestyle
+2026-02-11,00:00,facebook,magdiel,Magdiel,unknown,page,Reel,react(like),,https://www.facebook.com/reel/1487217782969394,Cherry-themed tablescape with elegant plates
+2026-02-11,00:00,facebook,sandralee,Sandra Lee,unknown,page,Reel,react(love),,https://www.facebook.com/reel/871200352301102,Valentine living room and tablescape decor
 2026-02-12,02:30,tiktok,@sortofceramics,Shan Smith,unknown,creator,pottery/ceramics,follow+like,,https://www.tiktok.com/@sortofceramics/video/7604956481041091847,kiln haul video. green/yellow/lavender glazes. building Shopify for spring collection. Toronto-based
 2026-02-12,02:33,tiktok,@by___felicia,by___felicia,unknown,creator,pottery/ceramics,follow+like+comment,"the little faces on these have so much personality, the pink scalloped one is unreal",https://www.tiktok.com/@by___felicia/video/7594711610963365175,character ceramic mugs with faces. handbuilding process. very popular in ceramics niche
 2026-02-12,02:38,tiktok,@kellyycha,kelly,unknown,creator,pottery/ceramics,follow+like,,https://www.tiktok.com/@kellyycha/video/7603611065905138958,apple-shaped glazed bowls. beautiful red glaze results

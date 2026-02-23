@@ -84,7 +84,9 @@ Notes:
 
 When the source contains images (diagrams, tables, screenshots, charts):
 
-1. Images are saved to the vault's `_media/` folder at the root
+1. Images are saved to the `_media/` folder of the note's top-level section:
+   - `Knowledge/_media/` for public Knowledge notes
+   - `Projects/_media/` for private Projects notes
 2. Naming convention: `{author}-{last6digits_of_id}-{NNN}.{ext}`
    - Example: `nicbstme-617652-001.png`
 3. Embed in the note using Obsidian wiki syntax: `![[nicbstme-617652-001.png]]`
@@ -99,7 +101,10 @@ When the source contains images (diagrams, tables, screenshots, charts):
 
 Images are extracted using:
 ```bash
-bash scripts/extract-tweet-images.sh "<tweet_url>" "<slug>" /path/to/vault/_media/
+# For Knowledge notes:
+bash scripts/extract-tweet-images.sh "<tweet_url>" "<slug>" ~/obsidian-vault/Knowledge/_media/
+# For Projects notes:
+bash scripts/extract-tweet-images.sh "<tweet_url>" "<slug>" ~/obsidian-vault/Projects/_media/
 ```
 
 The script returns a JSON array of filenames. Map them to the article by visual order

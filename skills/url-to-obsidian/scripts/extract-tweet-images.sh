@@ -18,8 +18,8 @@
 set -euo pipefail
 
 TWEET_URL="${1:?Usage: extract-tweet-images.sh <tweet_url> <slug> [output_dir]}"
-SLUG="${2:?Usage: extract-tweet-images.sh <tweet_url> <slug> [output_dir]}"
-OUTPUT_DIR="${3:-.}"
+export SLUG="${2:?Usage: extract-tweet-images.sh <tweet_url> <slug> [output_dir]}"
+export OUTPUT_DIR="${3:-.}"
 
 mkdir -p "$OUTPUT_DIR"
 

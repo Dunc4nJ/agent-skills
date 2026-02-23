@@ -56,15 +56,7 @@ Most established sessions should lean on the FYP. Mix in Search and other method
 
 ## What to Engage With
 
-Engage with videos that feel like they belong in the brand's world. For Table Clay, that means content like:
-
-- Pottery, ceramics, clay work (throwing, glazing, kiln reveals, handbuilding)
-- Coffee culture (pour-overs, latte art, morning routines, cafe visits)
-- Cute home finds, aesthetic kitchen/table setups
-- DIY and artsy projects (painting, crafting, woodworking, candle making)
-- Handmade goods and small business showcases
-- Cozy lifestyle and mindful living content
-- Process and tutorial videos for crafts
+Engage with videos that feel like they belong in the brand's world. Load the brand's audience file (`Projects/Ecommerce/Business/{Brand}/Brand/audience.md`) to understand what content themes and communities are relevant.
 
 **The bar is vibes, not metrics.** If the video feels like something the brand's audience would enjoy, engage with it.
 
