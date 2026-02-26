@@ -274,6 +274,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>brand-context-builder</name>
+<description>Distill deep research documents into structured brand context files across the Obsidian vault. Use when adding a new brand, populating skeleton brand files, or updating brand context from research docs. Triggers: "brand context", "new brand", "populate brand files", "build brand profile", "update brand context for [name]".</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>bv</name>
 <description>"Beads Viewer - Graph-aware triage engine for Beads projects. Computes PageRank, betweenness, critical path, and cycles. Use --robot-* flags for AI agents."</description>
 <location>global</location>
@@ -443,13 +449,19 @@ Usage notes:
 
 <skill>
 <name>social-media-engagement</name>
-<description>"Run social media engagement sessions on Instagram, TikTok, or Facebook via browser automation. Use when the user says 'run engagement', 'engage on instagram', 'social media session', 'like and follow', 'run a tiktok session', 'facebook engagement', or asks to engage with accounts in a brand's niche. Requires Chrome browser connection and logged-in social media accounts."</description>
+<description>"Automated social media engagement workflow across Instagram, Facebook, and TikTok. Finds relevant accounts, follows/likes them, reacts to posts, drafts natural comments, and occasionally saves/bookmarks standout content -- all via browser automation. Supports any brand with swappable brand context files. Instagram: Explore-based discovery, follows, likes, comments, saves. Facebook: Reels-based discovery, Page follows, reactions, comments. TikTok: FYP-based discovery, follows, likes, comments, saves. Use when user says 'run engagement', 'Instagram engagement', 'Facebook engagement', 'TikTok engagement', 'social media engagement', 'daily engagement run', 'run IG session', 'run FB session', 'run TikTok session', 'run TK session', 'run engagement on all', 'all platforms', or 'engagement for [brand name]'. Runs via browser automation. Does NOT post original content -- only engages with others' content."</description>
 <location>global</location>
 </skill>
 
 <skill>
 <name>ssh</name>
 <description>"SSH remote access patterns and utilities. Connect to servers, manage keys, tunnels, and transfers."</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>streamdeck-editor</name>
+<description>Edit Elgato Stream Deck XL profile buttons — change prompts, icons, labels, or add/remove buttons. Use when the user says "edit stream deck", "change a button", "replace button", "update stream deck profile", "add a stream deck button", "swap prompt", or mentions the Stream Deck profile. Includes a validation script to verify profile integrity before committing.</description>
 <location>global</location>
 </skill>
 

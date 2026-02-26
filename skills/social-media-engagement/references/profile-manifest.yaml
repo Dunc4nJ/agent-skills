@@ -17,12 +17,13 @@ brands:
         auth_status: active
       facebook:
         handle: "tableclay"
+        page_name: "_TBD_"  # Exact Facebook Page name to switch to
         url: "https://www.facebook.com/"
         auth_status: active
       tiktok:
         handle: "Table.clay"
         url: "https://www.tiktok.com/"
-        auth_status: rate_limited
+        auth_status: active
     vault_brand_context: "Projects/Ecommerce/Business/TableClay/Brand/"
 
   preppack:
@@ -37,6 +38,7 @@ brands:
         auth_status: pending
       facebook:
         handle: "PrepPack"
+        page_name: "_TBD_"  # Exact Facebook Page name to switch to
         url: "https://www.facebook.com/"
         auth_status: pending
       tiktok:

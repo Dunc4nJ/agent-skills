@@ -99,24 +99,53 @@ The point is that no two consecutive engagements should look identical. A human 
 
 ## Session Limits
 
-| Action | Per Session | Daily Max (2 sessions) |
-|--------|-------------|----------------------|
-| Follows | 10-12 | 20-24 |
-| Likes | 10 | 20 |
-| Comments | 5 | 10 |
-| Saves | 0-2 | 0-4 |
+| Action | Per Session (randomize within range) |
+|--------|----------------------------------------|
+| Follows | 7-12 |
+| Likes | 6-10 |
+| Comments | 3-5 |
+| Saves | 0-2 |
 
-**Max 2 sessions per day** (morning + evening).
+**Pick a random target** within each range at the start of each session. Never hit the same combo twice in a row.
+
+No daily session cap — run as many sessions as needed. Space sessions at least 4 hours apart to stay safe.
 
 ---
 
-## Pacing
+## Pacing & Anti-Detection Intervals
 
-The natural time spent scrolling, finding posts, reading content, and executing browser actions provides sufficient spacing between engagements. Don't add unnecessary artificial waits.
+Consistent timing is a bot signal. Every interval below should be **randomized within the stated range** — never use the same delay twice in a row.
 
-- **Between accounts:** No explicit wait needed. The time to close a modal, scroll, assess the next post, and click it (typically 5-10 seconds) is natural pacing.
-- **After posting a comment:** Wait **15-30 seconds** before moving to the next account. Comments are the highest-signal action and benefit from a brief pause.
-- **If anything feels "off"** (slow loading, repeated errors, unusual prompts), stop and tell the user.
+### Between Individual Actions (on the same post)
+
+| Action Pair | Interval |
+|-------------|----------|
+| Like → Follow (same post) | **3-8 seconds** |
+| Follow → Comment (same post) | **5-12 seconds** |
+| Like → Save (same post) | **4-9 seconds** |
+
+### Between Posts/Accounts
+
+| Transition | Interval |
+|------------|----------|
+| Close modal → scroll → open next post | **8-20 seconds** (natural browsing pace) |
+| After posting a comment → next post | **20-40 seconds** |
+| After a save → next post | **10-20 seconds** |
+| Skip a post (scroll past without engaging) | **3-6 seconds** |
+
+### Session-Level Pacing
+
+- **Skip 1-3 posts between engagements** — don't engage with consecutive posts in the grid
+- **Vary scroll distance** — sometimes scroll past 2-3 rows, sometimes just 1
+- **Take a 60-90 second "browse break"** after every 4-5 engagements (just scroll without acting)
+- **If anything feels "off"** (slow loading, repeated errors, unusual prompts), stop and tell the user
+
+### Anti-Detection Best Practices
+
+- **Never repeat the same action sequence** on consecutive posts (e.g. like→follow→comment, like→follow→comment)
+- **Randomize all delays** — use `sleep $((RANDOM % (max - min) + min))` or equivalent
+- **Don't engage at machine speed** — even 2-second consistent gaps between clicks look robotic
+- **Scroll naturally** — humans don't jump straight to the next relevant post, they browse past irrelevant ones
 
 ---
 
@@ -136,6 +165,36 @@ After following, the button changes to "Following". If you see "Following" on a 
 
 ### Explore Grid Runs Out of Relevant Content
 If you've scrolled far and aren't finding niche-relevant posts, navigate to `https://www.instagram.com/explore/` again for a fresh batch rather than continuing to scroll through irrelevant content.
+
+### Off-Niche / Untrained Feed (New Accounts)
+
+New or lightly-used accounts will have an Explore page full of generic viral content (memes, celebrities, sports) with zero niche relevance. This is normal — the algorithm needs engagement signals to learn.
+
+**Do NOT engage with off-niche content just to "fill the session."** That trains the algorithm in the wrong direction.
+
+**Strategy for untrained feeds:**
+
+1. **Switch to Search-based discovery.** Use Instagram's search to find niche-relevant content directly:
+   - Navigate to `https://www.instagram.com/explore/`
+   - Use the search bar at the top — search for niche keywords from the brand's audience file (e.g. "handmade pottery", "ceramic mug", "meal prep containers")
+   - Browse the search results grid and engage with relevant posts
+   - **Vary search terms across sessions** — don't use the same keyword every time
+
+2. **Scroll past off-niche content naturally.** When you encounter irrelevant posts (between search results or on Explore):
+   - Scroll past at a normal pace (3-6 seconds per skip)
+   - Don't like, follow, or interact with anything off-niche
+   - Occasionally pause on a post briefly before scrolling past (humans do this)
+   - **Never rapid-scroll through dozens of posts** — that's a bot signal
+
+3. **Use hashtag pages** as an alternative discovery source:
+   - Navigate to `https://www.instagram.com/explore/tags/{hashtag}/` with niche-relevant hashtags
+   - Browse the grid and engage with relevant posts
+
+4. **Keep going until you hit session targets.** Cycle through discovery methods (search keywords → hashtag pages → fresh Explore loads) until you reach your randomized session goals. Never end a session early due to a bad feed — switch methods instead.
+
+5. **Rotate search terms.** If one keyword isn't producing enough results, try another from the brand's audience file. Broaden slightly if needed (e.g. "handmade" → "artisan", "ceramics" → "pottery studio") but stay within the niche.
+
+6. **Signal the niche.** Every follow, like, and comment on niche content teaches the algorithm. After 3-5 sessions of search-based engagement, the Explore page should start surfacing relevant content naturally.
 
 ---
 

@@ -10,7 +10,39 @@ Before engaging with any Reels:
 
 1. Read the engagement log (`engagement-log.csv`) and note all previously engaged Facebook Page names
 2. Keep that list in memory for the entire session — do NOT re-read the CSV between engagements
-3. Navigate to `https://www.facebook.com/reel/`
+3. **Switch to the correct Page identity** (see Page Switching below)
+4. Navigate to `https://www.facebook.com/reel/`
+
+---
+
+## Page Switching
+
+Multiple brands share one Facebook personal profile. Each brand has its own **Facebook Page**. Before engaging, you must switch to act as the correct Page.
+
+### How to Switch
+
+1. Navigate to `https://www.facebook.com/`
+2. Click the **profile avatar / account menu** in the top-right corner
+3. Look for **"Switch Profile"** or **"See all profiles"** in the dropdown
+4. Select the Page that matches the brand you're engaging for (check `references/profile-manifest.yaml` for the Page name)
+5. **Verify the switch**: After selecting, the top-right avatar should change to the Page's logo/icon. The name shown when you hover should be the Page name, not the personal profile name.
+6. If verification fails (still showing personal profile name), try navigating to `https://www.facebook.com/pages/?category=your_pages`, click the Page, then click **"Use Facebook as [Page Name]"**
+
+### Verification Before Engaging
+
+**Never start engagement without confirming the active identity.** After switching:
+- Take a screenshot and verify the Page name in the top-right
+- If unsure, navigate to `https://www.facebook.com/me` — it should show the Page, not the personal profile
+- If you're acting as the wrong Page or personal profile, **stop and switch** before any engagement
+
+### Fallback: Direct Page Switch URL
+
+If the menu-based switch doesn't work:
+1. Navigate to `https://www.facebook.com/{page-username}/`
+2. Look for a **"Switch to [Page Name]"** or **"Use Facebook as [Page Name]"** button
+3. Click it and verify the switch
+
+**Important:** All reactions, follows, and comments will appear as the active Page identity. Engaging as the wrong Page or personal profile is worse than not engaging at all.
 
 ---
 
@@ -193,24 +225,55 @@ When you encounter content that doesn't fit the brand's niche, simply advance to
 
 ## Session Limits
 
-| Action | Per Session | Daily Max (2 sessions) |
-|--------|-------------|------------------------|
-| Page follows | 8 | 16 |
-| Reactions | 12 | 24 |
-| Comments | 4 | 8 |
+| Action | Per Session (randomize within range) |
+|--------|----------------------------------------|
+| Page follows | 5-8 |
+| Reactions | 8-12 |
+| Comments | 2-4 |
 
-**Max 2 sessions per day.** Space sessions at least 4 hours apart.
+**Pick a random target** within each range at the start of each session. Never hit the same combo twice in a row.
+
+No daily session cap — run as many sessions as needed. Space sessions at least 6 hours apart to stay safe.
 
 ---
 
-## Pacing
+## Pacing & Anti-Detection Intervals
 
-- **No explicit wait between react and follow on the same Reel** -- the time to locate and click both buttons is natural pacing (~5-10 seconds)
-- **20-40 seconds between reactions on different Reels** -- use this time to assess the next Reel's niche fit
-- **15-30 seconds after posting a comment** before advancing to the next Reel -- comments are high-signal actions and benefit from a brief pause
-- **Watch each Reel for at least 3-5 seconds** before engaging or scrolling past
+Consistent timing is a bot signal. Every interval below should be **randomized within the stated range** — never use the same delay twice in a row.
 
-The natural time spent scrolling, finding Reels, and assessing content provides sufficient spacing between engagements. Don't add unnecessary artificial waits beyond what's listed above.
+### Watch Time (Critical)
+
+**Watch each Reel for at least 5-10 seconds** before engaging or scrolling past. Instant reactions are a strong bot signal on Facebook.
+
+### Between Individual Actions (on the same Reel)
+
+| Action Pair | Interval |
+|-------------|----------|
+| React → Follow (same Reel) | **4-10 seconds** |
+| Follow → Comment (same Reel) | **6-15 seconds** |
+| React → Comment (no follow) | **5-12 seconds** |
+
+### Between Reels
+
+| Transition | Interval |
+|------------|----------|
+| Advance to next Reel (no comment) | **8-20 seconds** (includes watch time) |
+| After posting a comment → next Reel | **20-45 seconds** |
+| Skip a Reel (scroll past without engaging) | **4-8 seconds** |
+
+### Session-Level Pacing
+
+- **Skip 1-2 Reels between engagements** — don't engage with every consecutive Reel
+- **Take a 60-90 second "browse break"** after every 4-5 engagements (just watch Reels without acting)
+- **Vary reaction types** across the session — don't use Love 5 times in a row
+- **If anything feels "off"** (slow loading, repeated errors, unusual prompts), stop and tell the user
+
+### Anti-Detection Best Practices
+
+- **Never repeat the same action sequence** on consecutive Reels
+- **Randomize all delays** — consistent 5-second gaps between every action look robotic
+- **Watch before acting** — humans watch the Reel first, then decide to react
+- **Let some good Reels go** — skipping relevant content occasionally is more human than engaging with every match
 
 ---
 
@@ -263,6 +326,34 @@ If you encounter **ANY** of these, **stop immediately** and inform the user:
 - **Feed cycles through same Reels:** Navigate directly to `https://www.facebook.com/reel/` for a fresh feed
 - **Clicked wrong element:** Close with `Escape`, re-query with `find`, try again
 - **Stale reference clicked wrong Reel:** Navigate to `https://www.facebook.com/reel/` and restart
+
+### Off-Niche / Untrained Feed (New Accounts)
+
+New Pages or Pages with little engagement history will get a Reels feed full of generic viral content (pranks, memes, sports highlights, celebrity clips) with zero niche relevance. This is normal — Facebook's algorithm needs signals to learn what content the Page cares about.
+
+**Do NOT engage with off-niche content just to "fill the session."** That trains the algorithm in the wrong direction.
+
+**Strategy for untrained feeds:**
+
+1. **Switch to Search-based discovery.** Use Facebook Search to find niche-relevant Pages and content:
+   - Navigate to `https://www.facebook.com/search/pages/?q={niche keyword}` (e.g. "handmade pottery", "ceramic art", "meal prep")
+   - Browse the Pages results and follow relevant ones
+   - Click into Pages to find their Reels/posts and engage there
+   - **Vary search terms across sessions**
+
+2. **Use direct Reel URLs.** If you find a relevant Reel, Facebook's "related Reels" that load after it are usually more on-niche than the generic feed. Use this as a discovery chain — one good Reel leads to more.
+
+3. **Scroll past off-niche Reels naturally.** When the feed serves irrelevant content:
+   - Watch for 3-5 seconds (normal browse behavior), then advance
+   - Don't react, follow, or comment on anything off-niche
+   - **Never rapid-skip through dozens of Reels** — that's a bot signal
+   - Occasionally let a Reel play for 8-10 seconds before skipping (humans get momentarily hooked)
+
+4. **Keep going until you hit session targets.** Cycle through discovery methods (Page search → direct Reel URLs → related Reels chains → fresh feed reloads) until you reach your randomized session goals. Never end a session early due to a bad feed — switch methods instead.
+
+5. **Rotate search terms.** If one keyword isn't producing enough Pages or Reels, try another from the brand's audience file. Broaden slightly if needed but stay within the niche.
+
+6. **Signal the niche.** Every Page follow and reaction on niche content teaches Facebook what to surface. After 3-5 sessions of search-based engagement, the Reels feed should start aligning.
 
 ---
 

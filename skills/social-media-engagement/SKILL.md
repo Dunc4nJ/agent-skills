@@ -197,11 +197,11 @@ After each session, if notable patterns emerged, append to the brand's vault `le
 
 ### Universal Rules
 1. **Never exceed session limits.**
-2. **Always pace actions** per platform-specific rules.
-3. **Vary patterns.** Don't repeat the same sequence every time.
+2. **Always pace actions** per platform-specific interval tables — randomize every delay.
+3. **Vary patterns.** Don't repeat the same action sequence on consecutive posts.
 4. **Stop on any warning** — blocking message, CAPTCHA, verification, unusual behavior.
-5. **Cool-down:** Instagram 4-6 hours, Facebook 6-12 hours, TikTok 6-12 hours.
-6. **Daily max:** 2 sessions per platform per day.
+5. **Cool-down between sessions:** Instagram 4-6 hours, Facebook 6-12 hours, TikTok 6-12 hours.
+6. **Take browse breaks** — pause for 60-120 seconds after every 4-5 engagements.
 
 ### Platform-Specific Safety
 See "Safety and Stop Triggers" in each platform's workflow file.
@@ -222,9 +222,10 @@ On the very first run for a platform:
 
 |  | Instagram | Facebook | TikTok |
 |---|-----------|----------|--------|
-| **Follows** | 10-12 | 8 | 10-12 |
-| **Likes/Reactions** | 10 | 12 | 10 |
-| **Comments** | 5 | 4 | 5 |
+| **Follows** | 7-12 | 5-8 | 7-12 |
+| **Likes/Reactions** | 6-10 | 8-12 | 6-10 |
+| **Comments** | 3-5 | 2-4 | 3-5 |
 | **Saves/Bookmarks** | 0-2 | — | 0-2 |
-| **Sessions/day** | 2 max | 2 max | 2 max |
-| **Cool-down** | 4-6h | 6-12h | 6-12h |
+| **Min cool-down** | 4-6h | 6-12h | 6-12h |
+
+Pick a random target within each range at session start. No two sessions should have the same action counts.

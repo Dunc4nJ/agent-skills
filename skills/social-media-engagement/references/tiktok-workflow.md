@@ -46,6 +46,17 @@ Once the FYP consistently shows niche-relevant content (pottery, crafts, coffee,
 
 Most established sessions should lean on the FYP. Mix in Search and other methods for variety.
 
+### Handling Off-Niche FYP Content
+
+Even on established accounts, the FYP will serve off-niche content. Handle it naturally:
+
+- **Watch for 5-10 seconds** before scrolling past (humans don't instantly skip — they assess first)
+- **Don't engage with anything off-niche** — no likes, follows, or comments on irrelevant content, as this trains the algorithm wrong
+- **Occasionally let an off-niche video play longer** (10-15 seconds) before skipping — this mimics natural curiosity
+- **Never rapid-scroll** through a streak of irrelevant videos — skip at a natural pace (5-12 seconds each)
+- **If 5+ consecutive videos are off-niche**, switch to Search-based discovery for the rest of the session rather than continuing to scroll a dead feed
+- **Keep going until you hit session targets** — cycle through discovery methods (FYP → Search with different keywords → Discover tab → suggested accounts) until you reach your randomized session goals. Never end a session early due to a bad feed — switch methods instead
+
 ### Additional Discovery Methods (mix in any time)
 
 - **Discover tab:** Browse trending hashtags and sounds in the brand's niche
@@ -117,35 +128,63 @@ The point is that no two consecutive engagements should look identical. A human 
 
 ## Session Limits
 
-Conservative limits. TikTok is aggressive about bot detection.
+Conservative per-session limits. TikTok is aggressive about bot detection.
 
-| Action | Per Session | Daily Max (2 sessions) |
-|--------|-------------|------------------------|
-| Follows | 10-12 | 20-24 |
-| Likes | 10 | 20 |
-| Comments | 5 | 10 |
-| Saves | 0-2 | 0-4 |
+| Action | Per Session (randomize within range) |
+|--------|----------------------------------------|
+| Follows | 7-12 |
+| Likes | 6-10 |
+| Comments | 3-5 |
+| Saves | 0-2 |
 
-**Max 2 sessions per day** (morning + evening).
+**Pick a random target** within each range at the start of each session. Never hit the same combo twice in a row.
 
-For accounts running TikTok engagement for 2+ weeks without flags, the user could consider gradually increasing limits. But this should be a manual user decision, not automatic.
+No daily session cap — run as many sessions as needed. Space sessions at least 6 hours apart to stay safe.
+
+For accounts running TikTok engagement for 2+ weeks without flags, the user could consider gradually increasing per-session limits. But this should be a manual user decision, not automatic.
 
 ---
 
-## Pacing
+## Pacing & Anti-Detection Intervals
 
-### Watch Before Engaging
+Consistent timing is a bot signal. Every interval below should be **randomized within the stated range** — never use the same delay twice in a row.
 
-**Critical for TikTok:** Always watch at least **10-15 seconds** of a video before engaging. TikTok tracks watch time as a signal. An account that follows/likes/comments without watching is a strong bot indicator.
+### Watch Time (Critical)
 
-Let the video play, then engage. This adds natural time and makes behavior organic.
+**Always watch at least 10-15 seconds** of a video before engaging. TikTok tracks watch time as a primary bot-detection signal. An account that follows/likes/comments without watching gets flagged fast.
 
-### Between Actions
+Let the video play, then engage. Sometimes watch the **full video** (especially shorter ones under 30s) before acting — humans often do.
 
-- **No explicit wait between follow and like on the same video** -- the time to locate and click both buttons is natural pacing
-- **After posting a comment:** Wait **15-30 seconds** before moving to the next video. Comments are the highest-signal action and benefit from a brief pause.
-- **Between videos:** The natural time spent watching (10-15 seconds minimum), assessing relevance, and scrolling provides sufficient spacing. Don't add unnecessary artificial waits beyond the watch time.
-- **If anything feels "off"** (slow loading, repeated errors, unusual prompts), stop and tell the user.
+### Between Individual Actions (on the same video)
+
+| Action Pair | Interval |
+|-------------|----------|
+| Like → Follow (same video) | **3-8 seconds** |
+| Follow → Comment (same video) | **6-15 seconds** |
+| Like → Save (same video) | **4-10 seconds** |
+
+### Between Videos
+
+| Transition | Interval |
+|------------|----------|
+| Scroll to next video (no comment) | **10-20 seconds** (includes watch time) |
+| After posting a comment → next video | **25-50 seconds** |
+| Skip a video (scroll past without engaging) | **5-12 seconds** (still watch briefly) |
+
+### Session-Level Pacing
+
+- **Skip 1-3 videos between engagements** — don't engage with every consecutive video
+- **Watch some videos fully without engaging** — this trains the FYP and looks natural
+- **Take a 60-120 second "scroll break"** after every 4-5 engagements (just watch without acting)
+- **If anything feels "off"** (slow loading, repeated errors, unusual prompts), stop and tell the user
+
+### Anti-Detection Best Practices
+
+- **Never repeat the same action sequence** on consecutive videos (e.g. like→follow, like→follow, like→follow)
+- **Randomize all delays** — TikTok's bot detection is the most aggressive of the three platforms
+- **Watch time > action speed** — a 15-second watch + instant like looks more human than a 2-second watch + 5-second delayed like
+- **Don't follow 5 accounts in a row** — mix in like-only and skip-only videos to break the pattern
+- **Occasional full-video watches** without any engagement signal genuine browsing behavior
 
 ---
 
