@@ -346,6 +346,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>engagement-intelligence</name>
+<description>"Harvest and analyze social media engagement outcomes for TableClay. Use when the user says 'harvest engagement', 'check engagement results', 'run engagement analysis', 'who engaged back', 'engagement report', 'outcome check', 'review notifications', or before starting an engagement session. Scrapes IG/FB notification pages via Chrome to collect response data (comment likes, replies, follow-backs), builds account relationship profiles, and produces actionable reports. Also used by the engagement skill as a pre-session outcome check."</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>frontend-design</name>
 <description>Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.</description>
 <location>global</location>
@@ -544,6 +550,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>vast-gpu</name>
+<description>"Cloud GPU access via Vast.ai for marker-pdf, embeddings, and ML workloads. Convenience scripts for instance management (start, stop, status, SSH) and PDF-to-markdown conversion. Use when the user says 'run on gpu', 'use gpu', 'marker-pdf', 'convert pdf', 'gpu status', 'start gpu', 'stop gpu', 'vast', or needs GPU acceleration from this CPU-only VPS."</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>vercel-composition-patterns</name>
 <description>React composition patterns that scale. Use when refactoring components with</description>
 <location>global</location>
@@ -583,6 +595,12 @@ Usage notes:
 <name>zombie-killer</name>
 <description>Detect and kill zombie processes on the VPS. Use when the user mentions zombies, defunct processes, slow VPS, high load average, stale agent sessions, or process cleanup. Triggers on "check zombies", "kill zombies", "why is my server slow", "clean up processes", "defunct processes".</description>
 <location>global</location>
+</skill>
+
+<skill>
+<name>bird</name>
+<description>X/Twitter CLI for reading, searching, posting, and engagement. Use when user asks about Twitter, tweets, timelines, posting to X, or social media engagement.</description>
+<location>project</location>
 </skill>
 
 </available_skills>
