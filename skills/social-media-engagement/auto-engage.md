@@ -13,8 +13,54 @@ Example cron message:
 
 ## Execution Protocol
 
-### 1. Random Jitter Delay
-Before doing anything, wait a random delay to avoid predictable timing:
+### 1. Skip Probability Check (Natural Variance)
+
+Before anything else, determine if this session should run. This makes daily engagement patterns look human — busier weekdays, lighter weekends, no two weeks identical.
+
+```bash
+# Get day of week (1=Mon, 7=Sun) and generate random 1-100
+DOW=$(date +%u)
+ROLL=$((RANDOM % 100 + 1))
+
+# Skip thresholds by day and platform
+# Instagram: weekday 15%, Saturday 40%, Sunday 50%
+# Facebook:  weekday 15%, Saturday 45%, Sunday 55%
+PLATFORM="$1"  # passed as argument or set from cron params
+
+if [ "$PLATFORM" = "instagram" ]; then
+  case $DOW in
+    6) THRESHOLD=40 ;;
+    7) THRESHOLD=50 ;;
+    *) THRESHOLD=15 ;;
+  esac
+elif [ "$PLATFORM" = "facebook" ]; then
+  case $DOW in
+    6) THRESHOLD=45 ;;
+    7) THRESHOLD=55 ;;
+    *) THRESHOLD=15 ;;
+  esac
+else
+  THRESHOLD=15
+fi
+
+echo "Day=$DOW Platform=$PLATFORM Threshold=$THRESHOLD Roll=$ROLL"
+if [ $ROLL -le $THRESHOLD ]; then
+  echo "SKIP — natural variance (roll $ROLL <= threshold $THRESHOLD)"
+  exit 0
+fi
+echo "RUN — proceeding (roll $ROLL > threshold $THRESHOLD)"
+```
+
+Run this check first. If it outputs "SKIP", report a brief skip message and exit:
+```
+⏭️ {Brand} {Platform} — Skipped (natural variance)
+Day: {weekday name} | Skip chance: {threshold}% | Roll: {roll}
+```
+
+Do NOT count skips as errors. This is intentional variance.
+
+### 2. Random Jitter Delay
+After passing the skip check, wait a random delay to avoid predictable timing:
 
 ```bash
 # Generate random delay between 0-90 minutes in seconds
@@ -26,7 +72,7 @@ echo "Jitter complete, starting session"
 
 Run this shell command and **wait for it to complete** (it will block). Do NOT schedule wake events or try to resume later — just let `sleep` finish, then proceed to pre-flight checks immediately in the same session. The cron timeout is set high enough to accommodate the full jitter + session time.
 
-### 2. Pre-Flight Checks
+### 3. Pre-Flight Checks
 
 a) **Read the profile manifest** at `references/profile-manifest.yaml`
 b) **Verify auth_status is `active`** for the brand+platform combo. If not → log skip reason and exit.
@@ -45,10 +91,10 @@ e) **Acquire lock:**
    /data/chrome-profiles/lock.sh acquire {brand} {platform}
    ```
 
-### 3. Load Brand Context
+### 4. Load Brand Context
 Follow Step 2 from the main SKILL.md — read vault brand files for audience, voice, etc.
 
-### 4. Connect and Run
+### 5. Connect and Run
 ```bash
 agent-browser connect {cdp_port}
 ```
@@ -64,7 +110,7 @@ Then follow the platform-specific workflow from `references/{platform}-workflow.
 - If any unexpected error → screenshot, log it, release lock, exit.
 - Comment text → generate autonomously using `references/comment-guide.md` + brand voice
 
-### 5. Session Limits (Autonomous Mode)
+### 6. Session Limits (Autonomous Mode)
 
 Use the **same randomized ranges** as manual sessions. Pick a random target within each range at session start:
 
@@ -75,7 +121,7 @@ Use the **same randomized ranges** as manual sessions. Pick a random target with
 | **Comments** | 3-5 | 2-4 |
 | **Saves** | 0-2 | — |
 
-### 6. Post-Session
+### 7. Post-Session
 
 a) **Log to `~/.openclaw/skills/social-media-engagement/engagement-log.csv`** (absolute path — do NOT create a new CSV elsewhere). Follow the format rules in SKILL.md Step 5B exactly: **one row per action** (each follow, like, react, comment = separate row), with columns: `date,time,platform,account_id,display_name,follower_count,account_type,content_type,action_taken,comment_text,post_url,notes`
 b) **Append to vault `learnings-log.md`** if notable patterns
@@ -89,7 +135,7 @@ d) **Disconnect browser:**
    ```
 e) **Report summary** — the cron delivery will announce this to the originating channel
 
-### 7. Error Summary Format
+### 8. Error Summary Format
 
 If the session fails at any point, report:
 ```
