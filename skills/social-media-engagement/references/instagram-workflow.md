@@ -213,6 +213,9 @@ If you encounter ANY of these, **stop immediately** and inform the user:
 
 ---
 
+## Content Observations
+While browsing, mentally note 2-5 standout posts (high engagement, trending formats, notable visual techniques). Write observations at session end per Step 4.5.
+
 ## Session Target
 
 A full session should take **8-12 minutes**. Most time is spent scrolling and identifying relevant content — the engagement actions themselves are fast.

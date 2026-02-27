@@ -255,6 +255,9 @@ On narrower browser windows (under ~1200px wide), TikTok's "Post" button for com
 
 ---
 
+## Content Observations
+While browsing, mentally note 2-5 standout posts (high engagement, trending formats, notable visual techniques). Write observations at session end per Step 4.5.
+
 ## Time Per Session
 
 15-25 minutes. Pacing + watch-time requirements spread actions naturally. Don't rush.

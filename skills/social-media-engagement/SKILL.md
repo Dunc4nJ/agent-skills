@@ -150,6 +150,38 @@ Natural scrolling/finding/assessing time is sufficient spacing. Only explicit pa
 
 **TikTok exception:** Watch at least **10-15 seconds** of each video before engaging (watch time is a bot-detection signal).
 
+## Step 4.5: Content Observation Capture
+
+During engagement (not as a separate pass — while already browsing), mentally note standout content that could inspire organic posts for the brand. This is lightweight — observations are written out at the END of the session, not during browsing (that would slow down engagement and look bot-like).
+
+### What to Capture (2-5 observations per session)
+
+- Posts with unusually high engagement (viral-level likes, lots of comments)
+- Content formats/styles trending in the niche (e.g., "clay process videos with ASMR audio", "earth-tone flat-lays with linen backgrounds")
+- Visual techniques that stand out (lighting, composition, color palettes)
+- Seasonal/timely themes getting traction
+- Content types the brand hasn't tried yet
+
+### What NOT to Capture
+
+- Every post seen (only standouts)
+- Off-niche content
+- Sponsored/ad content (save that for future ad intelligence)
+
+### When and Where to Write
+
+After finishing all engagements but before writing the session summary, append observations to:
+
+```
+/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Content-Intelligence/organic/observations/{YYYY-MM-DD}-{platform}.json
+```
+
+Create the directory tree if it doesn't exist. If the file already exists (another session same day/platform), read the existing JSON array and append new observations to it.
+
+### Schema
+
+Read the full observation schema from `~/.agent/skills/organic-content-generator/references/observation-schema.md`. Each observation is a JSON object with fields: `observed_at`, `platform`, `account`, `content_type`, `description`, `engagement_signals`, `why_notable`, `visual_elements`, `format`, `hashtags_noted`, and `relevance_to_brand`. The file is a JSON array of these objects.
+
 ## Step 5: Session Logging and Summary
 
 ### A. Show the User a Summary
@@ -160,6 +192,7 @@ Accounts followed: [count]
 Posts liked/reacted to: [count]
 Comments posted: [count]
 Posts saved/bookmarked: [count, or "0"]
+Observations captured: [count]
 Notable accounts found: [standouts worth revisiting]
 Any issues: [rate limiting, CAPTCHAs, errors, or "none"]
 ```

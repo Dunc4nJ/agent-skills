@@ -364,6 +364,9 @@ New Pages or Pages with little engagement history will get a Reels feed full of 
 
 ---
 
+## Content Observations
+While browsing, mentally note 2-5 standout posts (high engagement, trending formats, notable visual techniques). Write observations at session end per Step 4.5.
+
 ## Time Per Session
 
 12-18 minutes. The pacing rules spread actions naturally. Don't rush.
