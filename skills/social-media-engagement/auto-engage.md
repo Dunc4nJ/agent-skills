@@ -6,7 +6,7 @@ This file is the **cron-mode prompt** for the social-media-engagement skill. Whe
 
 The cron job message must specify:
 - **brand** — which brand to engage as (e.g. `tableclay`, `preppack`)
-- **platform** — which platform (`instagram` or `facebook`; `tiktok` when auth is ready)
+- **platform** — which platform (`instagram`, `facebook`, or `tiktok`)
 
 Example cron message:
 > Run autonomous engagement: brand=tableclay, platform=instagram
@@ -25,6 +25,7 @@ ROLL=$((RANDOM % 100 + 1))
 # Skip thresholds by day and platform
 # Instagram: weekday 15%, Saturday 40%, Sunday 50%
 # Facebook:  weekday 15%, Saturday 45%, Sunday 55%
+# TikTok:    weekday 15%, Saturday 35%, Sunday 45%
 PLATFORM="$1"  # passed as argument or set from cron params
 
 if [ "$PLATFORM" = "instagram" ]; then
@@ -37,6 +38,12 @@ elif [ "$PLATFORM" = "facebook" ]; then
   case $DOW in
     6) THRESHOLD=45 ;;
     7) THRESHOLD=55 ;;
+    *) THRESHOLD=15 ;;
+  esac
+elif [ "$PLATFORM" = "tiktok" ]; then
+  case $DOW in
+    6) THRESHOLD=35 ;;
+    7) THRESHOLD=45 ;;
     *) THRESHOLD=15 ;;
   esac
 else
