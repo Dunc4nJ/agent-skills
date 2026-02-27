@@ -159,5 +159,5 @@ Action needed: {none/manual re-auth/check Chrome service/etc}
 - **Never attempt login or credential entry**
 - **Never attempt CAPTCHA solving**
 - **Always release lock on exit** (including error paths)
-- **Minimum 4-hour gap (IG) / 6-hour gap (FB/TK)** between sessions on same brand+platform — check log timestamps
+- **Lock-based concurrency control** — if another session is running for this brand (lock held), skip. No fixed time gap required; the lock mechanism prevents overlap.
 - **Follow the interval tables** in each platform workflow — randomize every delay within the stated ranges

@@ -259,6 +259,6 @@ On the very first run for a platform:
 | **Likes/Reactions** | 6-10 | 8-12 | 6-10 |
 | **Comments** | 3-5 | 2-4 | 3-5 |
 | **Saves/Bookmarks** | 0-2 | — | 0-2 |
-| **Min cool-down** | 4-6h | 6-12h | 6-12h |
+| **Concurrency** | Lock-based (no fixed gap) | Lock-based (no fixed gap) | Lock-based (no fixed gap) |
 
 Pick a random target within each range at session start. No two sessions should have the same action counts.
