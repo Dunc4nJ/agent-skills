@@ -64,85 +64,11 @@ See `references/resize-strategies.md` for the full decision tree, ImageMagick co
 4. If target taller → Gemini outpaint top/bottom
 5. If target much smaller → ImageMagick smart crop + resize
 
-## Gemini Outpainting (Chrome MCP)
+## Output
 
-Same agent-browser pattern as native-image-ad-generator and image-refiner:
+Create a `-variants/` subdirectory alongside each refined image with platform-specific PNGs and a `variants-manifest.json`. Update the source `.json` status to `ready`. See `references/output-format.md` for full schema, manifest format, and failure handling.
 
-1. `agent-browser open "https://gemini.google.com/app"` + wait 3000
-2. Verify logged in (screenshot check). If not, STOP and ask user.
-3. Upload the refined image via attachment button
-4. Prompt: "Extend this image to {W}x{H} ({target_ar}) aspect ratio by naturally continuing the background/scene. Keep the product and central composition unchanged. Extend the {direction} edges seamlessly. Output exactly {W}x{H} pixels."
-5. Submit, wait 50s (max 90s), download via hover → Download icon
-6. Copy to variants directory
-7. Open new chat for each outpaint operation
-
-**Zero-Waste Rule:** Only use Gemini when AR change genuinely needs content generation. Never for same-AR resizes.
-
-## Output Structure
-
-For each refined image, create a `-variants/` subdirectory alongside it:
-```
-ad-outputs/organic/2026-02-27/
-├── morning-studio-1-refined.png
-├── morning-studio-1-refined.json
-└── morning-studio-1-refined-variants/
-    ├── ig-feed-4x5.png
-    ├── ig-story-9x16.png
-    ├── fb-feed-4x5.png
-    └── variants-manifest.json
-```
-
-### variants-manifest.json
-```json
-{
-  "source": "morning-studio-1-refined.png",
-  "generated_at": "ISO timestamp",
-  "variants": [
-    {
-      "filename": "ig-feed-4x5.png",
-      "platform": "instagram",
-      "placement": "feed",
-      "dimensions": "1080x1350",
-      "aspect_ratio": "4:5",
-      "method": "simple-resize|gemini-outpaint|smart-crop",
-      "file_size_kb": 245
-    }
-  ]
-}
-```
-
-### Update Source Metadata
-
-After all variants generated, update the source `.json`:
-```json
-{
-  "status": "ready",
-  "resized_at": "ISO timestamp",
-  "variants_dir": "morning-studio-1-refined-variants/",
-  "variants_count": 3
-}
-```
-
-## Compression
-
-After generating each variant:
-```bash
-# If pngquant available:
-pngquant --quality=80-95 --force --output OUTPUT OUTPUT
-# Elif optipng available:
-optipng -o2 OUTPUT
-# Else: ImageMagick quality is sufficient
-```
-
-## Failure Handling
-
-| Situation | Action |
-|---|---|
-| ImageMagick not installed | Stop, offer install command |
-| Gemini not logged in | Stop, ask user to log in |
-| Outpaint fails/times out | Skip that variant, note in manifest |
-| No refined images found | Report "no refined images found" |
-| Browser drops mid-batch | Save completed variants, list remaining |
+Compress variants with pngquant/optipng if available (see Post-Processing in `references/resize-strategies.md`).
 
 ## Batch Summary
 
@@ -158,4 +84,5 @@ After processing, report:
 ## Reference Files
 
 - `references/platform-specs.md` — All platform dimensions, aspect ratios, and format requirements
-- `references/resize-strategies.md` — Decision tree, ImageMagick commands, Gemini outpaint prompts
+- `references/resize-strategies.md` — Decision tree, ImageMagick commands, Gemini outpaint browser workflow and prompts
+- `references/output-format.md` — Directory structure, manifest schema, source metadata updates, failure handling

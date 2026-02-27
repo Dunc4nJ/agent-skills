@@ -94,140 +94,19 @@ Read `references/nanobanana-prompt-guide.md` from the native-image-ad-generator 
 
 ## Step 5: Score & Select Top 3-5
 
-Score each concept 1-5 on five criteria (max 25). See `references/scoring-criteria.md`.
+Score each concept 1-5 on five criteria (max 25): trend alignment, brand fit, visual distinctiveness, platform suitability, refiner-readiness. Select top 3-5 with ≥2 different content types. Default to 3 unless observations are rich (then up to 5).
 
-1. **Trend alignment** — matches current observations
-2. **Brand fit** — matches voice/positioning/visual identity
-3. **Visual distinctiveness** — different from recent outputs
-4. **Platform suitability** — would perform on target platform
-5. **Refiner-readiness** — product placement allows clean swap
-
-**Rules:**
-- Top 3-5 must include ≥2 different content types
-- Default to 3 concepts unless observations are rich (then up to 5)
-- Tiebreaker: higher refiner-readiness score
+See `references/scoring-criteria.md` for the full rubric and selection rules.
 
 ## Step 6: Generate Images via Gemini Web UI
 
-Use the EXACT same pattern as native-image-ad-generator Steps 6A-6C. The process is identical:
-
-### 6A. Pre-Flight
-```bash
-agent-browser open "https://gemini.google.com/app"
-agent-browser wait 3000
-agent-browser screenshot /tmp/gemini-preflight.png
-```
-Verify logged in. If not, STOP and ask user.
-
-### 6B. Per-Concept Loop
-
-For each selected concept:
-
-1. **New chat:** `agent-browser open "https://gemini.google.com/app"` + wait 3000
-2. **Insert prompt:** Try `agent-browser fill` on input field. Fallback to JS execCommand on `.ql-editor.textarea`
-3. **Submit:** Click send button via `agent-browser eval`
-4. **Wait:** 50s initial + check, max 90s
-5. **Download:** Hover image → click Download icon (NOT Save). Verify `~/Downloads/Gemini_Generated_Image_*.png`
-6. **Copy to vault output folder**
-
-### 6C. Failure Handling
-
-Same as native-image-ad-generator: safety refusal → promote next concept, timeout → skip, ≥3 fails → save successes + `REMAINING_PROMPTS.md`.
-
-**Zero-Waste Rule:** No test images, no retries unless Gemini explicitly refuses.
+Generate images via Chrome MCP driving Gemini web UI. See `references/gemini-generation.md` for the full browser automation sequence (pre-flight, per-concept loop, failure handling).
 
 ## Step 7: Save & Register
 
-### Output Structure
+Save images + per-image metadata JSON to vault, write generation run summary, register in assets-registry.md, and deliver summary message.
 
-Images:
-```
-/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Brand/ad-outputs/organic/{YYYY-MM-DD}/
-├── {concept_name_slug}.png
-├── {concept_name_slug}.json      # per-image metadata
-└── ...
-```
-
-Generation run summary:
-```
-{Brand}/Content-Intelligence/organic/generation-runs/{YYYY-MM-DD}-run.md
-```
-
-### Per-Image Metadata JSON
-
-Save as `{concept_name_slug}.json` alongside each image:
-
-```json
-{
-  "generated_at": "ISO timestamp",
-  "brand": "BrandName",
-  "concept_name": "Morning Studio Light",
-  "content_type": "lifestyle",
-  "inspired_by": ["2026-02-25-instagram.json#3"],
-  "product_described": "Product name + brief physical description",
-  "prompt_used": "full NanoBanana prompt",
-  "aspect_ratio": "4:5",
-  "platform_target": "instagram-feed",
-  "score": 4.2,
-  "status": "base-generated",
-  "tags": ["morning-light", "studio", "ceramic"],
-  "trend_signals_used": ["natural lighting", "earth tones"],
-  "refiner_notes": {
-    "product_location": "center-right, on wooden table",
-    "product_scale": "occupies ~20% of frame",
-    "lighting_direction": "soft left, warm",
-    "background_complexity": "medium"
-  }
-}
-```
-
-**Status lifecycle:** `base-generated` → `refined` (image-refiner swaps product) → `resized` (image-resizer) → `ready`
-
-The `refiner_notes` object enables the downstream image-refiner skill to accurately place the real product photo.
-
-### Generation Run Summary
-
-```markdown
-# Organic Content Run — {Brand}
-Date: {YYYY-MM-DD}
-Platform: {target}
-
-## Observations Used
-- {N} observations from last 7 days ({platforms})
-- Top trends: {list}
-
-## Concepts Generated: {N} → Top {M} selected
-
-### Concept 1: {Name}
-- **Type:** {content_type}
-- **Score:** {N}/25
-- **Inspired by:** {observation refs or "brand research only"}
-- **File:** {filename}
-- **Prompt:** {full prompt}
-
-[repeat]
-
-## Failed Generations (if any)
-
-## Sources
-{vault files + observation files used}
-```
-
-### Register in assets-registry.md
-
-Append to brand's `assets-registry.md`:
-```markdown
-| {date} | ad-outputs/organic/{date}/{slug}.png | organic {content_type}: {concept_name} | gemini-chrome |
-```
-
-### Delivery Message
-```
-Done — organic content generated for {Brand}.
-✅ {N} images saved to vault
-✅ Metadata JSON per image (refiner-ready)
-✅ Run summary in Content-Intelligence/organic/generation-runs/
-Path: Projects/Ecommerce/Business/{Brand}/Brand/ad-outputs/organic/{date}/
-```
+See `references/output-templates.md` for all output paths, JSON schema, run summary template, registry format, and delivery message.
 
 ## Reference Files
 

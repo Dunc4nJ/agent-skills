@@ -54,6 +54,20 @@ Compute crop dimensions to match target AR before resizing.
 
 For AR changes requiring canvas extension with generated content.
 
+### Browser Workflow (agent-browser)
+
+Same pattern as native-image-ad-generator and image-refiner:
+
+1. `agent-browser open "https://gemini.google.com/app"` + wait 3000
+2. Verify logged in (screenshot check). If not, STOP and ask user.
+3. Upload the refined image via attachment button
+4. Submit the appropriate prompt below
+5. Wait 50s (max 90s), download via hover → Download icon
+6. Copy to variants directory
+7. Open new chat for each outpaint operation
+
+**Zero-Waste Rule:** Only use Gemini when AR change genuinely needs content generation. Never for same-AR resizes.
+
 ### Wider Target (extend left/right)
 Prompt:
 ```
