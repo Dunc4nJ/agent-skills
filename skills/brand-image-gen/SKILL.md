@@ -5,7 +5,7 @@ description: Generate or edit images for ecommerce brands via Chrome MCP (Gemini
 
 # Brand Image Generator
 
-Generate and edit images for ecommerce brands. Primary method: Chrome MCP (browser automation to Gemini web UI, uses subscription — no per-image cost). Fallback: Gemini API via nano-banana-pro skill.
+Generate and edit images for ecommerce brands via Chrome MCP (browser automation to Gemini web UI). Uses existing subscription — no per-image API cost.
 
 ## Required Inputs
 
@@ -36,9 +36,9 @@ If `assets-registry.md` lacks a table header, prepend:
 |------|------|-------------|--------|
 ```
 
-## Method 1: Chrome MCP (Primary)
+## Workflow: Chrome MCP
 
-Use `agent-browser` to drive the Gemini web UI. No API key or per-image cost — uses existing subscription.
+Drive the Gemini web UI via `agent-browser`. No API key needed — uses existing subscription.
 
 ### Text-to-Image
 
@@ -83,27 +83,7 @@ Use `agent-browser` to drive the Gemini web UI. No API key or per-image cost —
 - Re-snapshot after every major UI change (page load, image appears, dialog opens).
 - If multiple images are generated, save all with sequential suffixes (`-01`, `-02`, etc.) and register each.
 
-## Method 2: API Fallback (nano-banana-pro)
-
-Use when Chrome MCP is unavailable (browser session expired, Gemini UI changed, etc.). Requires `GEMINI_API_KEY`.
-
-```bash
-uv run /usr/lib/node_modules/openclaw/skills/nano-banana-pro/scripts/generate_image.py \
-  --prompt "{prompt}" \
-  --filename "/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Brand/assets/{filename}.png" \
-  --resolution 1K
-```
-
-For edits:
-```bash
-uv run /usr/lib/node_modules/openclaw/skills/nano-banana-pro/scripts/generate_image.py \
-  --prompt "{edit instructions}" \
-  --filename "{output_path}" \
-  -i "{input_image_path}" \
-  --resolution 2K
-```
-
-## Post-Generation (Both Methods)
+## Post-Generation
 
 1. **Register the asset** — append to `assets-registry.md` in the brand's vault folder.
 2. **Report** — tell the user the saved path and method used. Do not read the image file back.
