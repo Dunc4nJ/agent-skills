@@ -280,12 +280,6 @@ Usage notes:
 </skill>
 
 <skill>
-<name>brand-image-gen</name>
-<description>Generate or edit images for ecommerce brands via Chrome MCP (Gemini web UI) or API fallback, saving outputs to the correct brand vault path. Use when asked to "generate a product image", "create a mockup", "make a social post graphic", "edit a product photo", or any image generation/editing task tied to a specific brand.</description>
-<location>global</location>
-</skill>
-
-<skill>
 <name>bv</name>
 <description>"Beads Viewer - Graph-aware triage engine for Beads projects. Computes PageRank, betweenness, critical path, and cycles. Use --robot-* flags for AI agents."</description>
 <location>global</location>
@@ -378,6 +372,12 @@ Usage notes:
 <skill>
 <name>markitdown</name>
 <description>Convert office documents and rich files to Markdown using markitdown. Use when reading, processing, or extracting text from .pptx, .docx, .xlsx, .xls, .pdf, .html, .csv, .json, .xml, .epub, .zip, images (EXIF/OCR), or audio files (transcription). Triggers on "read this PowerPoint", "extract text from Word doc", "convert spreadsheet", "parse this PDF", "read this presentation", or any task involving these file types where the Read tool cannot handle the format directly.</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>native-image-ad-generator</name>
+<description>|</description>
 <location>global</location>
 </skill>
 
