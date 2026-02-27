@@ -101,6 +101,19 @@ git push
 
 The user re-imports the `.streamDeckProfile` on their Mac to apply changes.
 
+### 7. Update Layout Reference
+
+After any edit, regenerate `LAYOUT.md` so humans can review all prompts at a glance:
+
+```bash
+bash /path/to/skills/streamdeck-editor/scripts/dump-layout.sh
+```
+
+Defaults to the standard profile and output paths. Override with positional args:
+```bash
+bash scripts/dump-layout.sh [profile-path] [output-path]
+```
+
 ## Additional Resources
 
 - **references/button-types.md** — All supported button types (Text, Hotkey, Next/Prev Page, Go to Page, Folder) with full JSON examples
