@@ -113,3 +113,5 @@ See `references/output-templates.md` for all output paths, JSON schema, run summ
 - `references/observation-schema.md` — Full JSON schema for observation files
 - `references/concept-categories.md` — Organic content type categories and guidance
 - `references/scoring-criteria.md` — Detailed scoring rubric for concept selection
+- `references/gemini-generation.md` — Browser automation sequence for Gemini image generation
+- `references/output-templates.md` — Output paths, JSON schema, run summary template, registry format

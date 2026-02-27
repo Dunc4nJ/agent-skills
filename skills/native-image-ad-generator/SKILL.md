@@ -97,58 +97,7 @@ See `references/gemini-browser-automation.md` for complete pre-flight checks, pe
 
 ## Step 7: Save & Register
 
-### Output structure
-```
-vault/Projects/Ecommerce/Business/{Brand}/Brand/ad-outputs/{Product}/
-├── Concept1_{ShortName}.png
-├── Concept2_{ShortName}.png
-├── ...
-└── Ad_Concepts_Summary.md
-```
-
-### Ad_Concepts_Summary.md
-
-```markdown
-# {Brand} — {Product} Ad Concepts
-Generated: {Date}
-
-## Summary
-- Concepts generated: {N} → Top 5 selected
-- Format: 4:5 (Meta/Instagram feed)
-
-## Selected Concepts
-
-### Concept 1: {Name}
-- **Type:** {Ad Type}
-- **Score:** {N}/25
-- **Rationale:** {Why}
-- **Ad Copy:** {Text overlays}
-- **File:** {filename}
-- **NanoBanana Prompt:** {full prompt}
-
-[repeat for all 5]
-
-## Failed Generations (if any)
-
-## Research Source
-{vault files used}
-```
-
-### Register in assets-registry.md
-
-Append to brand's `assets-registry.md`:
-```markdown
-| {date} | ad-outputs/{Product}/Concept{N}_{Name}.png | {ad type}: {concept name} | gemini-chrome |
-```
-
-### Delivery message
-```
-Done — 5 ad concepts generated for {Brand} {Product}.
-✅ {N} images saved to vault
-✅ Summary + prompts in Ad_Concepts_Summary.md
-✅ Assets registered
-Path: Projects/Ecommerce/Business/{Brand}/Brand/ad-outputs/{Product}/
-```
+Save images to vault, write `Ad_Concepts_Summary.md`, and register in `assets-registry.md`. See `references/output-format.md` for templates, file structure, and delivery message format.
 
 ## Brand Discovery
 
@@ -159,4 +108,6 @@ List brands: `ls /data/projects/obsidian-vault/Projects/Ecommerce/Business/`
 
 - `references/nanobanana-prompt-guide.md` — Prompt engineering for Gemini image generation
 - `references/concept-scoring-rubric.md` — Scoring criteria for concept selection
+- `references/gemini-browser-automation.md` — Browser automation commands for Gemini web UI
+- `references/output-format.md` — Output templates, asset registration, delivery message
 - `assets/product-spec-template.md` — Product spec extraction template
