@@ -28,6 +28,10 @@ bash ~/.agent/skills/url-to-obsidian/scripts/detect-url-type.sh "<url-or-path>"
 ```
 
 **If pdf** (local file path or URL ending in `.pdf`):
+
+For **research papers** (arXiv, academic PDFs with figures/tables): follow `references/research-paper-workflow.md` instead — it uses markitdown for text, pdfimages + vision QC for figures, and a paper-specific note template. Rejoin this workflow at step 4.
+
+For **simple PDFs** (reports, docs without important figures):
 ```bash
 bash ~/.agent/skills/url-to-obsidian/scripts/fetch-pdf.sh "<path-or-url>" /tmp/content.md
 # File output: collapsible callout with full extracted text

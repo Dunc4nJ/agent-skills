@@ -110,6 +110,59 @@ bash scripts/extract-tweet-images.sh "<tweet_url>" "<slug>" ~/obsidian-vault/Pro
 The script returns a JSON array of filenames. Map them to the article by visual order
 (image 001 = first image in the article, 002 = second, etc.).
 
+## Format: Research Papers
+
+Use this for arXiv papers and academic PDFs with figures/tables.
+
+```markdown
+---
+created: YYYY-MM-DD
+description: One sentence — the paper's core claim
+source: https://arxiv.org/abs/XXXX.XXXXX
+type: paper
+authors:
+  - First Author
+  - Second Author
+arxiv: "XXXX.XXXXX"
+---
+
+## Abstract
+
+The paper's abstract, lightly cleaned up for readability.
+
+## Key Takeaways
+
+Original analysis in your own words. Weave [[wiki links]] inline.
+Reference key figures inline where they support a point:
+
+*Caption: what the figure shows*
+![[slug-fig-001.png]]
+
+## External Resources
+
+- [Resource](url) — description
+
+## Original Content
+
+> [!quote]- Full Paper Text
+> Markitdown output (collapsed by default).
+> Figures embedded inline at their approximate reference points:
+>
+> *Figure 1: System architecture*
+> ![[slug-fig-001.png]]
+>
+> Continuing text...
+>
+> [Source: paper title](https://arxiv.org/pdf/XXXX.XXXXX)
+```
+
+Notes:
+- Text extraction via `markitdown` (preserves tables as markdown)
+- Images extracted via `pdfimages -all`, filtered by size, QC'd with vision model
+- Images placed inline at their reference points, not in a separate section
+- `authors` and `arxiv` frontmatter fields are specific to this format
+- See `references/research-paper-workflow.md` for the full step-by-step procedure
+
 ## Rules
 
 - Title is a claim, not a topic: "onboarding drives 70% of retention" not "onboarding-notes"
