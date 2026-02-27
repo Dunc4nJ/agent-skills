@@ -424,6 +424,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>organic-content-generator</name>
+<description>|</description>
+<location>project</location>
+</skill>
+
+<skill>
 <name>perplexity-search</name>
 <description>AI-powered web search and research via Perplexity (Sonar models), including ranked search results and AI-synthesized answers with citations. Use for up-to-date facts, source gathering, deep research, and reasoning. Requires PERPLEXITY_API_KEY.</description>
 <location>project</location>
