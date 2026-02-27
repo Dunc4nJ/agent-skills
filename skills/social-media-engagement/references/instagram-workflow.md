@@ -8,7 +8,7 @@ This reference covers the full Instagram engagement workflow: discovery, engagem
 
 Before engaging with any accounts:
 
-1. Read the engagement log (`engagement-log.csv`) and note all previously engaged Instagram handles
+1. Read the engagement log (`~/.openclaw/skills/social-media-engagement/engagement-log.csv`) and note all previously engaged Instagram handles
 2. Keep that list in memory for the entire session — do NOT re-read the CSV between engagements
 3. Navigate to `https://www.instagram.com/explore/`
 

@@ -8,7 +8,7 @@ This reference covers the full Facebook engagement workflow. All actions are per
 
 Before engaging with any Reels:
 
-1. Read the engagement log (`engagement-log.csv`) and note all previously engaged Facebook Page names
+1. Read the engagement log (`~/.openclaw/skills/social-media-engagement/engagement-log.csv`) and note all previously engaged Facebook Page names
 2. Keep that list in memory for the entire session — do NOT re-read the CSV between engagements
 3. **Switch to the correct Page identity** (see Page Switching below)
 4. Navigate to `https://www.facebook.com/reel/`
@@ -279,7 +279,7 @@ Consistent timing is a bot signal. Every interval below should be **randomized w
 
 ## Engagement Log Format
 
-After each session, append to `engagement-log.csv` following these rules:
+After each session, append to `~/.openclaw/skills/social-media-engagement/engagement-log.csv` following these rules:
 
 1. **One row per action.** Each follow, react, and comment is a separate row. If you follow + react + comment on one account, that's 3 rows.
 2. **Always include time (HH:MM).** Every row must have a timestamp. Never leave blank.

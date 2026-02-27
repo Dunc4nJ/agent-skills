@@ -280,6 +280,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>brand-image-gen</name>
+<description>Generate or edit images for ecommerce brands via Chrome MCP (Gemini web UI) or API fallback, saving outputs to the correct brand vault path. Use when asked to "generate a product image", "create a mockup", "make a social post graphic", "edit a product photo", or any image generation/editing task tied to a specific brand.</description>
+<location>global</location>
+</skill>
+
+<skill>
 <name>bv</name>
 <description>"Beads Viewer - Graph-aware triage engine for Beads projects. Computes PageRank, betweenness, critical path, and cycles. Use --robot-* flags for AI agents."</description>
 <location>global</location>

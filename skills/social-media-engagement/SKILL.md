@@ -94,7 +94,7 @@ For writing comments: `references/comment-guide.md`
 
 ### Pre-Session: Load Engagement History
 
-Read `engagement-log.csv` once and keep in memory. Do NOT re-read between engagements.
+Read `~/.openclaw/skills/social-media-engagement/engagement-log.csv` (use this absolute path) once and keep in memory. Do NOT re-read between engagements.
 - Same platform match → skip the account
 - Different platform match → don't skip, but note in the `notes` column
 
@@ -165,7 +165,7 @@ Any issues: [rate limiting, CAPTCHAs, errors, or "none"]
 ```
 
 ### B. Append to Engagement Log
-Save to `engagement-log.csv` in this skill's directory.
+Save to `~/.openclaw/skills/social-media-engagement/engagement-log.csv` (always use this absolute path — do NOT create a new CSV elsewhere).
 
 ```
 date,time,platform,account_id,display_name,follower_count,account_type,content_type,action_taken,comment_text,post_url,notes

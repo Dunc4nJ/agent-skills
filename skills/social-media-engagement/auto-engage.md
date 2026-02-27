@@ -77,7 +77,7 @@ Use the **same randomized ranges** as manual sessions. Pick a random target with
 
 ### 6. Post-Session
 
-a) **Log to `engagement-log.csv`** per SKILL.md rules (one row per action)
+a) **Log to `~/.openclaw/skills/social-media-engagement/engagement-log.csv`** (absolute path — do NOT create a new CSV elsewhere). Follow the format rules in SKILL.md Step 5B exactly: **one row per action** (each follow, like, react, comment = separate row), with columns: `date,time,platform,account_id,display_name,follower_count,account_type,content_type,action_taken,comment_text,post_url,notes`
 b) **Append to vault `learnings-log.md`** if notable patterns
 c) **Release lock:**
    ```bash

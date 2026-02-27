@@ -8,7 +8,7 @@ This reference covers the full TikTok engagement workflow: discovery, engagement
 
 Before engaging with any accounts:
 
-1. Read the engagement log (`engagement-log.csv`) and note all previously engaged TikTok handles
+1. Read the engagement log (`~/.openclaw/skills/social-media-engagement/engagement-log.csv`) and note all previously engaged TikTok handles
 2. Keep that list in memory for the entire session — do NOT re-read the CSV between engagements
 3. Navigate to `https://www.tiktok.com/` (For You feed) or TikTok Search if the FYP is still off-niche (see Discovery below)
 
