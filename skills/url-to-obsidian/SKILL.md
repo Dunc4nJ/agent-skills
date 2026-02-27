@@ -19,6 +19,21 @@ Capture knowledge from a URL and create a linked vault note.
 
 ## Workflow
 
+### 0. Early fork: GitHub repo → Resource fast-path
+
+If the URL is a GitHub repository root (e.g. `github.com/org/repo`), treat it as a **resource capture** by default. Skip the full knowledge workflow and follow these steps:
+
+1. **Fetch README** — `web_fetch` on `https://github.com/org/repo` (the rendered README is on the main page)
+2. **Synthesize blurb** — Write 2-3 sentences for "What it is" and "Why it's interesting" from the README content
+3. **Determine subfolder** — If the user specified a subfolder (e.g. "put this in Orchestration"), use it. If not, search the vault with `qmd vsearch` to find the best-matching `Knowledge/Agents/{subfolder}/resources/` folder and use that.
+4. **Create note** — Use the resource template (`references/resource-template.md`). Title is the project/repo name, not a claim.
+5. **Sync** — Commit, push, `qmd update` (same as step 8 of the main workflow)
+6. **Report** — Note title, location, source URL
+
+The user can override this by saying "capture this as a knowledge note" or similar — in that case, fall through to the full workflow below.
+
+---
+
 ### 1. Classify and fetch content
 
 Classify the input:
@@ -29,15 +44,13 @@ bash ~/.agent/skills/url-to-obsidian/scripts/detect-url-type.sh "<url-or-path>"
 
 **If pdf** (local file path or URL ending in `.pdf`):
 
-For **research papers** (arXiv, academic PDFs with figures/tables): follow `references/research-paper-workflow.md` instead — it uses markitdown for text, pdfimages + vision QC for figures, and a paper-specific note template. Rejoin this workflow at step 4.
+For **research papers** (arXiv, academic PDFs with figures/tables): follow `references/research-paper-workflow.md` instead — it uses pymupdf4llm for structured markdown + pymupdf for position-aware image extraction, vision QC for figure filtering, and a paper-specific note template. Rejoin this workflow at step 4.
 
 For **simple PDFs** (reports, docs without important figures):
 ```bash
-bash ~/.agent/skills/url-to-obsidian/scripts/fetch-pdf.sh "<path-or-url>" /tmp/content.md
-# File output: collapsible callout with full extracted text
-# Stdout: JSON metadata { title, filename, description, url }
+python ~/.agent/skills/url-to-obsidian/scripts/extract-pdf-pymupdf.py "<path-or-url>" > /tmp/content.md
 ```
-Prerequisite: `poppler-utils` (`sudo apt install poppler-utils`).
+Prerequisite: `pip install pymupdf pymupdf4llm` (~25MB, instant).
 For `source` frontmatter: use the PDF filename (e.g., `Framework.pdf`), not the full path.
 
 **If twitter**:
@@ -166,7 +179,7 @@ Analyze the content domain and suggest a folder:
 
 Create a new subfolder under `Knowledge/` if no existing folder fits.
 
-**Resource capture:** If the content is a GitHub repo, tool, or library that the user wants to bookmark (not analyze into knowledge), follow the resource template in `references/resource-template.md` instead. Resources live in `resources/` subfolders within `Knowledge/Agents/` topic folders. They use project names as titles (not claims), have lighter templates, and do NOT get MOC entries. Skip steps 6-7 and go directly to step 8 (sync).
+**Resource capture:** If you reach this step and realize the content is a repo/tool/library, use the resource fast-path in **step 0** above. GitHub repo URLs should have been caught there already — this is a fallback for non-GitHub tools discovered mid-analysis.
 
 Present the suggestion to the user via AskUserQuestion:
 ```

@@ -20,44 +20,36 @@ file /tmp/paper.pdf
 
 For arXiv URLs in `/abs/` format, convert to `/pdf/` (replace `abs` with `pdf`).
 
-## 2. Extract text with markitdown
+## 2. Extract text and images with pymupdf
+
+pymupdf4llm extracts structured markdown (headings, tables, code blocks preserved) instantly with no models needed. pymupdf extracts images with page-position metadata for accurate figure-to-text mapping.
 
 ```bash
-markitdown /tmp/paper.pdf -o /tmp/paper-text.md
+python scripts/extract-pdf-pymupdf.py /tmp/paper.pdf --images /tmp/paper-images/ --json > /tmp/paper-extracted.json
 ```
 
-Why markitdown over pdftotext: preserves headings, renders tables as markdown tables, handles multi-column layouts better.
+This produces:
+- **Markdown** with headings, tables, and structure preserved
+- **Images** extracted to `/tmp/paper-images/` with page numbers and dimensions
+- **Metadata** (title, author, page count)
 
-If markitdown produces poor output (garbled tables, missing sections), fall back to:
-```bash
-pdftotext -layout /tmp/paper.pdf /tmp/paper-text.txt
+The JSON output contains all three:
+```json
+{
+  "markdown": "# Paper Title\n\n## Abstract\n...",
+  "images": [
+    {"file": "img-001.png", "page": 3, "width": 800, "height": 600, "bytes": 45230},
+    ...
+  ],
+  "metadata": {"pages": 12, "title": "...", "author": "..."}
+}
 ```
 
-## 3. Extract images with pdfimages
+Prerequisite: `pip install pymupdf pymupdf4llm` (~25MB, instant).
 
-```bash
-mkdir -p /tmp/paper-images
-pdfimages -all /tmp/paper.pdf /tmp/paper-images/img
-```
+### 2a. Image filtering
 
-This dumps every embedded image as a separate file (PNG, JPG, PPM, etc.).
-
-### 3a. Size filter
-
-Drop images that are clearly not figures:
-
-```bash
-bash scripts/extract-pdf-images.sh /tmp/paper.pdf /tmp/paper-images/
-```
-
-The script:
-1. Runs `pdfimages -all`
-2. Converts any PPM/PBM files to PNG via `convert` (ImageMagick)
-3. Drops images under 150x150px (icons, bullets, logos)
-4. Drops images under 5KB (decorative noise)
-5. Outputs a JSON array of surviving filenames with dimensions
-
-### 3b. Vision QC
+### 2b. Vision QC
 
 Review each surviving image using the vision model. For each image, classify as:
 - **figure** — charts, plots, graphs, results visualizations
@@ -71,7 +63,7 @@ Keep only `figure`, `table`, and `diagram` images. Generate a one-line caption f
 1. Review each image
 2. Return a JSON report: `[{file, classification, caption, keep: bool}]`
 
-### 3c. Rename and store
+### 2c. Rename and store
 
 Rename keepers with the slug convention:
 ```
@@ -125,7 +117,7 @@ Reference figures inline where they support a point:
 ## Original Content
 
 > [!quote]- Full Paper Text
-> Markitdown output here (collapsed by default).
+> pymupdf4llm markdown output here (collapsed by default).
 > Figures are embedded inline at their approximate reference points:
 >
 > *Figure 1: System architecture*
