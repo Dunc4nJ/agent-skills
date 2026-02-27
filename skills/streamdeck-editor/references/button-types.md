@@ -116,7 +116,18 @@ KeyModifiers bitmask: 1=Shift, 2=Ctrl, 4=Option, 8=Cmd (sum for combos).
 
 Opens a nested sub-layout. Contents stored as a separate profile directory under `Profiles/`.
 
-- `Plugin.UUID`: `com.elgato.streamdeck.profile.folder`
-- `Settings.ProfileUUID`: UUID of the folder's sub-profile directory
+**Folder opener** (on main page):
+- `Plugin.Name`: `"Create Folder"`
+- `Plugin.UUID`: `com.elgato.streamdeck.profile.openchild`
+- `UUID`: `com.elgato.streamdeck.profile.openchild`
+- `Settings.ProfileUUID`: UUID of the folder's sub-profile directory name
 
-The folder's `manifest.json` uses the same `Controllers[0].Actions` structure. Position `0,0` is reserved for the auto-generated back button.
+**Back button** (at `0,0` inside the folder — must be added explicitly):
+- `Plugin.Name`: `"Open Folder"`
+- `Plugin.UUID`: `com.elgato.streamdeck.profile.backtoparent`
+- `UUID`: `com.elgato.streamdeck.profile.backtoparent`
+- `Settings`: `null`
+
+⚠️ **WARNING:** Do NOT use `com.elgato.streamdeck.profile.folder` — that UUID does not work. The correct UUID is `openchild` (verified from reference implementation).
+
+The folder's `manifest.json` uses the same `Controllers[0].Actions` structure with `row,col` keys.
