@@ -44,7 +44,7 @@ bash ~/.agent/skills/url-to-obsidian/scripts/detect-url-type.sh "<url-or-path>"
 
 **If pdf** (local file path or URL ending in `.pdf`):
 
-For **research papers** (arXiv, academic PDFs with figures/tables): follow `references/research-paper-workflow.md` instead — it uses pymupdf4llm for structured markdown + pymupdf for position-aware image extraction, vision QC for figure filtering, and a paper-specific note template. Rejoin this workflow at step 4.
+For **research papers** (arXiv, academic PDFs with figures/tables): follow `references/research-paper-workflow.md` instead — it uses **marker-pdf on a Vast.ai GPU instance** (see `vast-gpu` skill) for best-in-class extraction: OCR, LaTeX equations, correct multi-column reading order, and inline figure extraction. Vision QC for figure filtering and a paper-specific note template. Rejoin this workflow at step 4.
 
 For **simple PDFs** (reports, docs without important figures):
 ```bash

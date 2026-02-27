@@ -15,11 +15,15 @@ status: unread
 
 ## What it is
 
-One to three sentences describing the project/repo.
+2-3 sentences describing the project/repo at a high level.
 
 ## Why it's interesting
 
-Why this caught your attention. What problem does it solve? What's novel about the approach?
+Why this caught your attention. What problem does it solve? What's novel about the approach? 2-3 sentences.
+
+## How it works
+
+Describe the architecture or mechanism in enough detail that a reader understands the approach without visiting the repo. Break into phases/steps if the system has a pipeline. Use bold labels for each stage. This section should answer "what's actually happening under the hood" — not just "it's fast and cheap." Skip this section only if the repo is a simple utility with no interesting internals.
 
 ## Key links
 

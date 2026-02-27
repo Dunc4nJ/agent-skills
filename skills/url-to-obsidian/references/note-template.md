@@ -157,8 +157,8 @@ Reference key figures inline where they support a point:
 ```
 
 Notes:
-- Text extraction via `markitdown` (preserves tables as markdown)
-- Images extracted via `pdfimages -all`, filtered by size, QC'd with vision model
+- Text extraction via `marker-pdf` on Vast.ai GPU (OCR, LaTeX equations, multi-column reading order)
+- Images extracted by marker-pdf, filtered by size, QC'd with vision model
 - Images placed inline at their reference points, not in a separate section
 - `authors` and `arxiv` frontmatter fields are specific to this format
 - See `references/research-paper-workflow.md` for the full step-by-step procedure
