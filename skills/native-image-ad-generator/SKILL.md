@@ -1,7 +1,7 @@
 ---
 name: native-image-ad-generator
 description: |
-  End-to-end native image ad creator for ecommerce brands. Takes a brand name and product, pulls brand research from the Obsidian vault, generates 10-20 ad concepts with NanoBanana prompts, auto-selects top 5, generates 5 images via Gemini API (curl, no browser needed), and saves to the brand's vault ad-outputs folder. Fully autonomous — no mid-workflow approval. Works in cron jobs.
+  End-to-end native image ad creator for ecommerce brands. Takes a brand name and product, pulls brand research from the Obsidian vault, generates 10-20 ad concepts with NanoBanana prompts, auto-selects top 5, generates 5 images via Chrome MCP (agent-browser driving Gemini web UI — uses subscription, no per-image API cost), and saves to the brand's vault ad-outputs folder. Fully autonomous — no mid-workflow approval.
 
   TRIGGERS: native image ads, static image ads, ad concepts, NanoBanana, image ad generator, generate ads, create ad images, ad variations, text to image ads, run ad generator, image ads for [brand], generate image ads
 
@@ -21,7 +21,7 @@ Fully autonomous: brand + product in → 5 finished ad images out. No mid-workfl
 | 3 | Analyze for strategy inputs | Auto |
 | 4 | Generate 10-20 concepts with NanoBanana prompts | Auto |
 | 5 | Auto-select top 5 (score + rank) | Auto |
-| 6 | Generate 5 images via Gemini API | Auto |
+| 6 | Generate 5 images via Gemini web UI (Chrome MCP) | Auto |
 | 7 | Save to vault + register assets | Auto |
 
 ## Autonomy Rules
@@ -31,7 +31,7 @@ Run fully autonomously after receiving brand + product. Do not stop for approval
 **Stop and ask only when:**
 - Research files not found in vault
 - Brand has multiple products and user didn't specify
-- `GEMINI_API_KEY` is not set
+- Gemini is not logged in (ask user to log in manually)
 
 ## Step 1: Input
 
@@ -87,70 +87,91 @@ Score 1-5 on: Emotional Resonance, Scroll-Stop Power, Brand Alignment, Strategic
 
 **Rules:** Rank by score. Top 5 must include ≥3 different ad types. ≥1 each for awareness, consideration, conversion. Tiebreaker: higher Scroll-Stop Power.
 
-## Step 6: Generate Images via Gemini API
+## Step 6: Generate Images via Gemini Web UI (Chrome MCP)
 
-Use the `image-generator` skill's curl-based approach. No browser needed — works headless, in cron jobs, anywhere.
+Use `agent-browser` to drive Google Gemini's web interface. Uses existing subscription — no per-image API cost. **5 generations total — no more.**
 
-**Pre-flight:**
-```bash
-if [ -z "${GEMINI_API_KEY:-}" ]; then
-  echo "ERROR: GEMINI_API_KEY is not set." >&2; exit 1
-fi
-```
+> **Zero-Waste Rule:** Every generation uses subscription quota. No test images, no retries unless Gemini explicitly refuses.
 
-**Per-concept generation** (5 total — no more):
+### 6A. Pre-Flight (zero generations)
 
 ```bash
-# 1. Write request JSON
-cat > /tmp/gemini_request.json << 'JSONEOF'
-{
-  "contents": [{
-    "parts": [{"text": "Generate an image: {NANOBANANA_PROMPT}"}]
-  }],
-  "generationConfig": {
-    "responseModalities": ["TEXT", "IMAGE"]
-  }
-}
-JSONEOF
-
-# 2. Call API
-curl -s -X POST \
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent" \
-  -H "x-goog-api-key: $GEMINI_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d @/tmp/gemini_request.json > /tmp/gemini_response.json
-
-# 3. Extract and save image
-python3 -c "
-import json, base64
-with open('/tmp/gemini_response.json') as f:
-    data = json.load(f)
-for part in data['candidates'][0]['content']['parts']:
-    if 'inlineData' in part:
-        img = base64.b64decode(part['inlineData']['data'])
-        with open('OUTPUT_PATH', 'wb') as out:
-            out.write(img)
-        print('Saved: OUTPUT_PATH')
-"
+agent-browser open "https://gemini.google.com/app"
+agent-browser wait 3000
+agent-browser screenshot /tmp/gemini-preflight.png
 ```
 
-**Output path per image:**
+Verify logged in (not a login page). If login required, STOP and ask user.
+
+Verify the input field works (zero-cost check):
+```bash
+agent-browser eval "const e=document.querySelector('.ql-editor.textarea'); e!==null && e.getAttribute('contenteditable')==='true'"
 ```
-/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Brand/ad-outputs/{Product}/Concept{N}_{ShortName}.png
+Must return `true`. If not, try `agent-browser snapshot -i` and locate the input field by ref.
+
+### 6B. Per-Concept Loop (5 iterations)
+
+For each of the 5 selected concepts:
+
+**1. New chat:**
+```bash
+agent-browser open "https://gemini.google.com/app"
+agent-browser wait 3000
 ```
 
-Create the `ad-outputs/{Product}/` directory if it doesn't exist.
+**2. Insert prompt** (Gemini uses Quill.js — standard fill may not work):
+```bash
+# Try agent-browser fill first
+agent-browser snapshot -i
+agent-browser fill @e{N} "Generate an image: {NANOBANANA_PROMPT}"
 
-### Failure Handling
+# If fill fails on contenteditable, use JavaScript:
+agent-browser eval "const e=document.querySelector('.ql-editor.textarea'); e.focus(); document.execCommand('selectAll'); document.execCommand('delete'); document.execCommand('insertText',false,'Generate an image: {PROMPT}')"
+```
+
+**3. Submit:**
+```bash
+agent-browser eval "document.querySelector('button[aria-label=\"Send message\"]').click()"
+```
+
+**4. Wait + check** (images take 10-30s, max 90s):
+```bash
+agent-browser wait 50000
+agent-browser screenshot /tmp/gemini-result-{N}.png
+# If still loading, wait 20s more
+```
+
+**5. Download the image:**
+- Scroll until generated image is visible
+- Hover over image to reveal overlay icons (Share, Copy, Download)
+- Click the Download icon (rightmost)
+- **DO NOT** click "Save" (goes to Google Photos, not local)
+- **DO NOT** use JavaScript fetch/blob (blocked by CORS)
+```bash
+agent-browser wait 5000
+```
+Verify file in `~/Downloads/` matching `Gemini_Generated_Image_*.png`.
+
+**6. Copy to vault:**
+```bash
+cp ~/Downloads/Gemini_Generated_Image_LATEST.png \
+  "/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Brand/ad-outputs/{Product}/Concept{N}_{ShortName}.png"
+```
+
+Create `ad-outputs/{Product}/` if it doesn't exist.
+
+### 6C. Failure Handling
 
 | Situation | Action |
 |---|---|
-| API error / safety refusal | Note, promote 6th concept |
-| No image in response | Note, promote next |
-| ≥3 concepts fail | Save successes + `FAILED_PROMPTS.md` with remaining prompts |
-| API key missing | Stop, ask user to set `GEMINI_API_KEY` |
+| Safety refusal | Note, promote 6th concept |
+| No image after 90s | Note timeout, promote next |
+| Download fails | Try hover-download once more. If fails, note Gemini URL for manual download |
+| Browser drops | Save completed images + `REMAINING_PROMPTS.md` |
+| ≥3 concepts fail | Save successes + `FAILED_PROMPTS.md` |
+| Input field not found | Output all prompts in `REMAINING_PROMPTS.md` |
 
-**Never:** Generate test images. Retry a prompt that produced an image. Use more than 5 API calls.
+**Never:** Generate test images. Retry a prompt that produced an image. Reuse a conversation between concepts. Use `innerHTML` on the editor (blocked by CSP).
 
 ## Step 7: Save & Register
 
@@ -195,7 +216,7 @@ Generated: {Date}
 
 Append to brand's `assets-registry.md`:
 ```markdown
-| {date} | ad-outputs/{Product}/Concept{N}_{Name}.png | {ad type}: {concept name} | gemini-api |
+| {date} | ad-outputs/{Product}/Concept{N}_{Name}.png | {ad type}: {concept name} | gemini-chrome |
 ```
 
 ### Delivery message
