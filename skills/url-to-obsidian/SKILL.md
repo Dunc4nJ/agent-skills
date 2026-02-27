@@ -162,8 +162,11 @@ Use the returned note titles as `[[wiki link]]` targets in step 6.
 Analyze the content domain and suggest a folder:
 - **Project-specific** (about a specific vault project) → `Projects/[Project]/`
 - **Cross-cutting knowledge** (general frameworks, tools, patterns) → `Knowledge/[Domain]/`
+- **Resource** (repo, tool, library — reference material, not synthesized knowledge) → `Knowledge/Agents/{subfolder}/resources/`
 
 Create a new subfolder under `Knowledge/` if no existing folder fits.
+
+**Resource capture:** If the content is a GitHub repo, tool, or library that the user wants to bookmark (not analyze into knowledge), follow the resource template in `references/resource-template.md` instead. Resources live in `resources/` subfolders within `Knowledge/Agents/` topic folders. They use project names as titles (not claims), have lighter templates, and do NOT get MOC entries. Skip steps 6-7 and go directly to step 8 (sync).
 
 Present the suggestion to the user via AskUserQuestion:
 ```
