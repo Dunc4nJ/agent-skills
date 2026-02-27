@@ -1,7 +1,7 @@
 ---
 name: native-image-ad-generator
 description: |
-  End-to-end native image ad creator for ecommerce brands. Takes a brand name and product, pulls brand research from the vault or GitHub repo, generates 10-20 ad concepts with NanoBanana prompts, auto-selects top 5, then generates 5 final images via Gemini web UI (Chrome MCP / agent-browser) and saves to the brand's vault assets folder. Fully autonomous — no mid-workflow approval needed.
+  End-to-end native image ad creator for ecommerce brands. Takes a brand name and product, pulls brand research from the Obsidian vault, generates 10-20 ad concepts with NanoBanana prompts, auto-selects top 5, generates 5 images via Gemini API (curl, no browser needed), and saves to the brand's vault ad-outputs folder. Fully autonomous — no mid-workflow approval. Works in cron jobs.
 
   TRIGGERS: native image ads, static image ads, ad concepts, NanoBanana, image ad generator, generate ads, create ad images, ad variations, text to image ads, run ad generator, image ads for [brand], generate image ads
 
@@ -10,201 +10,165 @@ description: |
 
 # Native Image Ad Generator
 
-Fully autonomous pipeline: brand + product in → finished ad images out. Fetches brand research, generates concepts, scores top 5, generates one image per concept via Gemini (4:5 ratio), saves everything to the vault. No mid-workflow approval gates.
+Fully autonomous: brand + product in → 5 finished ad images out. No mid-workflow approval gates.
 
-## Quick Reference
+## Pipeline
 
 | Step | What | User Action |
 |---|---|---|
 | 1 | Receive brand + product | User provides |
-| 2 | Fetch research dossier | Auto |
-| 3 | Analyze dossier for strategy inputs | Auto |
+| 2 | Load brand research from vault (.md) | Auto |
+| 3 | Analyze for strategy inputs | Auto |
 | 4 | Generate 10-20 concepts with NanoBanana prompts | Auto |
 | 5 | Auto-select top 5 (score + rank) | Auto |
-| 6 | Generate images via Gemini browser automation | Auto |
+| 6 | Generate 5 images via Gemini API | Auto |
 | 7 | Save to vault + register assets | Auto |
 
 ## Autonomy Rules
 
-Run fully autonomously after receiving brand + product. Do not stop for approval, confirmation, or review. Work silently and deliver final output.
+Run fully autonomously after receiving brand + product. Do not stop for approval or show progress. Deliver final output only.
 
 **Stop and ask only when:**
-- Research dossier not found
+- Research files not found in vault
 - Brand has multiple products and user didn't specify
-- Gemini is not logged in (ask user to log in manually)
+- `GEMINI_API_KEY` is not set
 
-## Step 1: Receive Input
+## Step 1: Input
 
-Required: **brand name** + **product name**. If only brand is given, check available dossiers and auto-select if exactly one exists.
+Required: **brand name** + **product name**. If only brand given, list available products from vault and auto-select if exactly one.
 
-## Step 2: Fetch Research Dossier
+## Step 2: Load Brand Research (Vault)
 
-Check these sources in order:
+All research lives in the Obsidian vault as `.md` files:
 
-1. **Vault** (preferred): `/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Brand/` — look for product-catalog.md, voice-profile.md, positioning.md, audience.md, creative-kit.md
-2. **GitHub repo**: `github.com/Nsf34/claude-skills/Brands/{Brand}/research/` — `.docx` files containing "Deep Research Dossier"
-3. **Local clone**: check if repo already cloned at `/tmp/claude-skills/`
-
-For GitHub `.docx` files, extract with:
-```bash
-python3 -c "from docx import Document; d=Document('/path/to/file.docx'); print('\n'.join(p.text for p in d.paragraphs))"
 ```
-Fallback: `python3 -m markitdown file.docx`
+/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Brand/
+├── product-catalog.md
+├── voice-profile.md
+├── positioning.md
+├── audience.md
+├── creative-kit.md
+└── learnings-log.md
+```
 
-## Step 3: Analyze Research Dossier
+Read all relevant files. Match product name to entries in `product-catalog.md`.
+
+**If vault files are empty/missing:** Check GitHub repo as fallback — `github.com/Nsf34/claude-skills/Brands/{Brand}/research/`. Convert any `.docx` with `python3 -m markitdown file.docx`.
+
+## Step 3: Analyze Research
 
 Internalize silently (do not output):
-1. Product spec sheet — physical description, dimensions, colors, materials, textures, must-NOT-look-like
+
+1. Product spec sheet — physical description, dimensions, colors, materials, must-NOT-look-like
 2. Emotional drivers — ranked purchase motivations
 3. Customer voice — verbatim quotes
-4. Objections + rebuttals
-5. Competitive landscape + gaps
-6. Target personas + psychographics
-7. Brand voice + visual identity (hex codes, tone, photography style)
-8. Messaging frameworks — positioning angles, proof points
-9. Pricing context
+4. Competitive landscape + gaps
+5. Target personas
+6. Brand voice + visual identity (hex codes, tone, photography style)
+7. Messaging frameworks — positioning angles, proof points
 
-Compile an internal product spec sheet using `assets/product-spec-template.md`.
+Compile internal product spec sheet using `assets/product-spec-template.md`.
 
 ## Step 4: Generate 10-20 Ad Concepts
 
-Each concept gets a complete NanoBanana prompt with `--ar 4:5`.
+Each concept gets a complete NanoBanana prompt ending with `--ar 4:5` (Meta/IG feed format).
 
-**Concept categories** (aim for variety):
-Before & After, Nightmare Scenario, Comparison / Us vs. Them, Big Benefit Statement, Offer Heavy, Media / Press / Authority, Reasons Why, Features & Benefits, Testimonial / Review, Humor / Fun, Lifestyle / Aspirational, UGC-Style, Pain Agitation, Seasonal / Contextual, Value Triptych, Unboxing / First Impression, Gift Angle
+**Categories** (aim for variety): Before & After, Nightmare Scenario, Comparison, Big Benefit Statement, Offer Heavy, Authority, Reasons Why, Features & Benefits, Testimonial, Humor, Lifestyle, UGC-Style, Pain Agitation, Seasonal, Value Triptych, Unboxing, Gift Angle
 
-**Per concept:**
-1. Concept Name
-2. Ad Type (category)
-3. Strategic Rationale (1-2 sentences grounded in research)
-4. Ad Copy Elements (text overlays)
-5. NanoBanana Prompt (complete, ending with `--ar 4:5`)
+**Per concept:** Name, Ad Type, Strategic Rationale, Ad Copy Elements, NanoBanana Prompt
 
 Read `references/nanobanana-prompt-guide.md` for prompt engineering rules.
 
 ## Step 5: Auto-Select Top 5
 
-Score all concepts (1-5 each, max 25):
-1. Emotional Resonance
-2. Scroll-Stop Power
-3. Brand Alignment
-4. Strategic Differentiation
-5. Prompt Feasibility
+Score 1-5 on: Emotional Resonance, Scroll-Stop Power, Brand Alignment, Strategic Differentiation, Prompt Feasibility (max 25). See `references/concept-scoring-rubric.md`.
 
-See `references/concept-scoring-rubric.md` for detailed rubric.
+**Rules:** Rank by score. Top 5 must include ≥3 different ad types. ≥1 each for awareness, consideration, conversion. Tiebreaker: higher Scroll-Stop Power.
 
-**Selection rules:**
-- Rank by total score
-- Diversity: top 5 must include ≥3 different ad types
-- Funnel coverage: ≥1 each for awareness, consideration, conversion
-- Tiebreaker: prefer higher Scroll-Stop Power
+## Step 6: Generate Images via Gemini API
 
-## Step 6: Generate Images via Gemini (Chrome MCP)
+Use the `image-generator` skill's curl-based approach. No browser needed — works headless, in cron jobs, anywhere.
 
-Use `agent-browser` to drive Google Gemini web UI. **5 generations total — no more.**
+**Pre-flight:**
+```bash
+if [ -z "${GEMINI_API_KEY:-}" ]; then
+  echo "ERROR: GEMINI_API_KEY is not set." >&2; exit 1
+fi
+```
 
-> **CRITICAL — Zero-Waste Rule:** Every generation uses subscription quota. Exactly 5 generations for 5 concepts. No test images, no retries unless Gemini explicitly refuses.
-
-### 6A. Pre-Flight Check (zero generations used)
+**Per-concept generation** (5 total — no more):
 
 ```bash
-agent-browser open "https://gemini.google.com/app"
-agent-browser screenshot /tmp/gemini-preflight.png
+# 1. Write request JSON
+cat > /tmp/gemini_request.json << 'JSONEOF'
+{
+  "contents": [{
+    "parts": [{"text": "Generate an image: {NANOBANANA_PROMPT}"}]
+  }],
+  "generationConfig": {
+    "responseModalities": ["TEXT", "IMAGE"]
+  }
+}
+JSONEOF
+
+# 2. Call API
+curl -s -X POST \
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent" \
+  -H "x-goog-api-key: $GEMINI_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d @/tmp/gemini_request.json > /tmp/gemini_response.json
+
+# 3. Extract and save image
+python3 -c "
+import json, base64
+with open('/tmp/gemini_response.json') as f:
+    data = json.load(f)
+for part in data['candidates'][0]['content']['parts']:
+    if 'inlineData' in part:
+        img = base64.b64decode(part['inlineData']['data'])
+        with open('OUTPUT_PATH', 'wb') as out:
+            out.write(img)
+        print('Saved: OUTPUT_PATH')
+"
 ```
 
-Verify: logged in, input field visible. If login page shows, STOP and ask user.
-
-```bash
-agent-browser snapshot -i
+**Output path per image:**
+```
+/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Brand/ad-outputs/{Product}/Concept{N}_{ShortName}.png
 ```
 
-Locate the prompt input field and send button refs.
+Create the `ad-outputs/{Product}/` directory if it doesn't exist.
 
-### 6B. Per-Concept Generation Loop
-
-For each of the 5 concepts:
-
-```
-1. NEW CHAT
-   agent-browser open "https://gemini.google.com/app"
-   agent-browser wait 3000
-
-2. INSERT PROMPT
-   agent-browser snapshot -i
-   # Find the input field ref
-   agent-browser fill @e{N} "Generate an image: {NanoBanana prompt}"
-   # If fill doesn't work on contenteditable, use eval:
-   agent-browser eval "const e=document.querySelector('.ql-editor.textarea'); e.focus(); document.execCommand('selectAll'); document.execCommand('delete'); document.execCommand('insertText',false,'Generate an image: {prompt}')"
-
-3. SUBMIT
-   agent-browser eval "document.querySelector('button[aria-label=\"Send message\"]').click()"
-
-4. WAIT + CHECK
-   agent-browser wait 50000
-   agent-browser screenshot /tmp/gemini-check-{N}.png
-   # If still loading, wait 20s more. Max total: 90s.
-
-5. DOWNLOAD
-   # Scroll to image, hover to reveal overlay icons, click download (rightmost)
-   agent-browser snapshot -i
-   # Find the generated image element, hover over it
-   # Click download icon
-   agent-browser wait 5000
-   # Verify file in ~/Downloads/
-
-6. COPY TO VAULT
-   cp ~/Downloads/Gemini_Generated_Image_*.png \
-     "/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Brand/assets/Concept{N}_{ShortName}.png"
-```
-
-### 6C. Failure Handling
+### Failure Handling
 
 | Situation | Action |
 |---|---|
-| Safety refusal | Note, promote 6th concept |
-| No image after 90s | Note timeout, promote next |
-| Download fails | Try once more, then note Gemini URL for manual download |
-| Browser drops | Save completed images + `REMAINING_PROMPTS.md` |
-| ≥3 concepts fail | Save successes + `FAILED_PROMPTS.md` |
-| Input field not found | Output all prompts in `REMAINING_PROMPTS.md` |
+| API error / safety refusal | Note, promote 6th concept |
+| No image in response | Note, promote next |
+| ≥3 concepts fail | Save successes + `FAILED_PROMPTS.md` with remaining prompts |
+| API key missing | Stop, ask user to set `GEMINI_API_KEY` |
 
-**Never:**
-- Generate test images
-- Retry a prompt that already produced an image
-- Reuse a conversation between concepts
+**Never:** Generate test images. Retry a prompt that produced an image. Use more than 5 API calls.
 
 ## Step 7: Save & Register
 
-### Output location
-
-Primary: vault brand assets folder
+### Output structure
 ```
-/data/projects/obsidian-vault/Projects/Ecommerce/Business/{Brand}/Brand/assets/
-  Concept1_{ShortName}.png
-  Concept2_{ShortName}.png
-  ...
-  Ad_Concepts_Summary.md
-```
-
-### Register in assets-registry.md
-
-Append one row per image to the brand's `assets-registry.md`:
-
-```markdown
-| {date} | Concept{N}_{ShortName}.png | {ad type}: {concept name} | gemini-chrome |
+vault/Projects/Ecommerce/Business/{Brand}/Brand/ad-outputs/{Product}/
+├── Concept1_{ShortName}.png
+├── Concept2_{ShortName}.png
+├── ...
+└── Ad_Concepts_Summary.md
 ```
 
 ### Ad_Concepts_Summary.md
-
-Create in the same assets folder:
 
 ```markdown
 # {Brand} — {Product} Ad Concepts
 Generated: {Date}
 
 ## Summary
-- Concepts generated: {N}
-- Top 5 selected by score
+- Concepts generated: {N} → Top 5 selected
 - Format: 4:5 (Meta/Instagram feed)
 
 ## Selected Concepts
@@ -212,7 +176,7 @@ Generated: {Date}
 ### Concept 1: {Name}
 - **Type:** {Ad Type}
 - **Score:** {N}/25
-- **Strategic Rationale:** {Why}
+- **Rationale:** {Why}
 - **Ad Copy:** {Text overlays}
 - **File:** {filename}
 - **NanoBanana Prompt:** {full prompt}
@@ -220,31 +184,31 @@ Generated: {Date}
 [repeat for all 5]
 
 ## Failed Generations (if any)
-{notes}
 
 ## Research Source
-{dossier file/path used}
+{vault files used}
+```
+
+### Register in assets-registry.md
+
+Append to brand's `assets-registry.md`:
+```markdown
+| {date} | ad-outputs/{Product}/Concept{N}_{Name}.png | {ad type}: {concept name} | gemini-api |
 ```
 
 ### Delivery message
-
 ```
-Done — 5 ad concepts generated in 4:5 format for {Brand} {Product}.
-
+Done — 5 ad concepts generated for {Brand} {Product}.
 ✅ {N} images saved to vault
 ✅ Summary + prompts in Ad_Concepts_Summary.md
 ✅ Assets registered
-
-Vault: Projects/Ecommerce/Business/{Brand}/Brand/assets/
+Path: Projects/Ecommerce/Business/{Brand}/Brand/ad-outputs/{Product}/
 ```
 
 ## Brand Discovery
 
-If brand not specified, infer from calling agent:
-- `tableclay-manager` → TableClay
-- `bananabanker` → ask (manages multiple)
-
-Available brands: `ls /data/projects/obsidian-vault/Projects/Ecommerce/Business/`
+Infer from calling agent: `tableclay-manager` → TableClay, `bananabanker` → ask.
+List brands: `ls /data/projects/obsidian-vault/Projects/Ecommerce/Business/`
 
 ## Reference Files
 
