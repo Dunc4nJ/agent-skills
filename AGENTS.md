@@ -364,6 +364,12 @@ Usage notes:
 </skill>
 
 <skill>
+<name>image-refiner</name>
+<description>|</description>
+<location>project</location>
+</skill>
+
+<skill>
 <name>markdown-url</name>
 <description>Route website visits through markdown.new for clean Markdown extraction. Use when reading docs, blog posts, changelogs, GitHub issues, or any web content where you need extractable text. Prefixes URLs with https://markdown.new/ automatically.</description>
 <location>project</location>
