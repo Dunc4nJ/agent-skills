@@ -77,6 +77,8 @@ Each concept gets a complete NanoBanana prompt ending with `--ar 4:5` (Meta/IG f
 
 **Per concept:** Name, Ad Type, Strategic Rationale, Ad Copy Elements, NanoBanana Prompt
 
+**Dedup against prior runs:** Before generating, check for existing `Ad_Concepts_Summary.md` files in the product's `ad-outputs/` folder. Extract the ad types and concept names already used. Pass them as a constraint: "Do NOT generate concepts using these types/angles: [list]. Prioritize unexplored categories from the list above." If all categories have been used, allow repeats but require a substantially different angle, scene, or emotional hook.
+
 Read `references/nanobanana-prompt-guide.md` for prompt engineering rules.
 
 ## Step 5: Auto-Select Top 5
