@@ -195,7 +195,7 @@ Key rules:
 - **Frontmatter**: `created` (today YYYY-MM-DD), `description` (one sentence elaborating the title claim), `source` (original URL), `type` (optional: framework, learning, synthesis)
 - **Key Takeaways**: Original analysis in your own words. Weave `[[wiki links]]` from step 4 inline into sentences. Aim for at least one wiki link per takeaway paragraph.
 - **External Resources**: URLs found in the content with one-line descriptions.
-- **Original Content**: Tweets as standard blockquotes with author handle, date, and engagement stats. Long web content in a collapsible Obsidian callout: `> [!quote]- Source Material`
+- **Original Content**: The **complete, unabridged** source text — never summarize or abbreviate. Tweets as standard blockquotes with author handle, date, and engagement stats. Long web/PDF content in a collapsible Obsidian callout: `> [!quote]- Source Material`. The collapsed callout keeps it out of reading view but the full text must always be preserved for future reference and search.
 - Always include a link back to the original URL.
 - No emoji in headings or body.
 - No "Related:" section at the bottom. All links woven inline.
@@ -238,7 +238,7 @@ Before finishing, verify:
 - [ ] Key Takeaways contains original analysis, not copied text
 - [ ] 3-7 `[[wiki links]]` woven inline into sentences
 - [ ] External links listed with brief descriptions
-- [ ] Original content preserved (blockquote or collapsible callout)
+- [ ] Original content preserved **in full** (blockquote or collapsible callout — never summarized)
 - [ ] Link to original URL included
 - [ ] Nearest MOC updated
 - [ ] **Images captured** (if source had images): downloaded to `_media/`, embedded with `![[filename]]` and captions
