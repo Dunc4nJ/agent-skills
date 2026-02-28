@@ -55,17 +55,19 @@ For `source` frontmatter: use the PDF filename (e.g., `Framework.pdf`), not the 
 
 **If twitter**:
 ```bash
-# Single tweet
-bird read <url> --plain
+# Single tweet — always save to temp file
+bird read <url> --plain > /tmp/source_content.md
 
 # If output shows it is part of a thread, re-fetch the full thread
-bird thread <url> --plain
+bird thread <url> --plain > /tmp/source_content.md
 ```
 
 **If web**:
 ```bash
-npx playbooks get "<url>"
+npx playbooks get "<url>" > /tmp/source_content.md
 ```
+
+**All modes must save to `/tmp/source_content.md`** (PDF already saves to `/tmp/content.md`). This file is the ground truth for the Original Content section — the agent must read from it during note writing, never reproduce content from memory.
 
 See `references/playbooks-usage.md` for detailed options and JSON output mode.
 
@@ -195,7 +197,11 @@ Key rules:
 - **Frontmatter**: `created` (today YYYY-MM-DD), `description` (one sentence elaborating the title claim), `source` (original URL), `type` (optional: framework, learning, synthesis)
 - **Key Takeaways**: Original analysis in your own words. Weave `[[wiki links]]` from step 4 inline into sentences. Aim for at least one wiki link per takeaway paragraph.
 - **External Resources**: URLs found in the content with one-line descriptions.
-- **Original Content**: The **complete, unabridged** source text — never summarize or abbreviate. Tweets as standard blockquotes with author handle, date, and engagement stats. Long web/PDF content in a collapsible Obsidian callout: `> [!quote]- Source Material`. The collapsed callout keeps it out of reading view but the full text must always be preserved for future reference and search.
+- **Original Content**: The **complete, unabridged, verbatim** source text. This is the most important rule in this entire skill: NEVER summarize, paraphrase, condense, or rewrite the original content.
+  - **How to write it**: Open `/tmp/source_content.md` (or `/tmp/content.md` for PDFs) with the Read tool. Copy its contents line-by-line into the Original Content section. Do NOT retype from memory or context — always read from the temp file.
+  - **Images**: Insert `![[slug-NNN.ext]]` embeds at their natural positions in the flow (where the image appeared in the source) with a brief italic caption above each.
+  - **Formatting**: Tweets as standard blockquotes with author handle, date, and engagement stats header. Long web/PDF content in a collapsible Obsidian callout: `> [!quote]- Source Material`.
+  - **The rule**: If a tweet has 15 paragraphs, all 15 go in. If an article is 5000 words, all 5000 words go in. The Original Content section is an archive — its job is to preserve the source exactly as written so we never need to visit the URL again.
 - Always include a link back to the original URL.
 - No emoji in headings or body.
 - No "Related:" section at the bottom. All links woven inline.
@@ -212,14 +218,26 @@ If adding to a new Knowledge subfolder, create a new subsection in `moc - Vault.
   - [[note title]]
 ```
 
-### 8. Sync
+### 8. Verify original content
+
+Before committing, verify the Original Content section is complete:
+
+```bash
+bash ~/.agent/skills/url-to-obsidian/scripts/verify-original-content.sh "<note_path>" /tmp/source_content.md
+```
+
+- **OK (≥90%)** — proceed to sync.
+- **WARNING (80-90%)** — review what's missing. Minor formatting differences are fine; missing paragraphs are not.
+- **FAIL (<80%)** — content was summarized or truncated. Re-read `/tmp/source_content.md` and fix the Original Content section before proceeding. Do NOT report success to the user until this passes.
+
+### 9. Sync
 
 ```bash
 cd ~/obsidian-vault && git add -A && git commit -m "vault: capture [short description] from [source type]" && git push
 qmd update
 ```
 
-### 9. Report
+### 10. Report
 
 Output a summary:
 ```
@@ -238,7 +256,7 @@ Before finishing, verify:
 - [ ] Key Takeaways contains original analysis, not copied text
 - [ ] 3-7 `[[wiki links]]` woven inline into sentences
 - [ ] External links listed with brief descriptions
-- [ ] Original content preserved **in full** (blockquote or collapsible callout — never summarized)
+- [ ] Original content is **verbatim** — verified by `verify-original-content.sh` (≥90% word coverage). Do not report success if verification fails.
 - [ ] Link to original URL included
 - [ ] Nearest MOC updated
 - [ ] **Images captured** (if source had images): downloaded to `_media/`, embedded with `![[filename]]` and captions
