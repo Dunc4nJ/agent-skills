@@ -4,7 +4,7 @@
 #        gpu-ssh 'command'    (run single command)
 set -euo pipefail
 
-INSTANCE_ID=32135400
+INSTANCE_ID=32143253
 
 # Get SSH details
 ssh_info=$(vastai show instances --raw 2>/dev/null | python3 -c "

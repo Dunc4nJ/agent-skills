@@ -3,7 +3,7 @@
 # Usage: gpu-marker input.pdf [output-dir]
 set -euo pipefail
 
-INSTANCE_ID=32135400
+INSTANCE_ID=32143253
 
 if [ $# -lt 1 ]; then
     echo "Usage: gpu-marker <input.pdf> [output-dir]"

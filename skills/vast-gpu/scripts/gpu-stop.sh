@@ -2,7 +2,7 @@
 # gpu-stop — Stop the Vast.ai GPU instance (preserves disk)
 set -euo pipefail
 
-INSTANCE_ID=32135400
+INSTANCE_ID=32143253
 
 status=$(vastai show instances --raw 2>/dev/null | python3 -c "
 import sys, json

@@ -2,7 +2,7 @@
 # gpu-start — Start the Vast.ai GPU instance and wait for SSH
 set -euo pipefail
 
-INSTANCE_ID=32135400
+INSTANCE_ID=32143253
 MAX_WAIT=180  # seconds
 
 # Check current status

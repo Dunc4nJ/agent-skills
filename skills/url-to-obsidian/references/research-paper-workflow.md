@@ -150,7 +150,8 @@ Reference figures inline where they support a point:
 ## Original Content
 
 > [!quote]- Full Paper Text
-> marker-pdf markdown output here (collapsed by default).
+> FULL marker-pdf markdown output here — include ALL extracted text, never summarize or abbreviate.
+> The collapsed callout keeps it out of reading view but preserves the complete source.
 > Figures are embedded inline at their approximate reference points:
 >
 > *Figure 1: System architecture*
