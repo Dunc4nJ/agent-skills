@@ -275,7 +275,7 @@ Usage notes:
 
 <skill>
 <name>brand-context-builder</name>
-<description>Distill deep research documents into structured brand context files across the Obsidian vault. Use when adding a new brand, populating skeleton brand files, or updating brand context from research docs. Triggers: "brand context", "new brand", "populate brand files", "build brand profile", "update brand context for [name]".</description>
+<description>'Distill deep research documents into structured brand context files across the Obsidian vault. Use when adding a new brand, populating skeleton brand files, or updating brand context from research docs. Triggers: "brand context", "new brand", "populate brand files", "build brand profile", "update brand context for [name]".'</description>
 <location>global</location>
 </skill>
 
@@ -348,6 +348,12 @@ Usage notes:
 <skill>
 <name>engagement-intelligence</name>
 <description>"Harvest and analyze social media engagement outcomes for TableClay. Use when the user says 'harvest engagement', 'check engagement results', 'run engagement analysis', 'who engaged back', 'engagement report', 'outcome check', 'review notifications', or before starting an engagement session. Scrapes IG/FB notification pages via Chrome to collect response data (comment likes, replies, follow-backs), builds account relationship profiles, and produces actionable reports. Also used by the engagement skill as a pre-session outcome check."</description>
+<location>global</location>
+</skill>
+
+<skill>
+<name>franken-research</name>
+<description>"Multi-repo comparative research for building best-of-breed projects. Explores multiple related repositories, interviews the user about what they're building, and generates a research prompt for deep feature extraction. Use when the user says 'franken-research', 'research these repos', 'extract features from repos', 'build a franken project', 'compare repositories', or wants to create a project by combining the best features from multiple existing codebases."</description>
 <location>global</location>
 </skill>
 
@@ -595,12 +601,6 @@ Usage notes:
 <name>zombie-killer</name>
 <description>Detect and kill zombie processes on the VPS. Use when the user mentions zombies, defunct processes, slow VPS, high load average, stale agent sessions, or process cleanup. Triggers on "check zombies", "kill zombies", "why is my server slow", "clean up processes", "defunct processes".</description>
 <location>global</location>
-</skill>
-
-<skill>
-<name>bird</name>
-<description>X/Twitter CLI for reading, searching, posting, and engagement. Use when user asks about Twitter, tweets, timelines, posting to X, or social media engagement.</description>
-<location>project</location>
 </skill>
 
 </available_skills>

@@ -4,7 +4,7 @@
 #        gpu-run 'python3 -c "import torch; print(torch.cuda.is_available())"'
 set -euo pipefail
 
-INSTANCE_ID=32143253
+INSTANCE_ID=32154587
 
 if [ $# -eq 0 ]; then
     echo "Usage: gpu-run <command>"

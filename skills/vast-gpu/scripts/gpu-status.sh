@@ -2,7 +2,7 @@
 # gpu-status — Show Vast.ai GPU instance status
 set -euo pipefail
 
-INSTANCE_ID=32143253
+INSTANCE_ID=32154587
 
 vastai show instances --raw 2>/dev/null | python3 -c "
 import sys, json
