@@ -105,7 +105,7 @@ Do NOT stop early on your own. The user controls when to move to prompt generati
 
 ## Step 5: Generate Research Prompt
 
-Use `references/prompt-template.md` as the skeleton. Populate it with:
+Use `references/research-methodology.md` as the skeleton. Populate it with:
 
 1. **"What We're Building" section** — transform Q&A answers into a structured project description:
    - Project name and form factor
@@ -121,7 +121,7 @@ Use `references/prompt-template.md` as the skeleton. Populate it with:
    | {name} | `{path}` | {one-line description from landscape} |
    ```
 
-3. **Output sections** — use the 6 recommended core sections from `references/research-execution.md`, adjusted if the interview revealed project-specific needs
+3. **Output sections** — use the 6 recommended core sections from `references/research-methodology.md`, adjusted if the interview revealed project-specific needs
 
 4. **Quality standards** — include the standard quality standards block
 

@@ -1,8 +1,10 @@
-# Research Prompt Template
+# Research Methodology
 
-This is the skeleton structure for a generated `research_prompt.md`. The interview mode populates the placeholders with project-specific content from the Q&A and landscape scan.
+This file is both the methodology for executing research on a target repository AND the template used by interview mode to generate `research_prompt.md`. There is one source of truth for the 4-phase process and output format.
 
-## Template
+## Prompt Template
+
+The interview mode populates the placeholders below with project-specific content from the Q&A and landscape scan. In research mode, the agent reads the generated `research_prompt.md` (which was produced from this template) and follows the phases directly.
 
 ````markdown
 # {PROJECT_NAME} Deep Research Prompt
@@ -66,11 +68,11 @@ Before launching any deep exploration, ground yourself:
 
 Launch up to 3 explore agents in parallel, each with a distinct focus area. Common domain splits (adapt based on repo structure):
 
-- **Agent A: Core execution architecture** -- How the main abstractions are defined, configured, and executed. The main loop, state management, core algorithms.
+- **Agent A: Core algorithms and data flow** -- How the main abstractions are defined, configured, and executed. The primary processing pipeline, state management, core algorithms.
 
-- **Agent B: Intelligence and data layer** -- Knowledge, memory, learning, reasoning, context management, data processing. How the system gets smarter or manages complexity.
+- **Agent B: Data management and intelligence** -- Storage, retrieval, caching, learning, reasoning, context management, data processing. How the system manages and leverages its data.
 
-- **Agent C: Infrastructure and extensions** -- Abstraction layers, persistence, serving, observability, configuration, plugin/extension system, CLI/API experience.
+- **Agent C: Infrastructure and extensibility** -- Abstraction layers, persistence, serving, observability, configuration, plugin/extension system, CLI/API experience.
 
 Each explore agent should:
 - Read actual source files, not just READMEs
