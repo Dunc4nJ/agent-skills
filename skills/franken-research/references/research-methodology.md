@@ -32,6 +32,21 @@ Use this prompt to analyze any repository in the {PROJECT_NAME} collection. Repl
 
 When evaluating features from `{REPO}`, ask: **"Would this make {PROJECT_NAME} better?"** -- {evaluation_criteria_from_interview}.
 
+<!-- ALTERNATE FRAMING: For existing-project research, replace the section above with: -->
+<!--
+## What We're Improving
+
+**{PROJECT_NAME}** is an existing {language}-based {form_factor}.
+
+**Current state**: {Brief description of the project today — what it does, how it works}
+
+**What's missing or weak**: {Capabilities or qualities the project lacks}
+
+**Target state**: {What the project should become after incorporating research findings}
+
+When evaluating features from `{REPO}`, ask: **"Does {PROJECT_NAME} already have this? If not, would adding it meaningfully improve {target_dimension}?"** -- {evaluation_criteria_from_interview}.
+-->
+
 ---
 
 ## The Prompt
@@ -184,3 +199,4 @@ The interview mode may adjust this template based on project-specific needs:
 - **Agent exploration domains**: The 3-agent split may be adjusted based on the domain (e.g., for a UI framework: rendering, state management, developer tooling)
 - **Evaluation criteria**: The synthesis questions should reflect the project's stated priorities
 - **Additional recommended sections**: If the interview reveals project-specific needs, additional sections may be added to the template (while keeping the 6 core sections as the baseline)
+- **Existing-project research**: If the user is researching repos to improve an existing project (not building something new), replace the "What We're Building" section with the alternate "What We're Improving" framing provided in the template comments

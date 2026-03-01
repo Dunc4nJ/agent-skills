@@ -19,7 +19,7 @@ Parse the user's message to determine which mode to run:
 **Research mode** — triggered by:
 - "review repo X", "research [repo name]", @research_prompt reference
 - A `research_docs/research_prompt.md` must exist in the workspace
-- Route to `references/research-methodology.md`
+- Read `research_docs/research_prompt.md` (or the @-referenced prompt) and follow its phases directly
 
 ## Interview Mode (Overview)
 
@@ -42,7 +42,7 @@ Deep-dive a single repository to extract its most impactful, distinctive feature
 3. Execute the 4-phase methodology on the target repo
 4. Write `research_docs/{repo}_findings.md`
 
-See `references/research-methodology.md` for the full 4-phase methodology.
+The research prompt contains the full 4-phase methodology. See `references/research-methodology.md` for the template source used to generate it.
 
 ## Output Conventions
 
@@ -54,4 +54,4 @@ All outputs go in `research_docs/` at the project root:
 ## References
 
 - **`references/interview-guide.md`** — Detailed interview methodology: repo detection, agent launch strategy, landscape format, Q&A question categories, convergence signals
-- **`references/research-methodology.md`** — 4-phase deep dive methodology and prompt template: orientation, parallel exploration, synthesis, document writing with recommended sections, quality standards, and the skeleton template for generated research prompts
+- **`references/research-methodology.md`** — Template source for generating research prompts (used by interview mode). Contains the 4-phase methodology, output format, and quality standards that get embedded into `research_prompt.md`
