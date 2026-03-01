@@ -64,14 +64,19 @@ bird thread <url> --plain > /tmp/source_content.md
 
 **If web**:
 ```bash
-npx playbooks get "<url>" > /tmp/source_content.md
+curl -sL "https://markdown.new/<url>?retain_images=true" > /tmp/source_content.md
 ```
+This fetches the page as clean markdown **with inline image URLs preserved** (e.g. `![alt](https://...image.png)`). The `retain_images=true` parameter is essential — without it, images are stripped. markdown.new uses a three-tier pipeline (content negotiation → Workers AI → headless browser) so it handles JS-heavy sites too.
+
+**Fallback** (if markdown.new fails or returns empty): use `npx playbooks get "<url>"` or `web_fetch`.
+
+See `references/playbooks-usage.md` for playbooks options and JSON output mode.
 
 **All modes must save to `/tmp/source_content.md`** (PDF already saves to `/tmp/content.md`). This file is the ground truth for the Original Content section — the agent must read from it during note writing, never reproduce content from memory.
 
-See `references/playbooks-usage.md` for detailed options and JSON output mode.
-
 ### 1b. Extract images (twitter and web)
+
+**This step is NOT optional.** Every web page and tweet must go through image extraction. Do not skip this step even if the fetched markdown looks "text-only" — the source page may have images that the text extraction missed.
 
 For **twitter** URLs, extract all content images from the post:
 ```bash
@@ -95,19 +100,31 @@ The script:
 
 Images are numbered in visual order (001 = first image in the article/thread).
 
-For **web** URLs, the agent examines the page directly using agent-browser:
+For **web** URLs, extract images from the markdown.new output + page inspection:
+
+**Primary method** — parse image URLs from the markdown.new output (step 1):
+```bash
+# Extract all image URLs from the fetched markdown
+grep -oP '!\[.*?\]\(\K[^)]+' /tmp/source_content.md | sort -u > /tmp/image_urls.txt
+```
+Filter out non-content images (logos, icons, favicons, OG/social cards, tracking pixels, navigation elements). Keep diagrams, charts, screenshots, figures, tables-as-images.
+
+For relative URLs, prepend the source domain (e.g. `/images/foo.png` → `https://example.com/images/foo.png`).
+
+Download each content image to the section's `_media/` folder:
+```bash
+# Use a consistent slug prefix for all images from this article
+# Convention: {domain_or_author}-{short_id}-{NNN}.{ext}
+curl -sL -o ~/obsidian-vault/Knowledge/Agents/_media/slug-001.png "<image_url>"
+```
+
+**Fallback** — if markdown.new returned no images but the page likely has them (technical blog posts usually do), open in agent-browser to inspect:
 ```bash
 agent-browser open "<url>"
-# Inspect the page — identify content images (diagrams, charts, tables, screenshots)
-# Skip decoration (logos, icons, nav images, tracking pixels)
 agent-browser eval 'JSON.stringify(Array.from(document.querySelectorAll("article img, main img, [role=main] img, .post img, .content img")).map(i=>({src:i.src,alt:i.alt,w:i.naturalWidth,h:i.naturalHeight})))'
-# Use judgment: download images that carry information not in the text
-# Download to the SECTION's _media/ folder (determined by step 5):
-# curl -sL -o ~/obsidian-vault/Knowledge/Agents/_media/slug-001.png "<image_url>"
+# Download content images, skip decoration
 agent-browser close
 ```
-No generic script needed — the agent sees the page and decides which images matter.
-Use the same slug convention: `{domain_or_author}-{short_id}-{NNN}.{ext}`
 
 For **PDFs**, skip image extraction (text-only capture via pdftotext).
 
