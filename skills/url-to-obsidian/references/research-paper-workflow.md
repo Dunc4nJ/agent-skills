@@ -92,9 +92,12 @@ Rename keepers with the slug convention:
 
 Example: `smith-04261-fig-001.png`, `smith-04261-fig-002.jpg`
 
-Copy to the appropriate `_media/` folder:
-- `Knowledge/_media/` for Knowledge notes
+Copy to the appropriate section's `_media/` folder:
+- `Knowledge/Agents/_media/` for Agents notes (most research papers)
+- `Knowledge/{Section}/_media/` for other Knowledge sections
 - `Projects/_media/` for Projects notes
+
+**No orphans**: Extract all figures aggressively, then review. Delete non-content artifacts (cover pages, decorative headers, publisher logos) before committing. Every remaining image must be embedded in the note.
 
 ## 3. Read the extracted markdown
 

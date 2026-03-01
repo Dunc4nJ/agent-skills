@@ -14,7 +14,7 @@ allowed-tools:
 Capture knowledge from a URL and create a linked vault note.
 
 **Vault location**: `~/obsidian-vault`
-**Media folders**: `~/obsidian-vault/Knowledge/_media/` (public) and `~/obsidian-vault/Projects/_media/` (private)
+**Media folders**: Per-section `_media/` (e.g. `Knowledge/Agents/_media/`, `Knowledge/Prediction Markets/_media/`) and `~/obsidian-vault/Projects/_media/` (private)
 **Collection**: `obsidian`
 
 ## Workflow
@@ -75,9 +75,9 @@ See `references/playbooks-usage.md` for detailed options and JSON output mode.
 
 For **twitter** URLs, extract all content images from the post:
 ```bash
-# Route to the correct _media/ based on where the note will live (step 5)
-# Public notes (Knowledge/):
-bash ~/.agent/skills/url-to-obsidian/scripts/extract-tweet-images.sh "<url>" "<slug>" ~/obsidian-vault/Knowledge/_media/
+# Route to the correct section _media/ based on where the note will live (step 5)
+# Example for a note going into Knowledge/Agents/:
+bash ~/.agent/skills/url-to-obsidian/scripts/extract-tweet-images.sh "<url>" "<slug>" ~/obsidian-vault/Knowledge/Agents/_media/
 
 # Private notes (Projects/):
 bash ~/.agent/skills/url-to-obsidian/scripts/extract-tweet-images.sh "<url>" "<slug>" ~/obsidian-vault/Projects/_media/
@@ -102,7 +102,8 @@ agent-browser open "<url>"
 # Skip decoration (logos, icons, nav images, tracking pixels)
 agent-browser eval 'JSON.stringify(Array.from(document.querySelectorAll("article img, main img, [role=main] img, .post img, .content img")).map(i=>({src:i.src,alt:i.alt,w:i.naturalWidth,h:i.naturalHeight})))'
 # Use judgment: download images that carry information not in the text
-# curl -sL -o ~/obsidian-vault/Knowledge/_media/slug-001.png "<image_url>"
+# Download to the SECTION's _media/ folder (determined by step 5):
+# curl -sL -o ~/obsidian-vault/Knowledge/Agents/_media/slug-001.png "<image_url>"
 agent-browser close
 ```
 No generic script needed — the agent sees the page and decides which images matter.
@@ -111,10 +112,14 @@ Use the same slug convention: `{domain_or_author}-{short_id}-{NNN}.{ext}`
 For **PDFs**, skip image extraction (text-only capture via pdftotext).
 
 **Image storage convention**:
-- Each top-level vault folder has its own `_media/` subfolder:
-  - `Knowledge/_media/` — images for public Knowledge notes (ships with public repo)
+- Images go in the `_media/` folder of the **top-level section** the note belongs to:
+  - `Knowledge/Agents/_media/` — images for Agents notes
+  - `Knowledge/Prediction Markets/_media/` — images for Prediction Markets notes
+  - `Knowledge/LLMs/_media/` — images for LLMs notes
+  - (Create `Knowledge/{Section}/_media/` for new sections as needed)
   - `Projects/_media/` — images for private Projects notes
-- This ensures images travel with their notes when folders are published separately
+- This ensures images travel with their notes during sparse checkout (e.g. checking out only `Agents/` includes its images)
+- **No orphans rule**: Every image in `_media/` MUST be referenced by at least one note. Download all content images aggressively during extraction, then review what you got. Delete non-content artifacts (OG social cards, logos, profile pictures, navigation icons, decorative images, tracking pixels) before committing. Every remaining image must be embedded in the note.
 
 **Image embedding convention** (used in step 6):
 - Embed with Obsidian wiki syntax: `![[slug-001.png]]`
@@ -127,7 +132,7 @@ For **PDFs**, skip image extraction (text-only capture via pdftotext).
 - Place embeds in the **Original Content** section near the text they illustrate
 - Also reference key images in **Key Takeaways** if they contain data absent from the text
 
-**Important**: Run image extraction AFTER determining folder placement (step 5) so you know which `_media/` folder to target. If folder placement is uncertain, default to `Knowledge/_media/` and move later if needed.
+**Important**: Run image extraction AFTER determining folder placement (step 5) so you know which section's `_media/` folder to target. Folder placement must be determined first — there is no single default `_media/` folder.
 
 ### 2. Analyze content
 
@@ -259,5 +264,6 @@ Before finishing, verify:
 - [ ] Original content is **verbatim** — verified by `verify-original-content.sh` (≥90% word coverage). Do not report success if verification fails.
 - [ ] Link to original URL included
 - [ ] Nearest MOC updated
-- [ ] **Images captured** (if source had images): downloaded to `_media/`, embedded with `![[filename]]` and captions
+- [ ] **Images captured** (if source had images): downloaded to the correct section's `_media/` folder, embedded with `![[filename]]` and captions
+- [ ] **No orphan images**: every downloaded image is referenced by the note. Delete non-content artifacts (social cards, logos, profile pics, icons) before committing.
 - [ ] Changes committed, pushed, and qmd re-indexed
