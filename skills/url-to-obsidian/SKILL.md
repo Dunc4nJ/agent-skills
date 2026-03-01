@@ -184,6 +184,8 @@ Analyze the content domain and suggest a folder:
 - **Cross-cutting knowledge** (general frameworks, tools, patterns) → `Knowledge/[Domain]/`
 - **Resource** (repo, tool, library — reference material, not synthesized knowledge) → `Knowledge/Agents/{subfolder}/resources/`
 
+If placing under `Knowledge/Agents/`, read `Knowledge/Agents/moc - Agents.md` for subfolder descriptions and placement criteria before choosing a subfolder.
+
 Create a new subfolder under `Knowledge/` if no existing folder fits.
 
 **Resource capture:** If you reach this step and realize the content is a repo/tool/library, use the resource fast-path in **step 0** above. GitHub repo URLs should have been caught there already — this is a fallback for non-GitHub tools discovered mid-analysis.
