@@ -1,65 +1,69 @@
 #!/usr/bin/env bash
-# gpu-marker — Convert PDF to markdown using marker-pdf on GPU
-# Usage: gpu-marker input.pdf [output-dir]
+# gpu-marker — Convert PDF to markdown via GPU-accelerated marker-pdf
+# Usage: gpu-marker document.pdf [output-dir]
+# Self-contained: will start a GPU instance if none is running, installs marker-pdf if needed.
 set -euo pipefail
 
-source "$(dirname "$0")/_resolve-instance.sh"
-
-if [ $# -lt 1 ]; then
-    echo "Usage: gpu-marker <input.pdf> [output-dir]"
-    echo ""
-    echo "Converts a PDF to markdown using marker-pdf on the Vast.ai GPU."
-    echo "Output includes markdown file and extracted images."
+if [ $# -eq 0 ]; then
+    echo "Usage: gpu-marker <pdf-file> [output-dir]"
     exit 1
 fi
 
-INPUT_PDF="$1"
+PDF_PATH="$1"
 OUTPUT_DIR="${2:-.}"
+PDF_NAME=$(basename "$PDF_PATH" .pdf)
 
-if [ ! -f "$INPUT_PDF" ]; then
-    echo "Error: File not found: $INPUT_PDF"
+if [ ! -f "$PDF_PATH" ]; then
+    echo "Error: File not found: $PDF_PATH"
     exit 1
 fi
 
-if [ "$VAST_STATUS" != "running" ]; then
-    echo "Error: Instance $VAST_INSTANCE_ID is $VAST_STATUS. Run 'gpu-start' first."
-    exit 1
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/_resolve-instance.sh"
+
+# Auto-start if no running instance
+if [ -z "$VAST_INSTANCE_ID" ] || [ "$VAST_STATUS" != "running" ]; then
+    echo "No running GPU instance. Starting one..."
+    "$SCRIPT_DIR/gpu-start.sh"
+    # Re-resolve after start
+    source "$SCRIPT_DIR/_resolve-instance.sh"
+    if [ -z "$VAST_INSTANCE_ID" ] || [ "$VAST_STATUS" != "running" ]; then
+        echo "ERROR: Failed to start GPU instance."
+        exit 1
+    fi
 fi
 
-ssh_host="$VAST_SSH_HOST"
-ssh_port="$VAST_SSH_PORT"
+SSH_CMD="ssh -o StrictHostKeyChecking=no -p $VAST_SSH_PORT root@$VAST_SSH_HOST"
+SCP_CMD="scp -o StrictHostKeyChecking=no -P $VAST_SSH_PORT"
 
-SSH_CMD="ssh -o StrictHostKeyChecking=no -p $ssh_port root@$ssh_host"
-SCP_CMD="scp -o StrictHostKeyChecking=no -P $ssh_port"
-
-BASENAME=$(basename "$INPUT_PDF" .pdf)
-REMOTE_DIR="/tmp/marker-jobs/$$"
-
-echo "Uploading $INPUT_PDF to GPU..."
-$SSH_CMD "mkdir -p $REMOTE_DIR" 2>/dev/null
-$SCP_CMD "$INPUT_PDF" "root@$ssh_host:$REMOTE_DIR/" 2>/dev/null
-
-echo "Running marker-pdf on GPU (this may take a few minutes)..."
-$SSH_CMD "marker_single '$REMOTE_DIR/$(basename "$INPUT_PDF")' --output_dir '$REMOTE_DIR/output' --output_format markdown" 2>&1 | \
-    grep -E '(Recognizing|Detecting|Running|Saved|Total time|Downloading)' || true
-
-REMOTE_OUTPUT=$($SSH_CMD "ls -d $REMOTE_DIR/output/*/ 2>/dev/null | head -1" 2>/dev/null || echo "")
-
-if [ -z "$REMOTE_OUTPUT" ]; then
-    REMOTE_OUTPUT="$REMOTE_DIR/output/"
+# Check if marker-pdf is installed, install if not
+if ! $SSH_CMD 'command -v marker_single' &>/dev/null; then
+    echo "Installing marker-pdf..."
+    $SSH_CMD 'pip install marker-pdf 2>&1 | tail -1 && pip install --upgrade torchvision 2>&1 | tail -1'
 fi
 
+# Upload PDF
+echo "Uploading $PDF_PATH..."
+$SCP_CMD "$PDF_PATH" "root@$VAST_SSH_HOST:/tmp/$PDF_NAME.pdf"
+
+# Run marker
+echo "Running marker-pdf on GPU..."
+$SSH_CMD "mkdir -p /tmp/marker-output && marker_single /tmp/$PDF_NAME.pdf --output_dir /tmp/marker-output" 2>&1
+
+# Download results
+mkdir -p "$OUTPUT_DIR"
 echo "Downloading results..."
-mkdir -p "$OUTPUT_DIR/$BASENAME"
-$SCP_CMD -r "root@$ssh_host:${REMOTE_OUTPUT%/}/*" "$OUTPUT_DIR/$BASENAME/" 2>/dev/null
 
-$SSH_CMD "rm -rf $REMOTE_DIR" 2>/dev/null &
+# Find the output directory (marker creates a subdirectory)
+REMOTE_OUT=$($SSH_CMD "ls -d /tmp/marker-output/$PDF_NAME/ 2>/dev/null || ls -d /tmp/marker-output/*/ 2>/dev/null | head -1" 2>/dev/null)
 
-md_file=$(find "$OUTPUT_DIR/$BASENAME" -name "*.md" -type f | head -1)
-img_count=$(find "$OUTPUT_DIR/$BASENAME" -name "*.jpeg" -o -name "*.png" -type f 2>/dev/null | wc -l)
+if [ -z "$REMOTE_OUT" ]; then
+    echo "ERROR: No marker output found on GPU."
+    exit 1
+fi
 
-echo ""
-echo "Done!"
-echo "  Markdown: $md_file"
-echo "  Images:   $img_count extracted"
-echo "  Output:   $OUTPUT_DIR/$BASENAME/"
+$SCP_CMD -r "root@$VAST_SSH_HOST:$REMOTE_OUT" "$OUTPUT_DIR/"
+echo "Done. Output in: $OUTPUT_DIR/$PDF_NAME/"
+
+# List output files
+ls -la "$OUTPUT_DIR/$PDF_NAME/" 2>/dev/null || ls -la "$OUTPUT_DIR/" 2>/dev/null

@@ -1,22 +1,18 @@
 #!/usr/bin/env bash
-# gpu-run — Run an arbitrary command on the Vast.ai GPU instance
+# gpu-run — Run a command on the GPU instance via SSH
+# Usage: gpu-run 'pip install something'
 set -euo pipefail
 
-source "$(dirname "$0")/_resolve-instance.sh"
-
 if [ $# -eq 0 ]; then
-    echo "Usage: gpu-run <command>"
-    echo ""
-    echo "Run any command on the Vast.ai GPU instance."
-    echo "Examples:"
-    echo "  gpu-run 'nvidia-smi'"
-    echo "  gpu-run 'pip install sentence-transformers'"
-    echo "  gpu-run 'python3 script.py'"
+    echo "Usage: gpu-run 'command'"
     exit 1
 fi
 
-if [ "$VAST_STATUS" != "running" ]; then
-    echo "Error: Instance $VAST_INSTANCE_ID is $VAST_STATUS. Run 'gpu-start' first."
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/_resolve-instance.sh"
+
+if [ -z "$VAST_INSTANCE_ID" ] || [ "$VAST_STATUS" != "running" ]; then
+    echo "No running GPU instance. Run 'gpu-start' first."
     exit 1
 fi
 

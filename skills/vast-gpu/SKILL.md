@@ -5,25 +5,25 @@ description: "Cloud GPU access via Vast.ai for marker-pdf, embeddings, and ML wo
 
 # Vast.ai Cloud GPU
 
-Cloud GPU accessible from this CPU-only VPS via SSH. Instance is resolved dynamically — scripts auto-detect the best available instance (running > exited, newest first). No hardcoded instance IDs. Typical GPU: RTX 3090 (24 GB VRAM). Cost: ~$0.11-0.20/hr running, ~$0.03/GB/mo storage when stopped.
+On-demand cloud GPU from Vast.ai marketplace. Instances are **ephemeral** — created when needed, destroyed after use. No persistent instances, no idle storage costs.
+
+`gpu-marker` is fully self-contained: if no GPU is running, it searches for one, creates an instance, installs marker-pdf, processes the PDF, and returns results. For batch work (multiple PDFs), call `gpu-start` first to avoid repeated setup, then `gpu-stop` when done.
 
 ## Quick Reference
 
 ```bash
-# Instance management
-gpu-start                        # Start instance, wait for SSH
-gpu-stop                         # Stop instance (preserves disk)
-gpu-status                       # Show status, uptime, cost
-gpu-ssh                          # Interactive SSH session
-gpu-ssh 'nvidia-smi'             # Run single command
-
-# PDF conversion
-gpu-marker paper.pdf             # Convert PDF to markdown via GPU
+# Self-contained PDF conversion (handles everything automatically)
+gpu-marker paper.pdf             # Find/create GPU, install marker, convert, return results
 gpu-marker paper.pdf ./output    # Specify output directory
 
-# Arbitrary commands
-gpu-run 'pip install something'  # Install packages
-gpu-run 'python3 script.py'      # Run scripts
+# Explicit instance management (for batch work)
+gpu-start                        # Search marketplace, create instance, install marker
+gpu-stop                         # DESTROY instance (default — no ongoing cost)
+gpu-stop --pause                 # Stop only (preserves disk, pays storage)
+gpu-status                       # Show current instance status
+gpu-ssh                          # Interactive SSH session
+gpu-ssh 'nvidia-smi'             # Run single command
+gpu-run 'pip install something'  # Run arbitrary commands
 ```
 
 All scripts live at `~/.agent/skills/vast-gpu/scripts/` and are symlinked to `~/.local/bin/`.
@@ -53,15 +53,14 @@ gpu-start
 
 Cold start takes 30-60 seconds. SSH becomes available 10-30 seconds after that.
 
-### Stop (save money)
+### Stop (destroy by default)
 
 ```bash
-gpu-stop
-# Stops instance, preserves disk state
-# Only pays storage (~$0.03/GB/mo) while stopped
+gpu-stop              # Destroy instance — no ongoing cost
+gpu-stop --pause      # Stop only — preserves disk, pays ~$0.03/GB/mo storage
 ```
 
-Always stop when not actively using GPU. At $0.11/hr, leaving it running overnight costs ~$1.
+**Default is destroy.** Instances are ephemeral — `gpu-start` creates a fresh one in ~1-2 minutes. Use `--pause` only during multi-session batch work where you want to preserve cached models between runs.
 
 ### Status
 
@@ -145,14 +144,14 @@ ssh -L 8080:localhost:8080 -p 15400 root@ssh3.vast.ai
 
 | State | Cost | What persists |
 |-------|------|---------------|
-| **Running** | ~$0.11/hr | Everything |
-| **Stopped** | ~$0.03/GB/mo (50 GB = ~$1.50/mo) | Disk, installed packages, cached models |
-| **Destroyed** | $0 | Nothing (must re-create and re-install) |
+| **Running** | ~$0.11-0.20/hr | Everything |
+| **Stopped** (`--pause`) | ~$0.03/GB/mo (50 GB = ~$1.50/mo) | Disk, installed packages, cached models |
+| **Destroyed** (default) | $0 | Nothing — `gpu-start` creates fresh next time |
 
 Rules:
-- Stop after every use session
-- Never destroy unless you want to switch GPUs or regions
-- Check `gpu-status` before starting work to avoid surprise charges
+- Default to destroy after every use (`gpu-stop`)
+- `gpu-marker` is self-contained — just call it, it handles the rest
+- For batch work: `gpu-start` → multiple `gpu-marker` calls → `gpu-stop`
 
 ### Check spending
 
