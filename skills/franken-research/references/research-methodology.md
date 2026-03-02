@@ -102,13 +102,13 @@ Each explore agent should:
 
 After exploration results return, evaluate each feature or pattern:
 
-1. **Is this genuinely novel?** Check against existing research docs and the "What We're Building" section. If another repo already has a stronger version, it's not this repo's gift. If this repo has a unique approach, that IS novel.
+1. **Document all significant features in Feature Analysis** -- even if another repo implements the same capability. Seeing HOW different repos solve the same problem reveals different approaches, trade-offs, and sometimes a superior implementation. Feature Analysis is a complete record of what this repo does.
 
-2. **Is this well-implemented?** Look for sophistication -- edge case handling, extensibility, clean abstractions.
+2. **For the "adopt" section, filter for genuine novelty.** Check against existing research docs and the "What We're Building" section. If another repo already has a stronger version of the same approach, it's not this repo's gift. But if this repo has a meaningfully different approach to the same problem, that IS worth adopting -- note what makes the approach distinct.
 
-3. **Would this make {PROJECT_NAME} better?** Evaluate against the stated priorities.
+3. **Is this well-implemented?** Look for sophistication -- edge case handling, extensibility, clean abstractions.
 
-4. **Is this table stakes or genuinely distinctive?** Common features are table stakes. Document them in Feature Analysis but do NOT promote to the "adopt" section unless genuinely superior.
+4. **Would this make {PROJECT_NAME} better?** Evaluate against the stated priorities.
 
 Optional: briefly explore 1-2 other repos to confirm novelty.
 
