@@ -42,9 +42,33 @@ bash ~/.agent/skills/url-to-obsidian/scripts/detect-url-type.sh "<url-or-path>"
 # Outputs: "pdf", "twitter", or "web"
 ```
 
-**If pdf** (local file path or URL ending in `.pdf`):
+**If arxiv** (URL contains `arxiv.org`):
 
-For **research papers** (arXiv, academic PDFs with figures/tables): follow `references/research-paper-workflow.md` instead — it uses **marker-pdf on a Vast.ai GPU instance** (see `vast-gpu` skill) for best-in-class extraction: OCR, LaTeX equations, correct multi-column reading order, and inline figure extraction. Vision QC for figure filtering and a paper-specific note template. Rejoin this workflow at step 4.
+**Always use GPU extraction via Vast.ai.** ArXiv papers have figures, tables, equations, and multi-column layouts that CPU-only extraction mangles. This is non-negotiable.
+
+```bash
+# 1. Download the PDF
+curl -sL "https://arxiv.org/pdf/<paper-id>" -o /tmp/paper.pdf
+
+# 2. Check GPU status and start if needed (see vast-gpu skill)
+gpu-status
+gpu-start  # if not running
+
+# 3. Extract via GPU marker-pdf
+gpu-marker /tmp/paper.pdf /tmp/paper-output
+
+# 4. Output contains markdown + extracted figure images
+# Copy figures to the vault _media/ folder with appropriate prefix
+# Use the markdown as /tmp/source_content.md
+cp /tmp/paper-output/*.md /tmp/source_content.md
+```
+
+For `source` frontmatter: use the abstract URL (e.g., `https://arxiv.org/abs/2405.15793`), not the PDF URL.
+After extraction, **stop the GPU** to avoid charges: `gpu-stop`
+
+**If pdf** (non-arxiv local file path or URL ending in `.pdf`):
+
+For **research papers with figures/tables**: use GPU extraction (same as arxiv above). Download the PDF first if it's a URL.
 
 For **simple PDFs** (reports, docs without important figures):
 ```bash

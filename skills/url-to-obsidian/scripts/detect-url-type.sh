@@ -23,7 +23,9 @@ NORMALIZED=$(echo "$INPUT" | sed -E 's|^https?://||; s|^www\.||')
 
 # Remote PDF URL (strip query params for extension check)
 URL_PATH="${NORMALIZED%%\?*}"
-if [[ "${URL_PATH,,}" == *.pdf ]]; then
+if [[ "$NORMALIZED" =~ ^arxiv\.org/ ]]; then
+  echo "arxiv"
+elif [[ "${URL_PATH,,}" == *.pdf ]]; then
   echo "pdf"
 elif [[ "$NORMALIZED" =~ ^(x\.com|twitter\.com)/ ]]; then
   echo "twitter"
