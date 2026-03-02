@@ -353,7 +353,7 @@ Usage notes:
 
 <skill>
 <name>franken-research</name>
-<description>"Multi-repo comparative research for building best-of-breed projects. Explores multiple related repositories, interviews the user about what they're building, and generates a research prompt for deep feature extraction. Use when the user says 'franken-research', 'research these repos', 'extract features from repos', 'build a franken project', 'compare repositories', or wants to create a project by combining the best features from multiple existing codebases."</description>
+<description>"This skill should be used when the user says 'franken-research', 'research these repos', 'extract features from repos', 'build a franken project', 'compare repositories', or wants to create a project by combining the best features from multiple existing codebases. Multi-repo comparative research for building best-of-breed projects — explores repositories, interviews the user about what they're building, and generates a research prompt for deep feature extraction."</description>
 <location>global</location>
 </skill>
 

@@ -1,6 +1,6 @@
 ---
 name: franken-research
-description: "Multi-repo comparative research for building best-of-breed projects. Explores multiple related repositories, interviews the user about what they're building, and generates a research prompt for deep feature extraction. Use when the user says 'franken-research', 'research these repos', 'extract features from repos', 'build a franken project', 'compare repositories', or wants to create a project by combining the best features from multiple existing codebases."
+description: "This skill should be used when the user says 'franken-research', 'research these repos', 'extract features from repos', 'build a franken project', 'compare repositories', or wants to create a project by combining the best features from multiple existing codebases. Multi-repo comparative research for building best-of-breed projects — explores repositories, interviews the user about what they're building, and generates a research prompt for deep feature extraction."
 ---
 
 # Franken-Research
@@ -9,17 +9,10 @@ Extract the best features from multiple related repositories and stitch them int
 
 ## Mode Routing
 
-Parse the user's message to determine which mode to run:
+Determine which mode to run:
 
-**Interview mode** — triggered by:
-- Project description: "I want to build X", "research these repos", "franken-research [description]"
-- No @-referenced research prompt
-- Route to `references/interview-guide.md`
-
-**Research mode** — triggered by:
-- "review repo X", "research [repo name]", @research_prompt reference
-- A `research_docs/research_prompt.md` must exist in the workspace
-- Read `research_docs/research_prompt.md` (or the @-referenced prompt) and follow its phases directly
+**User describes a project or says "research these repos"?** → Interview mode. Route to `references/interview-guide.md`
+**User says "review repo X" or references an existing research prompt?** → Research mode. Read `research_docs/research_prompt.md` (or the @-referenced prompt) and follow its phases directly. A `research_docs/research_prompt.md` must exist in the workspace.
 
 ## Interview Mode (Overview)
 
