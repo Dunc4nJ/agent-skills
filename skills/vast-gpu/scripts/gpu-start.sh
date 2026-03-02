@@ -2,46 +2,34 @@
 # gpu-start — Start the Vast.ai GPU instance and wait for SSH
 set -euo pipefail
 
-INSTANCE_ID=32154587
-MAX_WAIT=180  # seconds
+source "$(dirname "$0")/_resolve-instance.sh"
 
-# Check current status
-status=$(vastai show instances --raw 2>/dev/null | python3 -c "
-import sys, json
-data = json.load(sys.stdin)
-inst = [x for x in data if x.get('id') == $INSTANCE_ID]
-print(inst[0].get('actual_status', 'unknown') if inst else 'not_found')
-" 2>/dev/null || echo "error")
+MAX_WAIT=180
 
-if [ "$status" = "running" ]; then
-    echo "Instance $INSTANCE_ID is already running."
-    # Print SSH info
+if [ "$VAST_STATUS" = "running" ]; then
+    echo "Instance $VAST_INSTANCE_ID is already running."
+    echo "  SSH: ssh -p $VAST_SSH_PORT root@$VAST_SSH_HOST"
     vastai show instances --raw 2>/dev/null | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
-inst = [x for x in data if x.get('id') == $INSTANCE_ID][0]
-print(f\"SSH: ssh -p {inst.get('ssh_port', 'N/A')} root@{inst.get('ssh_host', 'N/A')}\")
-print(f\"GPU: {inst.get('gpu_name', 'N/A')}\")
+inst = [x for x in data if x.get('id') == $VAST_INSTANCE_ID]
+if inst:
+    print(f\"  GPU: {inst[0].get('gpu_name', 'N/A')}\")
 " 2>/dev/null
     exit 0
 fi
 
-if [ "$status" = "not_found" ]; then
-    echo "Error: Instance $INSTANCE_ID not found. It may have been destroyed."
-    echo "Search for a new instance: vastai search offers 'gpu_name=RTX_3090 num_gpus=1 reliability>0.95 dph<0.50' -o 'dph' --limit 10"
-    exit 1
-fi
-
-echo "Starting instance $INSTANCE_ID..."
-vastai start instance "$INSTANCE_ID" 2>&1
+echo "Starting instance $VAST_INSTANCE_ID (was: $VAST_STATUS)..."
+vastai start instance "$VAST_INSTANCE_ID" 2>&1
 
 echo "Waiting for instance to boot..."
 elapsed=0
+status="$VAST_STATUS"
 while [ "$elapsed" -lt "$MAX_WAIT" ]; do
     status=$(vastai show instances --raw 2>/dev/null | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
-inst = [x for x in data if x.get('id') == $INSTANCE_ID]
+inst = [x for x in data if x.get('id') == $VAST_INSTANCE_ID]
 print(inst[0].get('actual_status', 'unknown') if inst else 'not_found')
 " 2>/dev/null || echo "error")
 
@@ -63,7 +51,7 @@ fi
 ssh_info=$(vastai show instances --raw 2>/dev/null | python3 -c "
 import sys, json
 data = json.load(sys.stdin)
-inst = [x for x in data if x.get('id') == $INSTANCE_ID][0]
+inst = [x for x in data if x.get('id') == $VAST_INSTANCE_ID][0]
 print(f\"{inst.get('ssh_host', '')} {inst.get('ssh_port', '')}\")
 " 2>/dev/null)
 ssh_host=$(echo "$ssh_info" | cut -d' ' -f1)
@@ -76,7 +64,6 @@ while [ "$ssh_elapsed" -lt 120 ]; do
         echo ""
         echo "GPU instance ready!"
         echo "  SSH: ssh -p $ssh_port root@$ssh_host"
-        # Show GPU info
         ssh -o StrictHostKeyChecking=no -p "$ssh_port" "root@$ssh_host" 'nvidia-smi --query-gpu=name,memory.total --format=csv,noheader' 2>/dev/null || true
         exit 0
     fi

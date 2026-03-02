@@ -5,7 +5,7 @@ description: "Cloud GPU access via Vast.ai for marker-pdf, embeddings, and ML wo
 
 # Vast.ai Cloud GPU
 
-RTX 3090 (24 GB VRAM) accessible from this CPU-only VPS via SSH. Instance ID: `32135400`. Cost: ~$0.11/hr running, ~$0.03/GB/mo storage when stopped.
+Cloud GPU accessible from this CPU-only VPS via SSH. Instance is resolved dynamically — scripts auto-detect the best available instance (running > exited, newest first). No hardcoded instance IDs. Typical GPU: RTX 3090 (24 GB VRAM). Cost: ~$0.11-0.20/hr running, ~$0.03/GB/mo storage when stopped.
 
 ## Quick Reference
 
@@ -33,13 +33,14 @@ All scripts live at `~/.agent/skills/vast-gpu/scripts/` and are symlinked to `~/
 ```
 VPS (CPU-only)                    Vast.ai (GPU)
 +-----------------+    SSH     +----------------------+
-| ubuntu@vps      | --------> | root@ssh3.vast.ai    |
-| gpu-marker      |  port     | RTX 3090 (24 GB)     |
-| gpu-start/stop  |  15400    | PyTorch 2.10 + CUDA  |
-| vastai CLI      |           | marker-pdf 1.10.2    |
-+-----------------+           | surya-ocr 0.17.1     |
+| ubuntu@vps      | --------> | root@sshN.vast.ai    |
+| gpu-marker      |  auto     | RTX 3090+ (24 GB)    |
+| gpu-start/stop  |  resolved | PyTorch + CUDA       |
+| vastai CLI      |           | marker-pdf           |
++-----------------+           | surya-ocr            |
                               +----------------------+
 ```
+Instance ID, SSH host, and port are resolved dynamically by `_resolve-instance.sh`.
 
 ## Instance Management
 
@@ -159,20 +160,22 @@ Rules:
 vastai show invoices
 ```
 
-## Changing Instance
+## Changing Instance / Instance Gone
 
-To switch to a different GPU or cheaper instance:
+Scripts auto-resolve the best instance — no hardcoded IDs to update. If your instance was destroyed or you want a different GPU:
 
 ```bash
 # Search for alternatives
-vastai search offers 'gpu_name=RTX_4090 num_gpus=1 reliability>0.95 dph<0.50' -o 'dph' --limit 10
+vastai search offers 'gpu_name=RTX_3090 num_gpus=1 reliability>0.95 dph<0.20' -o 'dph' --limit 10
 
-# Create new instance (update instance ID in scripts afterward)
+# Create new instance (scripts will auto-detect it)
 vastai create instance <OFFER_ID> --image pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel --disk 50 --ssh --direct
 
-# Update scripts
-sed -i 's/INSTANCE_ID=.*/INSTANCE_ID=<NEW_ID>/' ~/.agent/skills/vast-gpu/scripts/gpu-*.sh
+# Verify scripts pick it up
+gpu-status
 ```
+
+No need to edit any scripts — `_resolve-instance.sh` finds the newest running or exited instance automatically.
 
 After creating a new instance, re-install marker-pdf:
 ```bash
@@ -190,8 +193,11 @@ gpu-ssh 'pip install marker-pdf && pip install --upgrade torchvision'
 gpu-ssh 'pip install --upgrade torchvision'
 ```
 
-**Instance destroyed / need to recreate** — Search for a new offer, create instance, reinstall:
+**Instance destroyed / need to recreate** — Scripts will report "No instances found." Search for a new offer, create one, and scripts auto-detect it:
 ```bash
+vastai search offers 'gpu_name=RTX_3090 num_gpus=1 reliability>0.95 dph<0.20' -o 'dph' --limit 5
+vastai create instance <OFFER_ID> --image pytorch/pytorch:2.5.1-cuda12.4-cudnn9-devel --disk 50 --ssh --direct
+gpu-status  # Should now find the new instance
 gpu-ssh 'pip install marker-pdf && pip install --upgrade torchvision'
 ```
 
