@@ -1,8 +1,35 @@
-# Button Types Reference
+# Button Types Reference (v3.0)
 
-## Text Button (Paste Prompt)
+## Plugin.UUID vs UUID
 
-The primary button type. Pastes text into the focused application.
+Every button has two UUID fields:
+
+| Field | Purpose |
+|---|---|
+| `Plugin.UUID` | The **plugin** that powers the button |
+| `UUID` (top-level) | The specific **action variant** within that plugin |
+
+For most types these are identical. The exception is **page navigation** — one plugin (`com.elgato.streamdeck.page`) provides three variants.
+
+### Reference Table
+
+| Plugin UUID | Action UUID (top-level) | Name | Purpose |
+|---|---|---|---|
+| `com.elgato.streamdeck.system.text` | (same) | Text | Pastes text |
+| `com.elgato.streamdeck.system.hotkey` | (same) | Hotkey | Keyboard shortcut |
+| `com.elgato.streamdeck.page` | `.page.next` | Next Page | Next page |
+| `com.elgato.streamdeck.page` | `.page.previous` | Previous Page | Previous page |
+| `com.elgato.streamdeck.page` | `.page.pop` | Go to Page | Jump to specific page |
+| `com.elgato.streamdeck.profile.openchild` | (same) | Create Folder | Opens folder |
+| `com.elgato.streamdeck.profile.backtoparent` | (same) | Back to Parent | Returns from folder |
+
+> **RequiredPlugins** in `package.json` uses `Plugin.UUID` values only. For page nav, add `com.elgato.streamdeck.page` once — not each variant.
+
+---
+
+## Text Button
+
+Pastes text into the focused application.
 
 ```json
 {
@@ -14,6 +41,7 @@ The primary button type. Pastes text into the focused application.
     "UUID": "com.elgato.streamdeck.system.text",
     "Version": "1.0"
   },
+  "Resources": null,
   "Settings": {
     "Hotkey": {
       "KeyModifiers": 0,
@@ -28,12 +56,13 @@ The primary button type. Pastes text into the focused application.
   "States": [
     {
       "FontFamily": "Verdana",
-      "FontSize": 7,
+      "FontSize": 10,
       "FontStyle": "Regular",
       "FontUnderline": false,
       "Image": "Images/YOUR_IMAGE.png",
       "OutlineThickness": 2,
       "ShowTitle": true,
+      "Title": "Button Label",
       "TitleAlignment": "top",
       "TitleColor": "#ffffff"
     }
@@ -45,9 +74,8 @@ The primary button type. Pastes text into the focused application.
 Key fields:
 - `Settings.pastedText` — text pasted on press
 - `Settings.isSendingEnter` — `true` to auto-submit after paste
-- `Settings.isTypingMode` — `true` types char-by-char (slower, more compatible); `false` clipboard paste
-- `States[0].Image` — icon path (288×288 PNG, relative to page dir)
-- `States[0].Title` — label text (only shown if `ShowTitle` is true)
+- `Settings.isTypingMode` — `true` types char-by-char; `false` clipboard paste
+- `Resources` — always `null`
 
 ## Hotkey Button
 
@@ -63,6 +91,7 @@ Sends a keyboard shortcut.
     "UUID": "com.elgato.streamdeck.system.hotkey",
     "Version": "1.0"
   },
+  "Resources": null,
   "Settings": {
     "Coalesce": true,
     "Hotkeys": [
@@ -96,38 +125,152 @@ Sends a keyboard shortcut.
 }
 ```
 
-KeyModifiers bitmask: 1=Shift, 2=Ctrl, 4=Option, 8=Cmd (sum for combos).
+KeyModifiers bitmask: 1=Shift, 2=Ctrl, 4=Option, 8=Cmd.
 
-## Navigation Buttons
+## Folder Opener
 
-**Next Page:**
-- `Plugin.UUID`: `com.elgato.streamdeck.page.next`
-- `Settings`: `{}`
+Opens a nested button group. `Settings.ProfileUUID` links to the folder directory (lowercase).
 
-**Previous Page:**
-- `Plugin.UUID`: `com.elgato.streamdeck.page.previous`
-- `Settings`: `{}`
+```json
+{
+  "ActionID": "<uuid-v4>",
+  "LinkedTitle": true,
+  "Name": "Create Folder",
+  "Plugin": {
+    "Name": "Create Folder",
+    "UUID": "com.elgato.streamdeck.profile.openchild",
+    "Version": "1.0"
+  },
+  "Resources": null,
+  "Settings": {
+    "ProfileUUID": "<folder-uuid-lowercase>"
+  },
+  "State": 0,
+  "States": [
+    {
+      "FontFamily": "Verdana",
+      "FontSize": 7,
+      "FontStyle": "Regular",
+      "FontUnderline": false,
+      "Image": "Images/FOLDER_ICON.png",
+      "OutlineThickness": 2,
+      "ShowTitle": true,
+      "Title": "Folder Name",
+      "TitleAlignment": "top",
+      "TitleColor": "#ffffff"
+    }
+  ],
+  "UUID": "com.elgato.streamdeck.profile.openchild"
+}
+```
 
-**Go to Page:**
-- `Plugin.UUID`: `com.elgato.streamdeck.page.pop`
-- `Settings.ProfileUUID`: target page UUID from top-level manifest `Pages.Pages` array
+⚠️ Do NOT add folder UUIDs to `Pages.Pages`. Folders are linked only via `Settings.ProfileUUID`.
 
-## Folder Button
+## Back Button (inside folder at 0,0)
 
-Opens a nested sub-layout. Contents stored as a separate profile directory under `Profiles/`.
+Returns from folder to parent view.
 
-**Folder opener** (on main page):
-- `Plugin.Name`: `"Create Folder"`
-- `Plugin.UUID`: `com.elgato.streamdeck.profile.openchild`
-- `UUID`: `com.elgato.streamdeck.profile.openchild`
-- `Settings.ProfileUUID`: UUID of the folder's sub-profile directory name
+```json
+{
+  "ActionID": "<uuid-v4>",
+  "LinkedTitle": true,
+  "Name": "Parent Folder",
+  "Plugin": {
+    "Name": "Open Parent Folder",
+    "UUID": "com.elgato.streamdeck.profile.backtoparent",
+    "Version": "1.0"
+  },
+  "Resources": null,
+  "Settings": {},
+  "State": 0,
+  "States": [{}],
+  "UUID": "com.elgato.streamdeck.profile.backtoparent"
+}
+```
 
-**Back button** (at `0,0` inside the folder — must be added explicitly):
-- `Plugin.Name`: `"Open Folder"`
-- `Plugin.UUID`: `com.elgato.streamdeck.profile.backtoparent`
-- `UUID`: `com.elgato.streamdeck.profile.backtoparent`
-- `Settings`: `null`
+Critical details:
+- `Name`: `"Parent Folder"` (not "Back")
+- `Plugin.Name`: `"Open Parent Folder"` (not "Open Folder" or "Back")
+- `Settings`: `{}` (empty object, **NOT** `null`)
+- `States`: `[{}]` (Stream Deck renders icon automatically)
 
-⚠️ **WARNING:** Do NOT use `com.elgato.streamdeck.profile.folder` — that UUID does not work. The correct UUID is `openchild` (verified from reference implementation).
+## Page Navigation Buttons
 
-The folder's `manifest.json` uses the same `Controllers[0].Actions` structure with `row,col` keys.
+All share `Plugin.UUID: "com.elgato.streamdeck.page"`. The variant goes in the top-level `UUID` field. All have `"Settings": {}` and `"States": [{}]`.
+
+### Next Page
+
+```json
+{
+  "ActionID": "<uuid-v4>",
+  "LinkedTitle": true,
+  "Name": "Next Page",
+  "Plugin": {
+    "Name": "Pages",
+    "UUID": "com.elgato.streamdeck.page",
+    "Version": "1.0"
+  },
+  "Resources": null,
+  "Settings": {},
+  "State": 0,
+  "States": [{}],
+  "UUID": "com.elgato.streamdeck.page.next"
+}
+```
+
+### Previous Page
+
+```json
+{
+  "ActionID": "<uuid-v4>",
+  "LinkedTitle": true,
+  "Name": "Previous Page",
+  "Plugin": {
+    "Name": "Pages",
+    "UUID": "com.elgato.streamdeck.page",
+    "Version": "1.0"
+  },
+  "Resources": null,
+  "Settings": {},
+  "State": 0,
+  "States": [{}],
+  "UUID": "com.elgato.streamdeck.page.previous"
+}
+```
+
+### Go to Page
+
+```json
+{
+  "ActionID": "<uuid-v4>",
+  "LinkedTitle": true,
+  "Name": "Go To Page",
+  "Plugin": {
+    "Name": "Pages",
+    "UUID": "com.elgato.streamdeck.page",
+    "Version": "1.0"
+  },
+  "Resources": null,
+  "Settings": {
+    "ProfileUUID": "<target-page-uuid-lowercase>"
+  },
+  "State": 0,
+  "States": [{}],
+  "UUID": "com.elgato.streamdeck.page.pop"
+}
+```
+
+---
+
+## Common Mistakes
+
+| Mistake | Symptom | Fix |
+|---|---|---|
+| Using `com.elgato.streamdeck.page.next` as `Plugin.UUID` | Button doesn't work | Use `com.elgato.streamdeck.page` for `Plugin.UUID`; variant goes in top-level `UUID` |
+| Adding folder UUID to `Pages.Pages` | Folder appears as a page | Remove from `Pages.Pages`; link via `Settings.ProfileUUID` only |
+| UPPERCASE UUID in JSON references | Profile doesn't load | Use lowercase in all JSON fields; UPPERCASE for directory names only |
+| Missing `"Resources": null` on buttons | May not import correctly | Always include `"Resources": null` on every button |
+| `Settings: null` on Back button | Back button broken | Use `"Settings": {}` (empty object) |
+| Wrong `Plugin.Name` on Back button | May not render correctly | Must be `"Open Parent Folder"` |
+| Adding variant UUIDs to RequiredPlugins | May not import correctly | Use plugin-level UUIDs only (e.g., `com.elgato.streamdeck.page`) |
+| `Pages.Pages` in wrong order | Wrong navigation sequence | Order determines Next/Previous navigation |

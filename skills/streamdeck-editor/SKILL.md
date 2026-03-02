@@ -1,6 +1,6 @@
 ---
 name: streamdeck-editor
-description: Edit Elgato Stream Deck XL profile buttons — change prompts, icons, labels, or add/remove buttons. Use when the user says "edit stream deck", "change a button", "replace button", "update stream deck profile", "add a stream deck button", "swap prompt", or mentions the Stream Deck profile. Includes a validation script to verify profile integrity before committing.
+description: Edit Elgato Stream Deck XL profile buttons — change prompts, icons, labels, or add/remove buttons. Use when the user says "edit stream deck", "change a button", "replace button", "update stream deck profile", "add a stream deck button", "swap prompt", or mentions the Stream Deck profile. Includes validation and layout dump scripts.
 ---
 
 # Stream Deck Profile Editor
@@ -9,7 +9,32 @@ description: Edit Elgato Stream Deck XL profile buttons — change prompts, icon
 
 - **Repo:** `/data/projects/streamdeck/`
 - **File:** `vibecoding_profile.streamDeckProfile` (ZIP archive)
-- **Format:** ZIP containing `AFBA0E43-48AA-48AC-958A-81E928D63A81.sdProfile/`
+- **Format version:** 3.0 (Stream Deck app 7.2+)
+
+## File Format (v3.0)
+
+The `.streamDeckProfile` ZIP contains at root level:
+
+```
+package.json                    # App version, device model, required plugins
+Profiles/
+  268CEC16-E96D-45BB-B272-71BF8C5AB763.sdProfile/
+    manifest.json               # Top-level profile metadata (device, pages)
+    Profiles/
+      69504FFB-41E2-410D-A4E3-A35D76040128/   # Page 1
+        manifest.json
+        Images/
+      AC1E1595-5240-46C5-8FEF-A7FE83A80058/   # Page 2
+        manifest.json
+        Images/
+      2EEB9127-1957-4BA5-A04B-F65584EFC1FE/   # Dueling Wizards folder
+        manifest.json
+        Images/
+```
+
+> **UUID Case Convention:** Directory names are **UPPERCASE**, JSON references are **lowercase**. This is critical.
+
+> **Resources field:** Every button must include `"Resources": null`.
 
 ## Grid Layout
 
@@ -26,18 +51,21 @@ cd /tmp/sd-edit
 unzip -q profile.zip
 ```
 
-### 2. Locate the Manifest
+### 2. Locate Key Files
 
-Main button config:
 ```
-AFBA0E43-48AA-48AC-958A-81E928D63A81.sdProfile/Profiles/BRMVM6VC1P1AP3DRJG6D7SSB2KZ/manifest.json
+package.json                                                                              # Root metadata
+Profiles/268CEC16-E96D-45BB-B272-71BF8C5AB763.sdProfile/manifest.json                    # Profile config
+Profiles/268CEC16-E96D-45BB-B272-71BF8C5AB763.sdProfile/Profiles/69504FFB-41E2-410D-A4E3-A35D76040128/manifest.json  # Page 1
+Profiles/268CEC16-E96D-45BB-B272-71BF8C5AB763.sdProfile/Profiles/AC1E1595-5240-46C5-8FEF-A7FE83A80058/manifest.json  # Page 2
+Profiles/268CEC16-E96D-45BB-B272-71BF8C5AB763.sdProfile/Profiles/2EEB9127-1957-4BA5-A04B-F65584EFC1FE/manifest.json  # Dueling Wizards folder
 ```
 
-Read a specific button (e.g. row 2, col 1):
+Read a specific button (e.g. row 2, col 1 on Page 1):
 ```bash
 python3 -c "
 import json
-with open('AFBA0E43-48AA-48AC-958A-81E928D63A81.sdProfile/Profiles/BRMVM6VC1P1AP3DRJG6D7SSB2KZ/manifest.json') as f:
+with open('Profiles/268CEC16-E96D-45BB-B272-71BF8C5AB763.sdProfile/Profiles/69504FFB-41E2-410D-A4E3-A35D76040128/manifest.json') as f:
     d = json.load(f)
 print(json.dumps(d['Controllers'][0]['Actions']['2,1'], indent=2))
 "
@@ -55,22 +83,19 @@ Use Python to load, modify, and write back the manifest JSON. Common edits:
 | Auto-send Enter | `Settings.isSendingEnter` (bool) |
 | Show/hide label | `States[0].ShowTitle` (bool) |
 
-**Icons:** Must be **288×288 PNG** (@2x for the XL's 144×144 logical grid). Place in `Images/` directory next to the manifest. Use ImageMagick to resize:
-```bash
-convert input.jpg -resize 288x288! Images/MY_ICON.png
-```
+**Icons:** Must be **144×144 PNG**. Place in `Images/` directory next to the manifest.
 
-**New buttons:** Add a new entry under `Controllers[0].Actions` with a unique UUID v4 as `ActionID`. See `references/button-types.md` for all supported types.
+**New buttons:** Add a new entry under `Controllers[0].Actions` with a unique UUID v4 as `ActionID`. Always include `"Resources": null`. See `references/button-types.md` for all supported types.
 
 ### 4. Repackage
 
 ```bash
 cd /tmp/sd-edit
-zip -r vibecoding_profile.streamDeckProfile AFBA0E43-48AA-48AC-958A-81E928D63A81.sdProfile/
-cp vibecoding_profile.streamDeckProfile /data/projects/streamdeck/
+zip -r profile.streamDeckProfile package.json Profiles/
+cp profile.streamDeckProfile /data/projects/streamdeck/vibecoding_profile.streamDeckProfile
 ```
 
-**Critical:** The ZIP root must be the `.sdProfile` directory — not nested in extra folders.
+**Critical:** The ZIP root must contain `package.json` and `Profiles/` directly — not nested in extra folders.
 
 ### 5. Validate
 
@@ -79,14 +104,6 @@ Run the validation script before committing:
 ```bash
 bash /data/projects/streamdeck/validate-profile.sh /data/projects/streamdeck/vibecoding_profile.streamDeckProfile
 ```
-
-This checks:
-- Valid ZIP with `.sdProfile` root directory
-- All manifest.json files are valid JSON
-- Grid positions within bounds (0-7 rows, 0-3 cols)
-- No duplicate ActionIDs
-- All referenced images exist
-- Required fields present (ActionID, UUID)
 
 **Only proceed to commit if validation passes with 0 errors.**
 
@@ -103,7 +120,7 @@ The user re-imports the `.streamDeckProfile` on their Mac to apply changes.
 
 ### 7. Update Layout Reference
 
-After any edit, regenerate `LAYOUT.md` so humans can review all prompts at a glance:
+After any edit, regenerate the layout dump:
 
 ```bash
 bash /path/to/skills/streamdeck-editor/scripts/dump-layout.sh
@@ -116,5 +133,5 @@ bash scripts/dump-layout.sh [profile-path] [output-path]
 
 ## Additional Resources
 
-- **references/button-types.md** — All supported button types (Text, Hotkey, Next/Prev Page, Go to Page, Folder) with full JSON examples
+- **references/button-types.md** — All supported button types with full JSON examples and common mistakes
 - **references/layout.md** — Current button layout grid
