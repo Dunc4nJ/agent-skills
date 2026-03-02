@@ -96,6 +96,7 @@ Each explore agent should:
 - Read 2-3 example files to see how the API is actually used
 - Note file paths and line numbers for key implementations
 - Focus on what seems novel, well-designed, or unusually thorough
+- Hunt for interesting optimizations, complex strategies, and non-trivial approaches -- the clever stuff that would be hard to invent from scratch
 - Investigate performance-relevant patterns: streaming, caching, concurrency, batching, and other optimizations
 
 ### Phase 3: Synthesis and Differentiation
