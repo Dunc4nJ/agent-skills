@@ -42,6 +42,21 @@ if ! $SSH_CMD 'command -v marker_single' &>/dev/null; then
     $SSH_CMD 'pip install marker-pdf 2>&1 | tail -1 && pip install --upgrade torchvision 2>&1 | tail -1'
 fi
 
+# Push cached models if available locally and not yet on GPU
+LOCAL_MODEL_CACHE="$HOME/.cache/datalab"
+if [ -d "$LOCAL_MODEL_CACHE/models" ]; then
+    REMOTE_CACHE_SIZE=$($SSH_CMD 'du -sb /root/.cache/datalab/models 2>/dev/null | cut -f1' 2>/dev/null || echo "0")
+    LOCAL_CACHE_SIZE=$(du -sb "$LOCAL_MODEL_CACHE/models" | cut -f1)
+    # Push if remote cache is less than 80% of local (i.e. missing/incomplete)
+    if [ "${REMOTE_CACHE_SIZE:-0}" -lt $((LOCAL_CACHE_SIZE * 80 / 100)) ]; then
+        echo "Pushing cached models to GPU (~$(du -sh "$LOCAL_MODEL_CACHE/models" | cut -f1))..."
+        $SSH_CMD 'mkdir -p /root/.cache/datalab'
+        rsync -az --info=progress2 -e "ssh -o StrictHostKeyChecking=no -p $VAST_SSH_PORT" \
+            "$LOCAL_MODEL_CACHE/models/" "root@$VAST_SSH_HOST:/root/.cache/datalab/models/"
+        echo "Model cache pushed."
+    fi
+fi
+
 # Upload PDF
 echo "Uploading $PDF_PATH..."
 $SCP_CMD "$PDF_PATH" "root@$VAST_SSH_HOST:/tmp/$PDF_NAME.pdf"
